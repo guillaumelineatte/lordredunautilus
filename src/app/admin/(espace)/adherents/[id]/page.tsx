@@ -17,8 +17,9 @@ import {
   paymentMethodLabel,
   registrationStatusLabel,
 } from "@/lib/labels";
+import { deleteConfirmation } from "@/lib/member-deletion";
 import {
-  anonymizeMemberNow,
+  deleteMemberAction,
   deleteMembership,
   markMinorReviewed,
   removeParentalDocument,
@@ -76,6 +77,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
     );
   }
 
+  const fullName = `${member.firstName} ${member.lastName}`;
   const age = member.birthYear ? Number(today.slice(0, 4)) - member.birthYear : null;
   const minorLooksOutdated = member.isMinor && age != null && age >= 18;
 
@@ -135,6 +137,16 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
                 Autorisation parentale pré-remplie
               </LinkButton>
             ) : null}
+            <ActionButton
+              action={deleteMemberAction}
+              input={{ id: member.id }}
+              variant="danger"
+              confirm={deleteConfirmation(fullName, member.memberships.length)}
+              success="Fiche supprimée."
+              redirectTo="/admin/adherents"
+            >
+              Supprimer la fiche
+            </ActionButton>
           </>
         }
       />
@@ -386,10 +398,14 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
 
           <Card title="Suppression">
             <p className="mb-4 text-sm text-ivory-2">
-              <b>Corbeille</b> : la fiche disparaît des listes et sera anonymisée automatiquement
-              dans 30 jours. <b>Supprimer et anonymiser</b> : immédiat et définitif (demande
-              d&apos;effacement). Nom, prénom, identifiants et documents sont effacés ; les
-              adhésions restent, sans nom, pour la comptabilité.
+              <b>Corbeille</b> : la fiche disparaît des listes, reste restaurable, et sera supprimée
+              automatiquement dans 30 jours.
+            </p>
+            <p className="mb-4 text-sm text-ivory-2">
+              <b>Supprimer la fiche</b> : immédiat et définitif.{" "}
+              {member.memberships.length > 0
+                ? `Nom, identifiants de jeu, autorisations et documents sont effacés ; ses ${member.memberships.length} adhésion(s) restent en comptabilité sous « Ancien membre ».`
+                : "Aucune adhésion n'est enregistrée : la fiche est entièrement effacée de la base."}
             </p>
             <div className="flex flex-wrap gap-2">
               {member.deletedAt ? (
@@ -411,14 +427,14 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
                 </ActionButton>
               )}
               <ActionButton
-                action={anonymizeMemberNow}
+                action={deleteMemberAction}
                 input={{ id: member.id }}
                 variant="danger"
-                confirm={`Supprimer et anonymiser définitivement la fiche de ${member.firstName} ${member.lastName} ? Cette action est irréversible.`}
-                success="Fiche anonymisée."
+                confirm={deleteConfirmation(fullName, member.memberships.length)}
+                success="Fiche supprimée."
                 redirectTo="/admin/adherents"
               >
-                Supprimer et anonymiser
+                Supprimer définitivement
               </ActionButton>
             </div>
           </Card>

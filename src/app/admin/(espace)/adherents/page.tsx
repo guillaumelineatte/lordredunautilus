@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { FilterSelect, SearchBox } from "@/components/admin/table-controls";
+import { MembersTable } from "@/components/admin/members-table";
 import {
   Pagination,
   parseListParams,
   SortHeader,
-  TableWrap,
   type SearchParams,
 } from "@/components/admin/table";
-import { Badge, EmptyState, LinkButton, PageHeader } from "@/components/admin/ui";
+import { EmptyState, LinkButton, PageHeader } from "@/components/admin/ui";
 import { todayParis, dbDateToDay } from "@/lib/dates";
 import { formatDay } from "@/lib/format";
 import { memberStatusLabel } from "@/lib/labels";
@@ -81,58 +80,37 @@ export default async function MembersPage({
             : "Aucun adhérent pour l'instant."}
         </EmptyState>
       ) : (
-        <TableWrap>
-          <table className="table-base">
-            <thead>
-              <tr>
-                <SortHeader label="Nom" field="lastName" params={params} sp={sp} />
-                <SortHeader label="Prénom" field="firstName" params={params} sp={sp} />
-                <th>Jeux</th>
-                <SortHeader label="Carte" field="cardNumber" params={params} sp={sp} />
-                <th>Dernière adhésion</th>
-                <SortHeader label="Statut" field="status" params={params} sp={sp} />
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((m) => {
-                const last = m.memberships[0];
-                const ended = last ? dbDateToDay(last.endDate) < today : false;
-                return (
-                  <tr key={m.id}>
-                    <td>
-                      <Link
-                        href={`/admin/adherents/${m.id}`}
-                        className="font-semibold hover:text-rose"
-                      >
-                        {m.lastName}
-                      </Link>
-                      {m.isMinor ? (
-                        <Badge tone="rose" className="ml-2">
-                          mineur
-                        </Badge>
-                      ) : null}
-                    </td>
-                    <td>{m.firstName}</td>
-                    <td className="text-ivory-2">
-                      {m.gameIds.map((g) => g.game.name).join(", ") || "—"}
-                    </td>
-                    <td className="font-mono text-xs">{m.cardNumber ?? "—"}</td>
-                    <td className={ended ? "text-ivory-3" : ""}>
-                      {last ? `${last.plan.name}, jusqu'au ${formatDay(last.endDate)}` : "Aucune"}
-                    </td>
-                    <td>
-                      {m.deletedAt ? (
-                        <Badge tone="danger">corbeille</Badge>
-                      ) : (
-                        <Badge tone={statusTone[m.status]}>{memberStatusLabel[m.status]}</Badge>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </TableWrap>
+        <MembersTable
+          head={
+            <>
+              <SortHeader label="Nom" field="lastName" params={params} sp={sp} />
+              <SortHeader label="Prénom" field="firstName" params={params} sp={sp} />
+              <th>Jeux</th>
+              <SortHeader label="Carte" field="cardNumber" params={params} sp={sp} />
+              <th>Dernière adhésion</th>
+              <SortHeader label="Statut" field="status" params={params} sp={sp} />
+            </>
+          }
+          rows={rows.map((m) => {
+            const last = m.memberships[0];
+            return {
+              id: m.id,
+              firstName: m.firstName,
+              lastName: m.lastName,
+              isMinor: m.isMinor,
+              games: m.gameIds.map((g) => g.game.name).join(", "),
+              cardNumber: m.cardNumber,
+              lastMembership: last
+                ? `${last.plan.name}, jusqu'au ${formatDay(last.endDate)}`
+                : null,
+              ended: last ? dbDateToDay(last.endDate) < today : false,
+              statusLabel: memberStatusLabel[m.status],
+              statusTone: statusTone[m.status],
+              inTrash: Boolean(m.deletedAt),
+              membershipCount: m._count.memberships,
+            };
+          })}
+        />
       )}
       <Pagination total={total} params={params} sp={sp} />
     </>

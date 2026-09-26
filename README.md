@@ -123,12 +123,12 @@ Une seule route, `GET /api/cron/quotidien`, protégée par `Authorization: Beare
 
 Chaque tâche est idempotente et tracée dans la table `CronRun`. Le tableau de bord alerte si rien n'a tourné depuis 36 h.
 
-| Tâche          | Contenu                                                                                                                                                                                                                                                                                                   |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `adhesions`    | Alertes à l'admin à J-30, J-7 et J0, une fois par palier (un palier manqué est rattrapé). Passage au statut « échu » le lendemain de la fin.                                                                                                                                                              |
-| `evenements`   | Événements passés → « terminé ». E-mails d'inscription effacés 7 jours après l'événement. Inscriptions supprimées au bout de 12 mois.                                                                                                                                                                     |
-| `conservation` | Messages traités supprimés après 6 mois (12 s'ils ne sont jamais traités). **Anonymisation automatique** des fiches dont la dernière adhésion a pris fin il y a plus de 3 ans (et des fiches en corbeille depuis 30 jours). Purge du journal (12 mois), des compteurs anti-abus et des sessions expirées. |
-| `digest`       | E-mail récapitulatif à l'admin : adhésions à renouveler ce mois-ci, inscriptions de la veille, messages en attente.                                                                                                                                                                                       |
+| Tâche          | Contenu                                                                                                                                                                                                                                                                                                                                                                                   |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `adhesions`    | Alertes à l'admin à J-30, J-7 et J0, une fois par palier (un palier manqué est rattrapé). Passage au statut « échu » le lendemain de la fin.                                                                                                                                                                                                                                              |
+| `evenements`   | Événements passés → « terminé ». E-mails d'inscription effacés 7 jours après l'événement. Inscriptions supprimées au bout de 12 mois.                                                                                                                                                                                                                                                     |
+| `conservation` | Messages traités supprimés après 6 mois (12 s'ils ne sont jamais traités). **Suppression automatique** des fiches dont la dernière adhésion a pris fin il y a plus de 3 ans, et des fiches en corbeille depuis 30 jours (même règle que le bouton : effacement complet sans adhésion, anonymisation sinon). Purge du journal (12 mois), des compteurs anti-abus et des sessions expirées. |
+| `digest`       | E-mail récapitulatif à l'admin : adhésions à renouveler ce mois-ci, inscriptions de la veille, messages en attente.                                                                                                                                                                                                                                                                       |
 
 Déclenchement manuel :
 
@@ -218,10 +218,14 @@ Ce sont ces cases qui autorisent ou bloquent la publication de photos. Chaque sa
 
 **Doublons** : la page **Fusionner des doublons** repère les fiches au même nom. Tout (adhésions, inscriptions, identifiants, autorisations) passe sur la fiche conservée.
 
-**Supprimer** :
+**Supprimer une fiche** : bouton **Supprimer** sur chaque ligne de la liste, ou **Supprimer la fiche** en haut de la fiche. Pour en supprimer plusieurs d'un coup, cochez-les dans la liste, puis **Supprimer la sélection**. Ce qui est effacé dépend de la fiche :
 
-- **Mettre à la corbeille** : la fiche disparaît des listes et sera anonymisée automatiquement après 30 jours. Elle reste restaurable d'ici là.
-- **Supprimer et anonymiser** : immédiat et définitif (demande d'effacement). Les adhésions restent, sans nom, pour la comptabilité.
+- **Fiche sans aucune adhésion** (erreur de saisie, doublon, test) : effacée entièrement de la base.
+- **Fiche avec des adhésions** : nom, identifiants de jeu, autorisations et documents sont effacés ; les montants et dates restent en comptabilité sous « Ancien membre ». C'est aussi la réponse à une demande d'effacement RGPD.
+
+Dans les deux cas, les photos où la personne était identifiée repassent en brouillon, et la suppression est tracée dans le journal.
+
+**Corbeille** (en bas de la fiche) : pour mettre une fiche de côté sans la supprimer tout de suite. Elle disparaît des listes (filtre « Corbeille » pour la retrouver), reste restaurable, puis est supprimée automatiquement après 30 jours.
 
 ### Événements
 
@@ -322,7 +326,7 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
 
 **Demande d'effacement (art. 17) ou d'opposition** :
 
-1. Fiche → **Supprimer et anonymiser**. L'effacement est immédiat : identité, identifiants, scan et inscriptions liées ; les photos où la personne était identifiée sont dépubliées.
+1. Fiche → **Supprimer la fiche**. L'effacement est immédiat : identité, identifiants, scan et inscriptions liées ; les photos où la personne était identifiée sont dépubliées. Si la personne a eu des adhésions, seuls les montants et dates restent, sans nom, pour la comptabilité.
 2. Supprimer aussi, si besoin, la photo de la galerie et les éventuelles copies hors site (Discord, sauvegardes locales).
 3. Répondre à la personne dans un délai d'un mois.
 
@@ -348,9 +352,10 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
   - paliers d'alerte, verrouillage ;
   - règles de publication photo, masquage du journal ;
   - validation des formulaires.
-- **Parcours critiques** (`npm run test:e2e`, 18 tests Playwright), qui couvrent :
+- **Parcours critiques** (`npm run test:e2e`, 19 tests Playwright), qui couvrent :
   - connexion ;
   - adhérent de bout en bout (adhésion, renouvellement, carte, anonymisation) ;
+  - suppression de fiches depuis la liste, une par une et par sélection ;
   - événement avec inscriptions publiques, liste d'attente, anti-doublon, promotion et émargement ;
   - galerie (publication bloquée puis autorisée) ;
   - cron protégé, routes admin refusées sans session ;

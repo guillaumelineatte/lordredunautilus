@@ -5,6 +5,7 @@ import { matchesPattern } from "@/lib/text";
 import type { Tx } from "../db";
 import type { AuditRecorder } from "../service/audit";
 import { fail } from "../service/errors";
+import { anonymizeMember } from "./anonymize";
 
 /** Remplace les identifiants de jeu d'un adhérent, chaque valeur étant validée par la regex du jeu. */
 export async function syncGameIds(
@@ -115,4 +116,51 @@ export async function enforcePhotoRules(
     }
   }
   return unpublished;
+}
+
+export type DeletionMode = "deleted" | "anonymized";
+
+/**
+ * Suppression d'une fiche depuis l'administration :
+ * - sans aucune adhésion (erreur de saisie, doublon, test) : effacement définitif ;
+ * - avec des adhésions : anonymisation, les montants restant en comptabilité
+ *   sous « Ancien membre ».
+ */
+export async function deleteMember(
+  tx: Tx,
+  memberId: string,
+  audit: AuditRecorder,
+  reason: string,
+): Promise<DeletionMode> {
+  const member = await tx.member.findUnique({
+    where: { id: memberId },
+    include: {
+      _count: { select: { memberships: true } },
+      taggedPhotos: { select: { id: true, isPublished: true } },
+    },
+  });
+  if (!member || member.anonymizedAt) fail("Fiche introuvable ou déjà supprimée.");
+
+  if (member._count.memberships > 0) {
+    await anonymizeMember(tx, memberId, audit, reason);
+    await tx.member.update({ where: { id: memberId }, data: { deletedAt: new Date() } });
+    return "anonymized";
+  }
+
+  // Les photos où la personne était identifiée repassent en brouillon, à revérifier.
+  const published = member.taggedPhotos.filter((p) => p.isPublished).map((p) => p.id);
+  if (published.length > 0) {
+    await tx.photo.updateMany({
+      where: { id: { in: published } },
+      data: { isPublished: false, publishedAt: null },
+    });
+  }
+  // Identifiants de jeu supprimés en cascade, inscriptions détachées, étiquettes photo retirées.
+  await tx.member.delete({ where: { id: memberId } });
+  if (member.parentalDocumentFileId) {
+    await tx.privateFile.delete({ where: { id: member.parentalDocumentFileId } });
+  }
+  const { _count, taggedPhotos: _photos, ...row } = member;
+  await audit.deleted("Member", row);
+  return "deleted";
 }

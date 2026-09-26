@@ -7,12 +7,12 @@ import { alertField, alertTier, type AlertTier } from "@/lib/membership-alerts";
 import { RETENTION } from "@/lib/retention";
 import { fullName } from "@/lib/text";
 import { db } from "../db";
-import { anonymizeMember } from "../domain/anonymize";
+import { deleteMember } from "../domain/members";
 import { notifyAdmin, siteUrl } from "../mail/send";
 import { AuditRecorder } from "../service/audit";
 
 const SYSTEM_META = { ip: null, userAgent: "cron" };
-const systemAudit = (client: Parameters<typeof anonymizeMember>[0] | typeof db) =>
+const systemAudit = (client: Parameters<typeof deleteMember>[0] | typeof db) =>
   new AuditRecorder(client, SYSTEM_META, "SYSTEM");
 
 function monthsAgo(n: number, from = new Date()): Date {
@@ -149,8 +149,9 @@ export async function retentionJob(now = new Date(), today = todayParis()): Prom
     where: { status: "NEW", createdAt: { lt: monthsAgo(RETENTION.contactUnhandledMonths, now) } },
   });
 
-  // Anonymisation : dernière adhésion terminée depuis plus de 3 ans,
-  // fiche sans adhésion créée il y a plus de 3 ans, corbeille de plus de 30 jours.
+  // Fin de conservation : dernière adhésion terminée depuis plus de 3 ans, fiche sans
+  // adhésion créée il y a plus de 3 ans, corbeille de plus de 30 jours. Même règle que
+  // le bouton « Supprimer » : effacement complet sans adhésion, anonymisation sinon.
   const limitDay = addDays(today, -365 * RETENTION.memberYears);
   const candidates = await db.member.findMany({
     where: {
@@ -164,9 +165,10 @@ export async function retentionJob(now = new Date(), today = todayParis()): Prom
     select: { id: true, deletedAt: true },
   });
   let anonymized = 0;
+  let deleted = 0;
   for (const c of candidates) {
-    const done = await db.$transaction((tx) =>
-      anonymizeMember(
+    const mode = await db.$transaction((tx) =>
+      deleteMember(
         tx,
         c.id,
         systemAudit(tx),
@@ -175,7 +177,8 @@ export async function retentionJob(now = new Date(), today = todayParis()): Prom
           : `Plus de ${RETENTION.memberYears} ans sans adhésion`,
       ),
     );
-    if (done) anonymized++;
+    if (mode === "anonymized") anonymized++;
+    else deleted++;
   }
 
   const audit = await db.auditLog.deleteMany({
@@ -186,7 +189,7 @@ export async function retentionJob(now = new Date(), today = todayParis()): Prom
   });
   const sessions = await db.adminSession.deleteMany({ where: { expiresAt: { lt: now } } });
 
-  if (anonymized > 0) {
+  if (anonymized + deleted > 0) {
     revalidateTag(TAGS.stats, "max");
     revalidateTag(TAGS.photos, "max");
   }
@@ -198,6 +201,7 @@ export async function retentionJob(now = new Date(), today = todayParis()): Prom
   return {
     messagesSupprimes: handled.count + stale.count,
     fichesAnonymisees: anonymized,
+    fichesSupprimees: deleted,
     journalPurge: audit.count,
     compteursPurges: rate.count,
     sessionsExpirees: sessions.count,

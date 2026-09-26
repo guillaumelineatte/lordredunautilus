@@ -133,8 +133,7 @@ export function LoginForm() {
         </form>
       )}
       <p className="mt-6 text-center text-xs text-ivory-3">
-        Accès réservé à l&apos;administrateur de l&apos;association. Après 5 échecs, le compte est
-        verrouillé 15 minutes.
+        Accès réservé à l&apos;administrateur de l&apos;association.
       </p>
     </div>
   );

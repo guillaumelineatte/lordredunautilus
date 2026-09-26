@@ -5,7 +5,7 @@ import type { AuditRecorder } from "../service/audit";
 export const FORMER_MEMBER = { firstName: "Ancien", lastName: "membre" } as const;
 
 /**
- * Anonymisation d'une fiche (bouton « Supprimer et anonymiser » et cron, même code).
+ * Anonymisation d'une fiche (suppression d'une fiche qui a des adhésions, et cron : même code).
  * - identité, année de naissance, carte, notes, droits, identifiants de jeu, scan : effacés ;
  * - inscriptions liées : anonymisées ; photos où il est identifié : dépubliées ;
  * - adhésions : conservées (montant, dates, formule) pour la comptabilité, sans la référence PayPal.
