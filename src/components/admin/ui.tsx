@@ -11,10 +11,16 @@ const variants: Record<Variant, string> = {
   subtle: "border-transparent text-ivory-2 hover:text-ivory hover:bg-ivory/5",
 };
 
-export function buttonClass(variant: Variant = "ghost", size: "sm" | "md" = "md") {
+export type ButtonSize = "sm" | "md" | "icon";
+
+export function buttonClass(variant: Variant = "ghost", size: ButtonSize = "md") {
   return clsx(
     "inline-flex items-center justify-center gap-2 rounded-full border font-head tracking-[0.06em] transition-colors disabled:cursor-not-allowed disabled:opacity-50",
-    size === "sm" ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm",
+    size === "icon"
+      ? "size-8 shrink-0"
+      : size === "sm"
+        ? "px-3 py-1.5 text-xs"
+        : "px-4 py-2 text-sm",
     variants[variant],
   );
 }
@@ -24,7 +30,7 @@ export function Button({
   size = "md",
   className,
   ...props
-}: ComponentProps<"button"> & { variant?: Variant; size?: "sm" | "md" }) {
+}: ComponentProps<"button"> & { variant?: Variant; size?: ButtonSize }) {
   return (
     <button type="button" className={clsx(buttonClass(variant, size), className)} {...props} />
   );
@@ -35,7 +41,7 @@ export function LinkButton({
   size = "md",
   className,
   ...props
-}: ComponentProps<typeof Link> & { variant?: Variant; size?: "sm" | "md" }) {
+}: ComponentProps<typeof Link> & { variant?: Variant; size?: ButtonSize }) {
   return <Link className={clsx(buttonClass(variant, size), className)} {...props} />;
 }
 

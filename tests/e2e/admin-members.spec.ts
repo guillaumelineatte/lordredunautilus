@@ -70,7 +70,7 @@ test("suppression depuis la liste : une fiche, puis une sélection", async ({ pa
   // Une fiche, depuis sa ligne (sans adhésion : effacement définitif)
   await page
     .getByRole("row", { name: new RegExp(names[0] ?? "") })
-    .getByRole("button", { name: "Supprimer" })
+    .getByRole("button", { name: /Supprimer la fiche de/ })
     .click();
   await expect(page.getByText("Fiche supprimée.")).toBeVisible();
   await expect(page.locator("tbody tr")).toHaveCount(2);
