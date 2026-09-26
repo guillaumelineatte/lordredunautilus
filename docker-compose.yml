@@ -1,0 +1,23 @@
+# PostgreSQL local (alternative à une branche Neon pour le développement).
+#   docker compose up -d
+#   DATABASE_URL="postgresql://nautilus:nautilus@localhost:5432/nautilus"
+#   DIRECT_URL="postgresql://nautilus:nautilus@localhost:5432/nautilus"
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nautilus
+      POSTGRES_PASSWORD: nautilus
+      POSTGRES_DB: nautilus
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nautilus"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  pgdata:
