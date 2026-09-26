@@ -1,0 +1,429 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ActionButton } from "@/components/admin/action-button";
+import { MemberForm } from "@/components/admin/member-form";
+import {
+  ParentalUploadForm,
+  RecordMembershipForm,
+  RenewMembershipForm,
+} from "@/components/admin/membership-forms";
+import { Badge, Card, EmptyState, LinkButton, PageHeader } from "@/components/admin/ui";
+import { dbDateToDay, todayParis } from "@/lib/dates";
+import { formatBytes, formatDateTime, formatDay, formatMoney } from "@/lib/format";
+import {
+  auditActionLabel,
+  memberStatusLabel,
+  paymentMethodLabel,
+  registrationStatusLabel,
+} from "@/lib/labels";
+import {
+  anonymizeMemberNow,
+  deleteMembership,
+  markMinorReviewed,
+  removeParentalDocument,
+  restoreMember,
+  setCardHandedOver,
+  trashMember,
+} from "@/server/actions/members";
+import { gameOptions, getMemberDetail, planOptions } from "@/server/queries/admin";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const data = await getMemberDetail(id);
+  return { title: data ? `${data.member.firstName} ${data.member.lastName}` : "Adhérent" };
+}
+
+const dayOrNull = (d: Date | null) => (d ? dbDateToDay(d) : null);
+
+export default async function MemberPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const [data, games, plans] = await Promise.all([
+    getMemberDetail(id),
+    gameOptions(true),
+    planOptions(),
+  ]);
+  if (!data) notFound();
+  const { member, history } = data;
+  const today = todayParis();
+  const membershipPlans = plans.filter((p) => p.kind === "MEMBERSHIP" && p.isActive);
+  const latest = member.memberships.find((m) => !m.renewedBy);
+  const anonymized = Boolean(member.anonymizedAt);
+
+  if (anonymized) {
+    return (
+      <>
+        <PageHeader
+          kicker="Adhérents"
+          title="Ancien membre"
+          description={`Fiche anonymisée le ${formatDateTime(member.anonymizedAt)}.`}
+        />
+        <Card title="Adhésions conservées pour la comptabilité">
+          <ul className="text-sm text-ivory-2">
+            {member.memberships.map((m) => (
+              <li key={m.id}>
+                {m.plan.name} — {formatDay(m.startDate)} → {formatDay(m.endDate)} —{" "}
+                {formatMoney(m.amountCents)}
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </>
+    );
+  }
+
+  const age = member.birthYear ? Number(today.slice(0, 4)) - member.birthYear : null;
+  const minorLooksOutdated = member.isMinor && age != null && age >= 18;
+
+  return (
+    <>
+      <PageHeader
+        kicker="Adhérent"
+        title={`${member.firstName} ${member.lastName}`}
+        description={
+          <span className="flex flex-wrap items-center gap-2">
+            <Badge
+              tone={
+                member.status === "ACTIVE" ? "ok" : member.status === "EXPIRED" ? "warn" : "danger"
+              }
+            >
+              {memberStatusLabel[member.status]}
+            </Badge>
+            {member.isMinor ? <Badge tone="rose">mineur</Badge> : null}
+            {member.deletedAt ? (
+              <Badge tone="danger">dans la corbeille depuis le {formatDay(member.deletedAt)}</Badge>
+            ) : null}
+            {member.cardNumber ? (
+              <span className="font-mono text-xs">Carte {member.cardNumber}</span>
+            ) : null}
+          </span>
+        }
+        actions={
+          <>
+            <LinkButton
+              href={`/api/admin/pdf/carte?adherent=${member.id}`}
+              prefetch={false}
+              size="sm"
+            >
+              Carte de membre (CR80)
+            </LinkButton>
+            <LinkButton
+              href={`/api/admin/pdf/carte?adherent=${member.id}&format=a6`}
+              prefetch={false}
+              size="sm"
+            >
+              Carte A6
+            </LinkButton>
+            <LinkButton
+              href={`/api/admin/export/fiche?adherent=${member.id}`}
+              prefetch={false}
+              size="sm"
+              title="Droit d'accès et portabilité (RGPD)"
+            >
+              Exporter ses données
+            </LinkButton>
+            {member.isMinor ? (
+              <LinkButton
+                href={`/api/admin/pdf/autorisation-parentale?adherent=${member.id}`}
+                prefetch={false}
+                size="sm"
+              >
+                Autorisation parentale pré-remplie
+              </LinkButton>
+            ) : null}
+          </>
+        }
+      />
+
+      {minorLooksOutdated ? (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-m border border-warn/40 bg-warn/10 px-4 py-3 text-sm text-warn">
+          <span>
+            Né·e en {member.birthYear} : {member.firstName} a peut-être 18 ans cette année. Vérifiez
+            la case « mineur ».
+          </span>
+          <span className="flex gap-2">
+            <ActionButton
+              action={markMinorReviewed}
+              input={{ id: member.id, isMinor: false }}
+              success="Fiche passée en majeur."
+            >
+              Passer en majeur
+            </ActionButton>
+            <ActionButton
+              action={markMinorReviewed}
+              input={{ id: member.id, isMinor: true }}
+              success="Case confirmée pour cette saison."
+            >
+              Toujours mineur
+            </ActionButton>
+          </span>
+        </div>
+      ) : null}
+
+      <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+        <div className="grid content-start gap-6">
+          <Card title="Adhésions">
+            {member.memberships.length === 0 ? (
+              <EmptyState>Aucune adhésion enregistrée.</EmptyState>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="table-base">
+                  <thead>
+                    <tr>
+                      <th>Période</th>
+                      <th>Formule</th>
+                      <th>Paiement</th>
+                      <th>Suivi</th>
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {member.memberships.map((m) => {
+                      const ended = dbDateToDay(m.endDate) < today;
+                      return (
+                        <tr key={m.id}>
+                          <td className="whitespace-nowrap">
+                            {formatDay(m.startDate)} → {formatDay(m.endDate)}
+                          </td>
+                          <td>
+                            {m.plan.name}
+                            <p className="text-xs text-ivory-3">{formatMoney(m.amountCents)}</p>
+                          </td>
+                          <td>
+                            {paymentMethodLabel[m.paymentMethod]}
+                            {m.transactionRef ? (
+                              <p className="font-mono text-xs text-ivory-3">{m.transactionRef}</p>
+                            ) : null}
+                          </td>
+                          <td className="space-y-1">
+                            {m.renewedBy ? (
+                              <Badge tone="ok">renouvelée</Badge>
+                            ) : ended ? (
+                              <Badge tone="warn">non renouvelée</Badge>
+                            ) : (
+                              <Badge>en cours</Badge>
+                            )}
+                            <div>
+                              <ActionButton
+                                action={setCardHandedOver}
+                                input={{ id: m.id, handed: !m.cardHandedOverAt }}
+                                variant="subtle"
+                                success={
+                                  m.cardHandedOverAt
+                                    ? "Remise annulée."
+                                    : "Carte marquée comme remise."
+                                }
+                              >
+                                {m.cardHandedOverAt
+                                  ? `Carte remise le ${formatDay(m.cardHandedOverAt)}`
+                                  : "Marquer la carte remise"}
+                              </ActionButton>
+                            </div>
+                          </td>
+                          <td className="text-right">
+                            <ActionButton
+                              action={deleteMembership}
+                              input={{ id: m.id }}
+                              variant="subtle"
+                              confirm="Supprimer cette adhésion ? (saisie erronée uniquement)"
+                              success="Adhésion supprimée."
+                            >
+                              Supprimer
+                            </ActionButton>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            <div className="mt-5 grid gap-3">
+              {latest ? (
+                <details
+                  className="rounded-m border border-line p-4"
+                  open={dbDateToDay(latest.endDate) <= today}
+                >
+                  <summary className="cursor-pointer font-head text-sm tracking-[0.06em] text-rose">
+                    Renouveler
+                  </summary>
+                  <div className="mt-4">
+                    <RenewMembershipForm
+                      previousId={latest.id}
+                      previousEnd={dbDateToDay(latest.endDate)}
+                      previousPlanId={latest.planId}
+                      plans={membershipPlans}
+                      cardNumber={member.cardNumber}
+                      today={today}
+                    />
+                  </div>
+                </details>
+              ) : null}
+              <details className="rounded-m border border-line p-4" open={!latest}>
+                <summary className="cursor-pointer font-head text-sm tracking-[0.06em] text-rose">
+                  Enregistrer une adhésion
+                </summary>
+                <div className="mt-4">
+                  <RecordMembershipForm
+                    memberId={member.id}
+                    plans={membershipPlans}
+                    cardNumber={member.cardNumber}
+                    today={today}
+                  />
+                </div>
+              </details>
+            </div>
+          </Card>
+
+          <Card title="Fiche">
+            <MemberForm
+              games={games}
+              initial={{
+                id: member.id,
+                firstName: member.firstName,
+                lastName: member.lastName,
+                birthYear: member.birthYear,
+                isMinor: member.isMinor,
+                cardNumber: member.cardNumber,
+                status: member.status,
+                notes: member.notes,
+                imageRightsGallery: member.imageRightsGallery,
+                imageRightsGallerySource: member.imageRightsGallerySource,
+                imageRightsGalleryAt: dayOrNull(member.imageRightsGalleryAt),
+                imageRightsSocial: member.imageRightsSocial,
+                imageRightsSocialSource: member.imageRightsSocialSource,
+                imageRightsSocialAt: dayOrNull(member.imageRightsSocialAt),
+                parentalDocumentReceived: member.parentalDocumentReceived,
+                parentalDocumentReceivedAt: dayOrNull(member.parentalDocumentReceivedAt),
+                gameIds: member.gameIds.map((g) => ({ gameId: g.gameId, value: g.value })),
+              }}
+            />
+          </Card>
+        </div>
+
+        <div className="grid content-start gap-6">
+          {member.isMinor ? (
+            <Card title="Autorisation parentale">
+              {member.parentalDocumentFile ? (
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm">
+                  <a
+                    href={`/api/admin/fichiers/${member.parentalDocumentFile.id}`}
+                    target="_blank"
+                    rel="noopener"
+                    className="text-rose hover:underline"
+                  >
+                    {member.parentalDocumentFile.filename}
+                  </a>
+                  <span className="text-xs text-ivory-3">
+                    {formatBytes(member.parentalDocumentFile.size)} · joint le{" "}
+                    {formatDay(member.parentalDocumentFile.createdAt)}
+                  </span>
+                  <ActionButton
+                    action={removeParentalDocument}
+                    input={{ id: member.id }}
+                    variant="subtle"
+                    confirm="Retirer le scan de la fiche ?"
+                    success="Scan retiré."
+                  >
+                    Retirer
+                  </ActionButton>
+                </div>
+              ) : (
+                <p className="mb-3 text-sm text-ivory-3">Aucun scan joint (facultatif).</p>
+              )}
+              <ParentalUploadForm memberId={member.id} />
+            </Card>
+          ) : null}
+
+          <Card title="Inscriptions récentes">
+            {member.registrations.length === 0 ? (
+              <p className="text-sm text-ivory-3">Aucune inscription rapprochée de cette fiche.</p>
+            ) : (
+              <ul className="divide-y divide-line text-sm">
+                {member.registrations.map((r) => (
+                  <li key={r.id} className="flex justify-between gap-2 py-2">
+                    <Link href={`/admin/evenements/${r.event.id}`} className="hover:text-rose">
+                      {r.event.title}
+                    </Link>
+                    <span className="text-xs text-ivory-3">
+                      {formatDay(r.event.startsAt)} · {registrationStatusLabel[r.status]}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {member._count.taggedPhotos > 0 ? (
+              <p className="mt-3 text-xs text-ivory-3">
+                Identifié·e sur {member._count.taggedPhotos} photo(s) de la galerie.
+              </p>
+            ) : null}
+          </Card>
+
+          <Card title="Historique de la fiche">
+            {history.length === 0 ? (
+              <p className="text-sm text-ivory-3">Aucune modification tracée.</p>
+            ) : (
+              <ul className="grid gap-2 text-sm">
+                {history.map((h) => (
+                  <li key={h.id} className="flex justify-between gap-2">
+                    <span>
+                      {auditActionLabel[h.action]}
+                      {h.actor === "SYSTEM" ? (
+                        <span className="text-ivory-3"> (automatique)</span>
+                      ) : null}
+                    </span>
+                    <span className="text-xs text-ivory-3">{formatDateTime(h.createdAt)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+
+          <Card title="Suppression">
+            <p className="mb-4 text-sm text-ivory-2">
+              <b>Corbeille</b> : la fiche disparaît des listes et sera anonymisée automatiquement
+              dans 30 jours. <b>Supprimer et anonymiser</b> : immédiat et définitif (demande
+              d&apos;effacement). Nom, prénom, identifiants et documents sont effacés ; les
+              adhésions restent, sans nom, pour la comptabilité.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {member.deletedAt ? (
+                <ActionButton
+                  action={restoreMember}
+                  input={{ id: member.id }}
+                  success="Fiche restaurée."
+                >
+                  Restaurer la fiche
+                </ActionButton>
+              ) : (
+                <ActionButton
+                  action={trashMember}
+                  input={{ id: member.id }}
+                  confirm="Mettre cette fiche à la corbeille ?"
+                  success="Fiche mise à la corbeille."
+                >
+                  Mettre à la corbeille
+                </ActionButton>
+              )}
+              <ActionButton
+                action={anonymizeMemberNow}
+                input={{ id: member.id }}
+                variant="danger"
+                confirm={`Supprimer et anonymiser définitivement la fiche de ${member.firstName} ${member.lastName} ? Cette action est irréversible.`}
+                success="Fiche anonymisée."
+                redirectTo="/admin/adherents"
+              >
+                Supprimer et anonymiser
+              </ActionButton>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </>
+  );
+}
