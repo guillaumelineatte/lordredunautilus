@@ -6,9 +6,9 @@ import { useState, useTransition, type ReactNode } from "react";
 import { deleteConfirmation } from "@/lib/member-deletion";
 import { deleteMemberAction, deleteMembersAction } from "@/server/actions/members";
 import { ActionButton } from "./action-button";
-import { TrashIcon } from "./icons";
+import { PencilIcon, TrashIcon } from "./icons";
 import { useToast } from "./toast";
-import { Badge, Button } from "./ui";
+import { Badge, Button, buttonClass } from "./ui";
 
 export type MemberRow = {
   id: string;
@@ -93,7 +93,7 @@ export function MembersTable({ rows, head }: { rows: MemberRow[]; head: ReactNod
                 />
               </th>
               {head}
-              <th className="w-12">
+              <th className="w-24">
                 <span className="sr-only">Actions</span>
               </th>
             </tr>
@@ -136,7 +136,15 @@ export function MembersTable({ rows, head }: { rows: MemberRow[]; head: ReactNod
                       <Badge tone={m.statusTone}>{m.statusLabel}</Badge>
                     )}
                   </td>
-                  <td className="text-right">
+                  <td className="text-right whitespace-nowrap">
+                    <Link
+                      href={`/admin/adherents/${m.id}?modifier=1`}
+                      className={buttonClass("subtle", "icon")}
+                      title="Modifier"
+                      aria-label={`Modifier la fiche de ${name}`}
+                    >
+                      <PencilIcon />
+                    </Link>
                     <ActionButton
                       action={deleteMemberAction}
                       input={{ id: m.id }}

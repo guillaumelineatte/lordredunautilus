@@ -201,6 +201,15 @@ On y trouve :
 3. Cochez **Carte remise en main propre** quand vous la donnez, ou cliquez plus tard sur « Marquer la carte remise ».
 4. Imprimez la carte : bouton **Carte de membre (CR80)** ou **A6**.
 
+**Modifier une fiche** : bouton **Modifier** dans « Paramètres de l'adhérent », en haut de la fiche, ou icône crayon dans la liste. Tous les paramètres se modifient au même endroit : identité, année de naissance, case mineur, numéro de carte, suspension, notes, identifiants de jeu, autorisations photo et parentale. **Enregistrer les modifications** revient au récapitulatif ; **Annuler** abandonne les changements. Contrôles appliqués à l'enregistrement :
+
+- le **statut** actif ou échu est calculé d'après les adhésions ; seule la case « Adhérent suspendu » se règle à la main ;
+- le **numéro de carte** doit être unique : le message indique à qui il est déjà attribué ;
+- chaque **identifiant de jeu** doit respecter le format de son jeu et ne pas appartenir à une autre fiche ;
+- si une **autorisation photo** est retirée (ou si la fiche passe en mineur sans papier signé), les photos où la personne est identifiée sont retirées de la galerie, et un message le signale.
+
+**Corriger une adhésion** : icône crayon sur la ligne de l'adhésion. On peut modifier la formule, le début, la fin (avec un lien pour la recalculer d'après la formule), le montant, le mode de paiement et la référence. Les dates ne doivent pas chevaucher une autre adhésion du membre. Si la fin change, les alertes d'échéance repartent de zéro et le statut est recalculé. L'icône poubelle supprime une adhésion saisie par erreur.
+
 **Renouveler** : la nouvelle adhésion est chaînée à la précédente. Si l'ancienne n'est pas terminée, la nouvelle commence le lendemain de sa fin : ni trou, ni chevauchement.
 
 ![Fiche adhérent](docs/captures/admin-fiche-adherent.jpg)
@@ -347,15 +356,16 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
 
 ## 9. Tests et qualité
 
-- **Unitaires** (`npm test`, 43 tests), qui couvrent :
+- **Unitaires** (`npm test`, 46 tests), qui couvrent :
   - dates en heure de Paris, fin et renouvellement d'adhésion ;
   - paliers d'alerte, verrouillage ;
   - règles de publication photo, masquage du journal ;
   - validation des formulaires.
-- **Parcours critiques** (`npm run test:e2e`, 19 tests Playwright), qui couvrent :
+- **Parcours critiques** (`npm run test:e2e`, 20 tests Playwright), qui couvrent :
   - connexion ;
   - adhérent de bout en bout (adhésion, renouvellement, carte, anonymisation) ;
   - suppression de fiches depuis la liste, une par une et par sélection ;
+  - modification d'une fiche (suspension, numéro de carte en doublon) et correction d'une adhésion ;
   - événement avec inscriptions publiques, liste d'attente, anti-doublon, promotion et émargement ;
   - galerie (publication bloquée puis autorisée) ;
   - cron protégé, routes admin refusées sans session ;

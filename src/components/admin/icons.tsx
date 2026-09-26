@@ -18,3 +18,22 @@ export function TrashIcon({ className = "size-4 shrink-0" }: { className?: strin
     </svg>
   );
 }
+
+/** Icône crayon (modifier). */
+export function PencilIcon({ className = "size-4 shrink-0" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M4 20h4L19 9a2.1 2.1 0 0 0-4-4L4 16v4z" />
+      <path d="M13.5 6.5l4 4" />
+    </svg>
+  );
+}

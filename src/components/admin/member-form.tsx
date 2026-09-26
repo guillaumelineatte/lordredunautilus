@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { ConsentSource, MemberStatus } from "@/generated/prisma/enums";
-import { consentSourceLabel, memberStatusLabel } from "@/lib/labels";
+import { consentSourceLabel } from "@/lib/labels";
 import { matchesPattern } from "@/lib/text";
 import { saveMember } from "@/server/actions/members";
 import {
@@ -14,6 +14,7 @@ import {
   TextAreaField,
   TextField,
 } from "./form";
+import { useToast } from "./toast";
 import { Button } from "./ui";
 
 type Game = {
@@ -49,7 +50,20 @@ const consentOptions = Object.entries(consentSourceLabel).map(([value, label]) =
   label,
 }));
 
-export function MemberForm({ games, initial }: { games: Game[]; initial?: MemberFormValues }) {
+export function MemberForm({
+  games,
+  initial,
+  onDone,
+  onCancel,
+}: {
+  games: Game[];
+  initial?: MemberFormValues;
+  /** Appelé après un enregistrement réussi (retour au mode lecture). */
+  onDone?: () => void;
+  onCancel?: () => void;
+}) {
+  const { notify } = useToast();
+  const editing = Boolean(initial?.id);
   const [isMinor, setIsMinor] = useState(initial?.isMinor ?? false);
   const [gallery, setGallery] = useState(initial?.imageRightsGallery ?? false);
   const [social, setSocial] = useState(initial?.imageRightsSocial ?? false);
@@ -60,8 +74,16 @@ export function MemberForm({ games, initial }: { games: Game[]; initial?: Member
   return (
     <ActionForm
       action={saveMember}
-      success={initial?.id ? "Fiche enregistrée." : "Adhérent créé."}
-      redirectTo={initial?.id ? undefined : (data: { id: string }) => `/admin/adherents/${data.id}`}
+      success={editing ? "Modifications enregistrées." : "Adhérent créé."}
+      redirectTo={editing ? undefined : (data: { id: string }) => `/admin/adherents/${data.id}`}
+      onSuccess={(data: { id: string; unpublished: number }) => {
+        if (data.unpublished > 0) {
+          notify(
+            `${data.unpublished} photo(s) où ce membre est identifié ont été retirées de la galerie (autorisation insuffisante).`,
+          );
+        }
+        onDone?.();
+      }}
       extra={{ gameIds: JSON.stringify(gameIds), ...(initial?.id ? { id: initial.id } : {}) }}
       className="gap-6"
     >
@@ -112,12 +134,11 @@ export function MemberForm({ games, initial }: { games: Game[]; initial?: Member
             />
           ) : null}
         </div>
-        <SelectField
-          label="Statut"
-          name="status"
-          defaultValue={initial?.status ?? "ACTIVE"}
-          options={Object.entries(memberStatusLabel).map(([value, label]) => ({ value, label }))}
-          hint="Actif / échu est recalculé à chaque adhésion ; « suspendu » reste jusqu'à modification."
+        <CheckboxField
+          label="Adhérent suspendu"
+          name="suspended"
+          defaultChecked={initial?.status === "SUSPENDED"}
+          hint="Sinon, le statut actif / échu est calculé automatiquement d'après les adhésions."
         />
         <TextAreaField
           label="Notes internes"
@@ -279,8 +300,15 @@ export function MemberForm({ games, initial }: { games: Game[]; initial?: Member
         </fieldset>
       ) : null}
 
-      <div className="flex justify-end">
-        <SubmitButton>{initial?.id ? "Enregistrer la fiche" : "Créer l'adhérent"}</SubmitButton>
+      <div className="flex justify-end gap-2">
+        {onCancel ? (
+          <Button variant="subtle" onClick={onCancel}>
+            Annuler
+          </Button>
+        ) : null}
+        <SubmitButton>
+          {editing ? "Enregistrer les modifications" : "Créer l'adhérent"}
+        </SubmitButton>
       </div>
     </ActionForm>
   );

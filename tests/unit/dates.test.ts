@@ -6,6 +6,7 @@ import {
   membershipEnd,
   parisDay,
   parisTime,
+  periodsOverlap,
   parisToUtc,
   renewalStart,
   seasonLabel,
@@ -64,4 +65,13 @@ describe("adhésions", () => {
     expect(seasonLabel("2026-09-01")).toBe("2026-2027");
     expect(seasonLabel("2027-08-31")).toBe("2026-2027");
   });
+});
+
+describe("chevauchement d'adhésions", () => {
+  it("périodes disjointes", () =>
+    expect(periodsOverlap("2026-01-01", "2026-12-31", "2027-01-01", "2027-12-31")).toBe(false));
+  it("bornes inclusives : un jour commun suffit", () =>
+    expect(periodsOverlap("2026-01-01", "2026-12-31", "2026-12-31", "2027-12-30")).toBe(true));
+  it("période incluse dans une autre", () =>
+    expect(periodsOverlap("2026-01-01", "2026-12-31", "2026-03-01", "2026-04-01")).toBe(true));
 });

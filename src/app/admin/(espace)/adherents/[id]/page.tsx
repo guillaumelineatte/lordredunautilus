@@ -1,31 +1,38 @@
 import type { Metadata } from "next";
+import type { ConsentSource } from "@/generated/prisma/enums";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ActionButton } from "@/components/admin/action-button";
 import { TrashIcon } from "@/components/admin/icons";
-import { MemberForm } from "@/components/admin/member-form";
+import { MemberSheet } from "@/components/admin/member-sheet";
+import { MembershipsTable } from "@/components/admin/memberships-table";
 import {
   ParentalUploadForm,
   RecordMembershipForm,
   RenewMembershipForm,
 } from "@/components/admin/membership-forms";
-import { Badge, Card, EmptyState, LinkButton, PageHeader } from "@/components/admin/ui";
-import { dbDateToDay, todayParis } from "@/lib/dates";
+import {
+  Badge,
+  Card,
+  DefinitionList,
+  EmptyState,
+  LinkButton,
+  PageHeader,
+} from "@/components/admin/ui";
+import { dbDateToDay, parisDay, todayParis } from "@/lib/dates";
 import { formatBytes, formatDateTime, formatDay, formatMoney } from "@/lib/format";
 import {
   auditActionLabel,
+  consentSourceLabel,
   memberStatusLabel,
-  paymentMethodLabel,
   registrationStatusLabel,
 } from "@/lib/labels";
 import { deleteConfirmation } from "@/lib/member-deletion";
 import {
   deleteMemberAction,
-  deleteMembership,
   markMinorReviewed,
   removeParentalDocument,
   restoreMember,
-  setCardHandedOver,
   trashMember,
 } from "@/server/actions/members";
 import { gameOptions, getMemberDetail, planOptions } from "@/server/queries/admin";
@@ -42,8 +49,20 @@ export async function generateMetadata({
 
 const dayOrNull = (d: Date | null) => (d ? dbDateToDay(d) : null);
 
-export default async function MemberPage({ params }: { params: Promise<{ id: string }> }) {
+function consent(granted: boolean, source: ConsentSource | null, at: Date | null): string {
+  if (!granted) return "Non";
+  return `Oui${source ? ` · ${consentSourceLabel[source].toLowerCase()}` : ""}${at ? ` · le ${formatDay(at)}` : ""}`;
+}
+
+export default async function MemberPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { id } = await params;
+  const startEditing = (await searchParams).modifier === "1";
   const [data, games, plans] = await Promise.all([
     getMemberDetail(id),
     gameOptions(true),
@@ -182,81 +201,131 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
 
       <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
         <div className="grid content-start gap-6">
+          <MemberSheet
+            games={games}
+            startEditing={startEditing}
+            values={{
+              id: member.id,
+              firstName: member.firstName,
+              lastName: member.lastName,
+              birthYear: member.birthYear,
+              isMinor: member.isMinor,
+              cardNumber: member.cardNumber,
+              status: member.status,
+              notes: member.notes,
+              imageRightsGallery: member.imageRightsGallery,
+              imageRightsGallerySource: member.imageRightsGallerySource,
+              imageRightsGalleryAt: dayOrNull(member.imageRightsGalleryAt),
+              imageRightsSocial: member.imageRightsSocial,
+              imageRightsSocialSource: member.imageRightsSocialSource,
+              imageRightsSocialAt: dayOrNull(member.imageRightsSocialAt),
+              parentalDocumentReceived: member.parentalDocumentReceived,
+              parentalDocumentReceivedAt: dayOrNull(member.parentalDocumentReceivedAt),
+              gameIds: member.gameIds.map((g) => ({ gameId: g.gameId, value: g.value })),
+            }}
+            summary={
+              <div className="grid gap-5 text-sm">
+                <DefinitionList
+                  items={[
+                    ["Prénom", member.firstName],
+                    ["Nom", member.lastName],
+                    [
+                      "Année de naissance",
+                      member.birthYear ? `${member.birthYear} (${age} ans cette année)` : "—",
+                    ],
+                    [
+                      "Mineur",
+                      member.isMinor
+                        ? `Oui${member.minorReviewedAt ? ` · vérifié le ${formatDay(member.minorReviewedAt)}` : ""}`
+                        : "Non",
+                    ],
+                    ["N° de carte", member.cardNumber ?? "—"],
+                    [
+                      "Statut",
+                      member.status === "SUSPENDED"
+                        ? "Suspendu (réglé à la main)"
+                        : `${memberStatusLabel[member.status]} (calculé d'après les adhésions)`,
+                    ],
+                    ["Notes internes", member.notes ?? "—"],
+                  ]}
+                />
+                <div>
+                  <p className="label mb-2">Identifiants de jeu</p>
+                  {member.gameIds.length === 0 ? (
+                    <p className="text-ivory-3">Aucun identifiant renseigné.</p>
+                  ) : (
+                    <DefinitionList
+                      items={member.gameIds.map((g): [string, React.ReactNode] => [
+                        `${g.game.name}`,
+                        <span key={g.id}>
+                          <span className="font-mono">{g.value}</span>
+                          <span className="text-ivory-3"> · {g.game.playerIdLabel}</span>
+                        </span>,
+                      ])}
+                    />
+                  )}
+                </div>
+                <div>
+                  <p className="label mb-2">Autorisations</p>
+                  <DefinitionList
+                    items={[
+                      [
+                        "Galerie du site",
+                        consent(
+                          member.imageRightsGallery,
+                          member.imageRightsGallerySource,
+                          member.imageRightsGalleryAt,
+                        ),
+                      ],
+                      [
+                        "Réseaux",
+                        consent(
+                          member.imageRightsSocial,
+                          member.imageRightsSocialSource,
+                          member.imageRightsSocialAt,
+                        ),
+                      ],
+                      ...(member.isMinor
+                        ? ([
+                            [
+                              "Autorisation parentale",
+                              member.parentalDocumentReceived
+                                ? `Reçue${member.parentalDocumentReceivedAt ? ` le ${formatDay(member.parentalDocumentReceivedAt)}` : ""}`
+                                : "Manquante",
+                            ],
+                          ] as [string, React.ReactNode][])
+                        : []),
+                    ]}
+                  />
+                </div>
+              </div>
+            }
+          />
+
           <Card title="Adhésions">
             {member.memberships.length === 0 ? (
               <EmptyState>Aucune adhésion enregistrée.</EmptyState>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="table-base">
-                  <thead>
-                    <tr>
-                      <th>Période</th>
-                      <th>Formule</th>
-                      <th>Paiement</th>
-                      <th>Suivi</th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {member.memberships.map((m) => {
-                      const ended = dbDateToDay(m.endDate) < today;
-                      return (
-                        <tr key={m.id}>
-                          <td className="whitespace-nowrap">
-                            {formatDay(m.startDate)} → {formatDay(m.endDate)}
-                          </td>
-                          <td>
-                            {m.plan.name}
-                            <p className="text-xs text-ivory-3">{formatMoney(m.amountCents)}</p>
-                          </td>
-                          <td>
-                            {paymentMethodLabel[m.paymentMethod]}
-                            {m.transactionRef ? (
-                              <p className="font-mono text-xs text-ivory-3">{m.transactionRef}</p>
-                            ) : null}
-                          </td>
-                          <td className="space-y-1">
-                            {m.renewedBy ? (
-                              <Badge tone="ok">renouvelée</Badge>
-                            ) : ended ? (
-                              <Badge tone="warn">non renouvelée</Badge>
-                            ) : (
-                              <Badge>en cours</Badge>
-                            )}
-                            <div>
-                              <ActionButton
-                                action={setCardHandedOver}
-                                input={{ id: m.id, handed: !m.cardHandedOverAt }}
-                                variant="subtle"
-                                success={
-                                  m.cardHandedOverAt
-                                    ? "Remise annulée."
-                                    : "Carte marquée comme remise."
-                                }
-                              >
-                                {m.cardHandedOverAt
-                                  ? `Carte remise le ${formatDay(m.cardHandedOverAt)}`
-                                  : "Marquer la carte remise"}
-                              </ActionButton>
-                            </div>
-                          </td>
-                          <td className="text-right">
-                            <ActionButton
-                              action={deleteMembership}
-                              input={{ id: m.id }}
-                              variant="subtle"
-                              confirm="Supprimer cette adhésion ? (saisie erronée uniquement)"
-                              success="Adhésion supprimée."
-                            >
-                              Supprimer
-                            </ActionButton>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              <MembershipsTable
+                plans={membershipPlans.map((p) => ({
+                  id: p.id,
+                  name: p.name,
+                  durationDays: p.durationDays,
+                }))}
+                rows={member.memberships.map((m) => ({
+                  id: m.id,
+                  planId: m.planId,
+                  planName: m.plan.name,
+                  startDate: dbDateToDay(m.startDate),
+                  endDate: dbDateToDay(m.endDate),
+                  amountCents: m.amountCents,
+                  paymentMethod: m.paymentMethod,
+                  transactionRef: m.transactionRef,
+                  cardHandedOverAt: m.cardHandedOverAt ? parisDay(m.cardHandedOverAt) : null,
+                  renewed: Boolean(m.renewedBy),
+                  ended: dbDateToDay(m.endDate) < today,
+                }))}
+              />
             )}
 
             <div className="mt-5 grid gap-3">
@@ -294,31 +363,6 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
                 </div>
               </details>
             </div>
-          </Card>
-
-          <Card title="Fiche">
-            <MemberForm
-              games={games}
-              initial={{
-                id: member.id,
-                firstName: member.firstName,
-                lastName: member.lastName,
-                birthYear: member.birthYear,
-                isMinor: member.isMinor,
-                cardNumber: member.cardNumber,
-                status: member.status,
-                notes: member.notes,
-                imageRightsGallery: member.imageRightsGallery,
-                imageRightsGallerySource: member.imageRightsGallerySource,
-                imageRightsGalleryAt: dayOrNull(member.imageRightsGalleryAt),
-                imageRightsSocial: member.imageRightsSocial,
-                imageRightsSocialSource: member.imageRightsSocialSource,
-                imageRightsSocialAt: dayOrNull(member.imageRightsSocialAt),
-                parentalDocumentReceived: member.parentalDocumentReceived,
-                parentalDocumentReceivedAt: dayOrNull(member.parentalDocumentReceivedAt),
-                gameIds: member.gameIds.map((g) => ({ gameId: g.gameId, value: g.value })),
-              }}
-            />
           </Card>
         </div>
 

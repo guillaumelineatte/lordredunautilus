@@ -65,7 +65,19 @@ export async function syncGameIds(
   }
 }
 
-/** Actif s'il existe une adhésion couvrant aujourd'hui ; les suspendus restent suspendus. */
+/** Statut déduit des adhésions : actif si une adhésion couvre aujourd'hui ou est à venir. */
+export async function membershipStatus(
+  tx: Tx,
+  memberId: string,
+  today: string = todayParis(),
+): Promise<"ACTIVE" | "EXPIRED"> {
+  const active = await tx.membership.count({
+    where: { memberId, endDate: { gte: dayToDbDate(today) } },
+  });
+  return active > 0 ? "ACTIVE" : "EXPIRED";
+}
+
+/** Recalcule le statut après un changement d'adhésion ; les suspendus restent suspendus. */
 export async function recomputeMemberStatus(
   tx: Tx,
   memberId: string,
@@ -74,20 +86,27 @@ export async function recomputeMemberStatus(
 ): Promise<void> {
   const member = await tx.member.findUnique({ where: { id: memberId } });
   if (!member || member.status === "SUSPENDED" || member.anonymizedAt) return;
-  const current = await tx.membership.count({
-    where: {
-      memberId,
-      startDate: { lte: dayToDbDate(today) },
-      endDate: { gte: dayToDbDate(today) },
-    },
-  });
-  const upcoming = await tx.membership.count({
-    where: { memberId, startDate: { gt: dayToDbDate(today) } },
-  });
-  const status = current > 0 || upcoming > 0 ? "ACTIVE" : "EXPIRED";
+  const status = await membershipStatus(tx, memberId, today);
   if (status !== member.status) {
     const updated = await tx.member.update({ where: { id: memberId }, data: { status } });
     await audit.updated("Member", member, updated);
+  }
+}
+
+/** Numéro de carte : unique, avec un message qui dit à qui il est attribué. */
+export async function assertCardNumberFree(tx: Tx, cardNumber: string | null, memberId?: string) {
+  if (!cardNumber) return;
+  const holder = await tx.member.findUnique({
+    where: { cardNumber },
+    select: { id: true, firstName: true, lastName: true },
+  });
+  if (holder && holder.id !== memberId) {
+    fail(
+      `Le numéro de carte ${cardNumber} est déjà attribué à ${holder.firstName} ${holder.lastName}.`,
+      {
+        cardNumber: "Numéro déjà attribué.",
+      },
+    );
   }
 }
 
