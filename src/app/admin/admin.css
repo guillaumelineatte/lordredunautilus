@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+/* Administration : même palette que le site, en mode sombre. */
+@theme {
+  --color-abyss: #0c1826;
+  --color-navy: #132438;
+  --color-surface: #1b3149;
+  --color-surface-2: #243d5a;
+  --color-line: rgb(243 239 231 / 0.14);
+  --color-line-strong: rgb(243 239 231 / 0.32);
+  --color-ivory: #f3efe7;
+  --color-ivory-2: rgb(243 239 231 / 0.72);
+  --color-ivory-3: rgb(243 239 231 / 0.48);
+  --color-rose: #dda5a7;
+  --color-rose-deep: #c98a8d;
+  --color-brass: #c8a96e;
+  --color-ok: #8fc9a3;
+  --color-warn: #e6c27a;
+  --color-danger: #e89a9a;
+
+  --font-head: var(--font-josefin), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-source), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-s: 6px;
+  --radius-m: 14px;
+  --radius-l: 28px;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html,
+  body {
+    background: var(--color-navy);
+    color: var(--color-ivory);
+    font-family: var(--font-body);
+  }
+  body {
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-head);
+    font-weight: 300;
+    letter-spacing: 0.01em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-rose);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: rgb(221 165 167 / 0.35);
+  }
+  input,
+  select,
+  textarea {
+    color-scheme: dark;
+  }
+  dialog::backdrop {
+    background: rgb(12 24 38 / 0.8);
+    backdrop-filter: blur(4px);
+  }
+}
+
+@layer components {
+  .field-input {
+    @apply w-full rounded-s border border-line-strong bg-abyss/60 px-3 py-2 text-ivory placeholder:text-ivory-3 focus:border-rose focus:outline-none disabled:opacity-60;
+  }
+  .label {
+    @apply font-head text-xs tracking-[0.08em] text-ivory-2;
+  }
+  .kicker {
+    @apply font-head text-[0.72rem] tracking-[0.22em] text-rose uppercase;
+  }
+  .card {
+    @apply rounded-m border border-line bg-surface/60;
+  }
+  .table-base {
+    @apply w-full border-collapse text-sm;
+  }
+  .table-base th {
+    @apply border-b border-line-strong px-3 py-2 text-left font-head text-xs font-normal tracking-[0.08em] text-ivory-2;
+  }
+  .table-base td {
+    @apply border-b border-line px-3 py-2.5 align-middle;
+  }
+  .table-base tbody tr:hover {
+    @apply bg-ivory/[0.03];
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

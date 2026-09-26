@@ -1,0 +1,32 @@
+# dépendances
+node_modules
+
+# Next.js
+.next
+out
+next-env.d.ts
+*.tsbuildinfo
+
+# Prisma
+src/generated
+
+# environnement
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# fichiers déposés en local (fallback sans Vercel Blob)
+public/uploads
+storage
+
+# tests
+playwright-report
+test-results
+coverage
+tests/e2e/.auth
+
+# divers
+.DS_Store
+.vercel
+backups
