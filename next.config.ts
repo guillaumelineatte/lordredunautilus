@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
@@ -32,6 +33,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Racine explicite : un package-lock.json parasite dans un dossier parent ne doit rien changer.
+  turbopack: { root: path.resolve(".") },
   serverExternalPackages: ["@react-pdf/renderer", "sharp", "@node-rs/argon2"],
   // Polices et logo lus sur disque par la génération des PDF
   outputFileTracingIncludes: {
@@ -39,6 +42,8 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     globalNotFound: true,
+    // CSS du site (≈ 7 Ko compressés) inliné dans le <head> : plus de requête bloquante.
+    inlineCss: true,
     serverActions: {
       // Scans d'autorisation parentale (5 Mo max) + marge multipart
       bodySizeLimit: "6mb",
