@@ -218,7 +218,7 @@ Ce sont ces cases qui autorisent ou bloquent la publication de photos. Chaque sa
 
 **Doublons** : la page **Fusionner des doublons** repère les fiches au même nom. Tout (adhésions, inscriptions, identifiants, autorisations) passe sur la fiche conservée.
 
-**Supprimer une fiche** : bouton **Supprimer** sur chaque ligne de la liste, ou **Supprimer la fiche** en haut de la fiche. Pour en supprimer plusieurs d'un coup, cochez-les dans la liste, puis **Supprimer la sélection**. Ce qui est effacé dépend de la fiche :
+**Supprimer une fiche** : icône poubelle au bout de chaque ligne de la liste, ou en haut à droite de la fiche. Pour en supprimer plusieurs d'un coup, cochez-les dans la liste, puis **Supprimer la sélection**. Ce qui est effacé dépend de la fiche :
 
 - **Fiche sans aucune adhésion** (erreur de saisie, doublon, test) : effacée entièrement de la base.
 - **Fiche avec des adhésions** : nom, identifiants de jeu, autorisations et documents sont effacés ; les montants et dates restent en comptabilité sous « Ancien membre ». C'est aussi la réponse à une demande d'effacement RGPD.
@@ -326,7 +326,7 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
 
 **Demande d'effacement (art. 17) ou d'opposition** :
 
-1. Fiche → **Supprimer la fiche**. L'effacement est immédiat : identité, identifiants, scan et inscriptions liées ; les photos où la personne était identifiée sont dépubliées. Si la personne a eu des adhésions, seuls les montants et dates restent, sans nom, pour la comptabilité.
+1. Fiche → icône poubelle (en haut à droite). L'effacement est immédiat : identité, identifiants, scan et inscriptions liées ; les photos où la personne était identifiée sont dépubliées. Si la personne a eu des adhésions, seuls les montants et dates restent, sans nom, pour la comptabilité.
 2. Supprimer aussi, si besoin, la photo de la galerie et les éventuelles copies hors site (Discord, sauvegardes locales).
 3. Répondre à la personne dans un délai d'un mois.
 

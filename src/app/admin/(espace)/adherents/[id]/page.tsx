@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ActionButton } from "@/components/admin/action-button";
+import { TrashIcon } from "@/components/admin/icons";
 import { MemberForm } from "@/components/admin/member-form";
 import {
   ParentalUploadForm,
@@ -144,8 +145,11 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
               confirm={deleteConfirmation(fullName, member.memberships.length)}
               success="Fiche supprimée."
               redirectTo="/admin/adherents"
+              size="icon"
+              title="Supprimer la fiche"
+              ariaLabel="Supprimer la fiche"
             >
-              Supprimer la fiche
+              <TrashIcon />
             </ActionButton>
           </>
         }

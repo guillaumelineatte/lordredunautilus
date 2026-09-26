@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useTransition, type ReactNode } from "react";
 import type { ActionResult } from "@/lib/action-result";
-import { Button } from "./ui";
+import { Button, type ButtonSize } from "./ui";
 import { useToast } from "./toast";
 
 /**
@@ -22,6 +22,7 @@ export function ActionButton<I, T>({
   className,
   disabled,
   title,
+  ariaLabel,
 }: {
   action: (input: I) => Promise<ActionResult<T>>;
   input: I;
@@ -30,10 +31,12 @@ export function ActionButton<I, T>({
   success?: string;
   redirectTo?: string;
   variant?: "primary" | "ghost" | "danger" | "subtle";
-  size?: "sm" | "md";
+  size?: ButtonSize;
   className?: string;
   disabled?: boolean;
   title?: string;
+  /** Nom accessible, indispensable pour un bouton ne contenant qu'une icône. */
+  ariaLabel?: string;
 }) {
   const router = useRouter();
   const { notify } = useToast();
@@ -45,6 +48,7 @@ export function ActionButton<I, T>({
       className={className}
       disabled={disabled || pending}
       title={title}
+      aria-label={ariaLabel}
       onClick={() => {
         if (confirm && !window.confirm(confirm)) return;
         start(async () => {

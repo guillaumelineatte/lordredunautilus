@@ -6,6 +6,7 @@ import { useState, useTransition, type ReactNode } from "react";
 import { deleteConfirmation } from "@/lib/member-deletion";
 import { deleteMemberAction, deleteMembersAction } from "@/server/actions/members";
 import { ActionButton } from "./action-button";
+import { TrashIcon } from "./icons";
 import { useToast } from "./toast";
 import { Badge, Button } from "./ui";
 
@@ -92,7 +93,7 @@ export function MembersTable({ rows, head }: { rows: MemberRow[]; head: ReactNod
                 />
               </th>
               {head}
-              <th className="w-24">
+              <th className="w-12">
                 <span className="sr-only">Actions</span>
               </th>
             </tr>
@@ -140,11 +141,14 @@ export function MembersTable({ rows, head }: { rows: MemberRow[]; head: ReactNod
                       action={deleteMemberAction}
                       input={{ id: m.id }}
                       variant="subtle"
+                      size="icon"
+                      className="hover:text-danger"
                       confirm={deleteConfirmation(name, m.membershipCount)}
                       success="Fiche supprimée."
-                      title={`Supprimer la fiche de ${name}`}
+                      title="Supprimer"
+                      ariaLabel={`Supprimer la fiche de ${name}`}
                     >
-                      Supprimer
+                      <TrashIcon />
                     </ActionButton>
                   </td>
                 </tr>
