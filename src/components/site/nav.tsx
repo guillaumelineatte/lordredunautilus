@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -66,7 +67,7 @@ export function Nav() {
   const close = () => setOpenOn(null);
 
   return (
-    <header className={`nav${scrolled || pathname !== "/" ? "scrolled" : ""}`} id="nav">
+    <header className={clsx("nav", (scrolled || pathname !== "/") && "scrolled")} id="nav">
       <div className="wrap">
         <Link className="brand" href="/" onClick={close}>
           <Image src="/logo.png" alt="" width={42} height={42} data-logo="" />
@@ -74,7 +75,7 @@ export function Nav() {
             L&apos;Ordre du <b>Nautilus</b>
           </span>
         </Link>
-        <ul className={`nav-links${open ? "open" : ""}`} id="navlinks">
+        <ul className={clsx("nav-links", open && "open")} id="navlinks">
           {LINKS.map((l) => (
             <li key={l.id}>
               <Link
@@ -96,7 +97,7 @@ export function Nav() {
           </Link>
           <button
             type="button"
-            className={`burger${open ? "open" : ""}`}
+            className={clsx("burger", open && "open")}
             id="burger"
             aria-label="Menu"
             aria-expanded={open}

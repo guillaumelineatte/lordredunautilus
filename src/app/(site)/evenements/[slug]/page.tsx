@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -121,7 +122,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
                   ) : left === null ? (
                     <span className="places">Ouvert à tous</span>
                   ) : (
-                    <span className={`places${full ? "full" : ""}`}>
+                    <span className={clsx("places", full && "full")}>
                       {full
                         ? `Complet${event.waitlisted ? ` · ${event.waitlisted} en liste d'attente` : ""}`
                         : `${left} place${left > 1 ? "s" : ""} restante${left > 1 ? "s" : ""} sur ${event.capacity}`}

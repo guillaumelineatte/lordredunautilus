@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Link from "next/link";
 import type { PlanDTO } from "@/lib/dto";
 import { formatAmount } from "@/lib/format";
@@ -21,7 +22,7 @@ export function Plans({ plans, onJoinPage = false }: { plans: PlanDTO[]; onJoinP
               ? "Soutenir l'association"
               : "Adhérer";
         return (
-          <article key={p.id} className={`plan${p.isFeatured ? "featured" : ""} reveal`}>
+          <article key={p.id} className={clsx("plan", p.isFeatured && "featured", "reveal")}>
             {p.isFeatured ? <span className="ribbon">Le plus choisi</span> : null}
             <h3>{p.name}</h3>
             <div className="price">

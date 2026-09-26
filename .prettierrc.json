@@ -1,5 +1,13 @@
 {
   "printWidth": 100,
-  "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindStylesheet": "./src/app/admin/admin.css"
+  "overrides": [
+    {
+      "files": ["src/app/admin/**", "src/components/admin/**"],
+      "options": {
+        "plugins": ["prettier-plugin-tailwindcss"],
+        "tailwindStylesheet": "./src/app/admin/admin.css",
+        "tailwindPreserveWhitespace": true
+      }
+    }
+  ]
 }
