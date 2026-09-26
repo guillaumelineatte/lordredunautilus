@@ -7,9 +7,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3001",
     "build": "prisma generate && next build",
-    "start": "next start",
+    "start": "next start --port 3001",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
@@ -22,7 +22,9 @@
     "db:studio": "prisma studio",
     "admin:reset": "tsx scripts/admin-reset.ts",
     "postinstall": "prisma generate",
-    "prepare": "husky"
+    "prepare": "husky",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "screenshots": "tsx scripts/screenshots.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -61,6 +63,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.3",
@@ -82,7 +85,6 @@
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",
-    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^5.0.2"
   }
 }

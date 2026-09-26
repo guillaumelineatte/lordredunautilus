@@ -1,0 +1,24 @@
+name: Qualité
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  qualite:
+    runs-on: ubuntu-latest
+    env:
+      # Valeurs factices : la génération du client Prisma n'a pas besoin de base.
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+      BETTER_AUTH_SECRET: ci-secret-ci-secret-ci-secret-ci-secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
