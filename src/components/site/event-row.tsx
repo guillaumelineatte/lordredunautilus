@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Link from "next/link";
 import { acceptsRegistration, placesLeft, type EventDTO } from "@/lib/dto";
 import { eventDateParts, formatHour } from "@/lib/format";
@@ -48,7 +49,10 @@ export function EventRow({ event }: { event: EventDTO }) {
         <h3>
           <Link href={`/evenements/${event.slug}`}>{event.title}</Link>
           <span
-            className={`tag${cancelled ? "cancelled" : event.isHot && !full ? "hot" : full ? "full" : ""}`}
+            className={clsx(
+              "tag",
+              cancelled ? "cancelled" : event.isHot && !full ? "hot" : full && "full",
+            )}
           >
             {tag}
           </span>
