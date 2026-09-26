@@ -2120,3 +2120,8 @@ html.js:not(.no-motion) .scroll-hint {
 html.js:not(.no-motion) .reveal.reveal-now {
   animation: nt-reveal 1s var(--out3) both;
 }
+
+/* note sous les formules : bloc centré (le texte l'était déjà) */
+.join-note {
+  margin-inline: auto;
+}
