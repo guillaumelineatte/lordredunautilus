@@ -109,3 +109,13 @@ export function seasonLabel(day: string = todayParis()): string {
   const start = m >= 9 ? y : y - 1;
   return `${start}-${start + 1}`;
 }
+
+/** Deux périodes inclusives [a, b] et [c, d] se chevauchent-elles ? */
+export function periodsOverlap(
+  aStart: string,
+  aEnd: string,
+  bStart: string,
+  bEnd: string,
+): boolean {
+  return aStart <= bEnd && bStart <= aEnd;
+}

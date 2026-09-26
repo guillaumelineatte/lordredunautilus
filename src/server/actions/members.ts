@@ -7,16 +7,19 @@ import {
   idInput,
   memberInput,
   membershipInput,
+  membershipUpdateInput,
   mergeInput,
   renewInput,
 } from "@/lib/validation/schemas";
 import {
+  assertCardNumberFree,
   deleteMember,
   enforcePhotoRules,
+  membershipStatus,
   recomputeMemberStatus,
   syncGameIds,
 } from "../domain/members";
-import { recordMembership, renewMembership } from "../domain/memberships";
+import { recordMembership, renewMembership, updateMembership } from "../domain/memberships";
 import { mergeMembers } from "../domain/merge";
 import { adminAction } from "../service/admin-action";
 import { fail } from "../service/errors";
@@ -26,8 +29,14 @@ const SCAN_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
 
 const dayOrNull = (v: string | null) => (v ? dayToDbDate(v) : null);
 
+/**
+ * Création ou modification d'une fiche.
+ * - statut : suspendu si coché, sinon déduit des adhésions (actif / échu) ;
+ * - numéro de carte unique, identifiants de jeu validés par la regex du jeu ;
+ * - autorisation photo retirée (ou mineur sans papier signé) : photos dépubliées.
+ */
 export const saveMember = adminAction(
-  { schema: memberInput, tags: [TAGS.stats] },
+  { schema: memberInput, tags: [TAGS.stats, TAGS.photos] },
   async (input, { tx, audit }) => {
     const now = new Date();
     const data = {
@@ -36,7 +45,6 @@ export const saveMember = adminAction(
       birthYear: input.birthYear,
       isMinor: input.isMinor,
       cardNumber: input.cardNumber,
-      status: input.status,
       notes: input.notes,
       imageRightsGallery: input.imageRightsGallery,
       imageRightsGallerySource: input.imageRightsGallery ? input.imageRightsGallerySource : null,
@@ -56,22 +64,30 @@ export const saveMember = adminAction(
       ...(input.minorReviewed ? { minorReviewedAt: now } : {}),
     };
 
+    await assertCardNumberFree(tx, input.cardNumber, input.id ?? undefined);
+
     if (input.id) {
       const before = await tx.member.findUnique({ where: { id: input.id } });
       if (!before || before.anonymizedAt) fail("Fiche introuvable.");
-      const after = await tx.member.update({ where: { id: input.id }, data });
+      const status = input.suspended ? "SUSPENDED" : await membershipStatus(tx, before.id);
+      const after = await tx.member.update({ where: { id: input.id }, data: { ...data, status } });
       await audit.updated("Member", before, after);
       await syncGameIds(tx, after.id, input.gameIds, audit);
-      await enforcePhotoRules(tx, after.id, audit);
-      return { id: after.id };
+      const unpublished = await enforcePhotoRules(tx, after.id, audit);
+      return { id: after.id, unpublished };
     }
 
     const created = await tx.member.create({
-      data: { ...data, minorReviewedAt: input.isMinor ? now : null },
+      data: {
+        ...data,
+        // Pas encore d'adhésion : « échu » jusqu'à l'enregistrement de la première.
+        status: input.suspended ? "SUSPENDED" : "EXPIRED",
+        minorReviewedAt: input.isMinor ? now : null,
+      },
     });
     await audit.created("Member", created);
     await syncGameIds(tx, created.id, input.gameIds, audit);
-    return { id: created.id };
+    return { id: created.id, unpublished: 0 };
   },
 );
 
@@ -171,6 +187,15 @@ export const renewMembershipAction = adminAction(
       },
       audit,
     );
+    return { id: m.id };
+  },
+);
+
+/** Correction d'une adhésion existante (formule, dates, montant, paiement, référence). */
+export const updateMembershipAction = adminAction(
+  { schema: membershipUpdateInput, tags: [TAGS.stats] },
+  async (input, { tx, audit }) => {
+    const m = await updateMembership(tx, input, audit);
     return { id: m.id };
   },
 );

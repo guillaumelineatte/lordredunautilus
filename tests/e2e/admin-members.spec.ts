@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { acceptDialogs, run } from "./helpers";
+import { acceptDialogs, inDays, run } from "./helpers";
 
 test("adhérent : création, adhésion, renouvellement, carte PDF, anonymisation", async ({
   page,
@@ -85,6 +85,71 @@ test("suppression depuis la liste : une fiche, puis une sélection", async ({ pa
   // Tracé dans le journal comme suppression
   await page.goto("/admin/journal?action=DELETE&entite=Member");
   await expect(page.locator("table").getByText("Suppression").first()).toBeVisible();
+});
+
+test("modification : paramètres de la fiche, suspension et correction d'une adhésion", async ({
+  page,
+}) => {
+  acceptDialogs(page);
+  const firstName = `Modif${run}`;
+  const card = `NAU-E2E-${run}`;
+
+  await page.goto("/admin/adherents/nouveau");
+  await page.getByLabel("Prénom").fill(firstName);
+  await page.getByLabel("Nom", { exact: true }).fill("Avant");
+  await page.getByRole("button", { name: "Créer l'adhérent" }).click();
+  await expect(page.getByRole("heading", { name: `${firstName} Avant` })).toBeVisible();
+  await page.getByRole("button", { name: "Enregistrer l'adhésion" }).click();
+  await expect(page.getByText("en cours", { exact: true })).toBeVisible();
+
+  // Mode lecture → modification des paramètres
+  await expect(page.getByRole("heading", { name: "Paramètres de l'adhérent" })).toBeVisible();
+  await page.getByRole("button", { name: "Modifier", exact: true }).click();
+  const edit = page.getByRole("region", { name: "Modifier les paramètres" });
+  await edit.getByLabel("Nom", { exact: true }).fill("Après");
+  await edit.getByLabel("Numéro de carte").fill(card);
+  await edit.getByLabel("Adhérent suspendu").check();
+  await page.getByRole("button", { name: "Enregistrer les modifications" }).click();
+  await expect(page.getByText("Modifications enregistrées.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: `${firstName} Après` })).toBeVisible();
+  await expect(page.getByText("Suspendu (réglé à la main)")).toBeVisible();
+
+  // Levée de la suspension : statut recalculé d'après les adhésions
+  await page.getByRole("button", { name: "Modifier", exact: true }).click();
+  await edit.getByLabel("Adhérent suspendu").uncheck();
+  await page.getByRole("button", { name: "Enregistrer les modifications" }).click();
+  await expect(page.getByText("Actif (calculé d'après les adhésions)")).toBeVisible();
+
+  // Correction d'une adhésion : dates incohérentes refusées, puis enregistrées
+  await page.getByRole("button", { name: /Modifier l'adhésion du/ }).click();
+  await page.getByLabel("Fin", { exact: true }).fill("2020-01-01");
+  await page.getByRole("button", { name: "Enregistrer l'adhésion" }).click();
+  await expect(page.getByText("La fin doit être postérieure ou égale au début.")).toBeVisible();
+  const end = inDays(100);
+  await page.getByLabel("Fin", { exact: true }).fill(end);
+  await page.getByRole("button", { name: "Enregistrer l'adhésion" }).click();
+  await expect(page.getByText("Adhésion modifiée.")).toBeVisible();
+  const [y, m, d] = end.split("-");
+  await expect(page.getByText(`→ ${d}/${m}/${y}`)).toBeVisible();
+
+  // Numéro de carte déjà attribué : refus explicite
+  await page.goto("/admin/adherents/nouveau");
+  await page.getByLabel("Prénom").fill(`Doublon${run}`);
+  await page.getByLabel("Nom", { exact: true }).fill("Carte");
+  await page.getByLabel("Numéro de carte").fill(card);
+  await page.getByRole("button", { name: "Créer l'adhérent" }).click();
+  await expect(page.getByText(`déjà attribué à ${firstName} Après`).first()).toBeVisible();
+
+  // Depuis la liste, le crayon ouvre directement l'édition
+  await page.goto(`/admin/adherents?q=${firstName}`);
+  await page.getByRole("link", { name: /Modifier la fiche de/ }).click();
+  await expect(page.getByRole("button", { name: "Enregistrer les modifications" })).toBeVisible();
+  await page.getByRole("button", { name: "Annuler" }).click();
+  await expect(page.getByRole("heading", { name: "Paramètres de l'adhérent" })).toBeVisible();
+
+  // Nettoyage
+  await page.getByRole("button", { name: "Supprimer la fiche" }).click();
+  await expect(page).toHaveURL(/\/admin\/adherents$/);
 });
 
 test("export CSV des adhérents tracé dans le journal", async ({ page, request }) => {

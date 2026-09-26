@@ -50,7 +50,7 @@ export const memberInput = z
     isMinor: checkbox,
     minorReviewed: checkbox,
     cardNumber: optionalText(40),
-    status: oneOf(MEMBER_STATUSES).default("ACTIVE"),
+    suspended: checkbox,
     notes: optionalText(500),
     imageRightsGallery: checkbox,
     imageRightsGallerySource: optionalConsent,
@@ -102,6 +102,22 @@ export const membershipInput = z.object({
   cardHandedOver: checkbox,
 });
 export type MembershipInput = z.output<typeof membershipInput>;
+
+export const membershipUpdateInput = z
+  .object({
+    id,
+    planId: id,
+    startDate: day,
+    endDate: day,
+    amount: euros,
+    paymentMethod: oneOf(PAYMENT_METHODS, "Choisissez le mode de paiement."),
+    transactionRef: optionalText(64),
+  })
+  .refine((v) => v.endDate >= v.startDate, {
+    message: "La fin doit être postérieure ou égale au début.",
+    path: ["endDate"],
+  });
+export type MembershipUpdateInput = z.output<typeof membershipUpdateInput>;
 
 export const renewInput = membershipInput.omit({ memberId: true, startDate: true }).extend({
   previousId: id,

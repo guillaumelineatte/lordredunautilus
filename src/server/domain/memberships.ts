@@ -1,6 +1,8 @@
 import "server-only";
 import type { PaymentMethod } from "@/generated/prisma/enums";
-import { dayToDbDate, dbDateToDay, membershipEnd, renewalStart } from "@/lib/dates";
+import { dayToDbDate, dbDateToDay, membershipEnd, periodsOverlap, renewalStart } from "@/lib/dates";
+import { formatDay } from "@/lib/format";
+import type { MembershipUpdateInput } from "@/lib/validation/schemas";
 import type { Tx } from "../db";
 import type { AuditRecorder } from "../service/audit";
 import { fail } from "../service/errors";
@@ -82,4 +84,59 @@ export async function renewMembership(
     { ...input, memberId: previous.memberId, startDate, renewedFromId: previous.id },
     audit,
   );
+}
+
+/**
+ * Modification d'une adhésion existante (correction de saisie) :
+ * formule d'adhésion uniquement, pas de chevauchement avec une autre adhésion
+ * du même membre, alertes d'échéance remises à zéro si la fin change,
+ * statut du membre recalculé.
+ */
+export async function updateMembership(tx: Tx, input: MembershipUpdateInput, audit: AuditRecorder) {
+  const before = await tx.membership.findUnique({ where: { id: input.id } });
+  if (!before) fail("Adhésion introuvable.");
+
+  const plan = await tx.membershipPlan.findUnique({ where: { id: input.planId } });
+  if (!plan || plan.kind !== "MEMBERSHIP") {
+    fail("Cette formule ne peut pas être enregistrée comme adhésion.", {
+      planId: "Formule invalide.",
+    });
+  }
+
+  const others = await tx.membership.findMany({
+    where: { memberId: before.memberId, NOT: { id: before.id } },
+    select: { startDate: true, endDate: true },
+  });
+  const clash = others.find((o) =>
+    periodsOverlap(
+      input.startDate,
+      input.endDate,
+      dbDateToDay(o.startDate),
+      dbDateToDay(o.endDate),
+    ),
+  );
+  if (clash) {
+    fail(
+      `Ces dates chevauchent l'adhésion du ${formatDay(clash.startDate)} au ${formatDay(clash.endDate)}.`,
+      { startDate: "Chevauchement.", endDate: "Chevauchement." },
+    );
+  }
+
+  const endChanged = dbDateToDay(before.endDate) !== input.endDate;
+  const after = await tx.membership.update({
+    where: { id: before.id },
+    data: {
+      planId: plan.id,
+      startDate: dayToDbDate(input.startDate),
+      endDate: dayToDbDate(input.endDate),
+      amountCents: input.amount,
+      paymentMethod: input.paymentMethod,
+      transactionRef: input.transactionRef,
+      // Nouvelle échéance : les alertes J-30 / J-7 / J0 repartent de zéro.
+      ...(endChanged ? { alertD30SentAt: null, alertD7SentAt: null, alertD0SentAt: null } : {}),
+    },
+  });
+  await audit.updated("Membership", before, after);
+  await recomputeMemberStatus(tx, before.memberId, audit);
+  return after;
 }
