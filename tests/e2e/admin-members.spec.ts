@@ -37,8 +37,8 @@ test("adhérent : création, adhésion, renouvellement, carte PDF, anonymisation
   const pdf = await request.get(`/api/admin/pdf/carte?adherent=${memberId}`);
   expect(pdf.headers()["content-type"]).toBe("application/pdf");
 
-  // Supprimer et anonymiser
-  await page.getByRole("button", { name: "Supprimer et anonymiser" }).click();
+  // Supprimer la fiche : elle a des adhésions, donc anonymisation
+  await page.getByRole("button", { name: "Supprimer la fiche" }).click();
   await expect(page).toHaveURL(/\/admin\/adherents$/);
   await page.goto(`/admin/adherents?q=${firstName}`);
   await expect(page.getByText("Aucun adhérent ne correspond")).toBeVisible();
@@ -51,6 +51,40 @@ test("adhérent : création, adhésion, renouvellement, carte PDF, anonymisation
   await page.goto("/admin/journal?action=ANONYMIZE");
   await expect(page.locator("table").getByText("Anonymisation").first()).toBeVisible();
   await expect(page.getByText(firstName)).toHaveCount(0);
+});
+
+test("suppression depuis la liste : une fiche, puis une sélection", async ({ page }) => {
+  acceptDialogs(page);
+  const names = ["Alpha", "Beta", "Gamma"].map((n) => `${n}${run}`);
+  for (const n of names) {
+    await page.goto("/admin/adherents/nouveau");
+    await page.getByLabel("Prénom").fill(n);
+    await page.getByLabel("Nom", { exact: true }).fill("Suppression");
+    await page.getByRole("button", { name: "Créer l'adhérent" }).click();
+    await expect(page.getByRole("heading", { name: `${n} Suppression` })).toBeVisible();
+  }
+
+  await page.goto(`/admin/adherents?q=${run}`);
+  await expect(page.locator("tbody tr")).toHaveCount(3);
+
+  // Une fiche, depuis sa ligne (sans adhésion : effacement définitif)
+  await page
+    .getByRole("row", { name: new RegExp(names[0] ?? "") })
+    .getByRole("button", { name: "Supprimer" })
+    .click();
+  await expect(page.getByText("Fiche supprimée.")).toBeVisible();
+  await expect(page.locator("tbody tr")).toHaveCount(2);
+
+  // Les deux autres, par sélection groupée
+  await page.getByLabel("Tout sélectionner").check();
+  await expect(page.getByText("2 fiche(s) sélectionnée(s)")).toBeVisible();
+  await page.getByRole("button", { name: "Supprimer la sélection" }).click();
+  await expect(page.getByText("2 fiche(s) supprimée(s).")).toBeVisible();
+  await expect(page.getByText("Aucun adhérent ne correspond")).toBeVisible();
+
+  // Tracé dans le journal comme suppression
+  await page.goto("/admin/journal?action=DELETE&entite=Member");
+  await expect(page.locator("table").getByText("Suppression").first()).toBeVisible();
 });
 
 test("export CSV des adhérents tracé dans le journal", async ({ page, request }) => {

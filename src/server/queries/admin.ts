@@ -161,6 +161,7 @@ export async function listMembers(p: ListParams) {
           take: 1,
           include: { plan: { select: { name: true } } },
         },
+        _count: { select: { memberships: true } },
       },
     }),
   ]);

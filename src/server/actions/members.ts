@@ -10,8 +10,12 @@ import {
   mergeInput,
   renewInput,
 } from "@/lib/validation/schemas";
-import { anonymizeMember } from "../domain/anonymize";
-import { enforcePhotoRules, recomputeMemberStatus, syncGameIds } from "../domain/members";
+import {
+  deleteMember,
+  enforcePhotoRules,
+  recomputeMemberStatus,
+  syncGameIds,
+} from "../domain/members";
 import { recordMembership, renewMembership } from "../domain/memberships";
 import { mergeMembers } from "../domain/merge";
 import { adminAction } from "../service/admin-action";
@@ -94,13 +98,31 @@ export const restoreMember = adminAction(
   },
 );
 
-export const anonymizeMemberNow = adminAction(
+const DELETE_REASON = "Suppression demandée depuis l'administration";
+
+/** Supprime une fiche (définitivement, ou par anonymisation si elle a des adhésions). */
+export const deleteMemberAction = adminAction(
   { schema: idInput, tags: [TAGS.stats, TAGS.photos] },
-  async ({ id }, { tx, audit }) => {
-    const done = await anonymizeMember(tx, id, audit, "Demande de suppression (bouton manuel)");
-    if (!done) fail("Fiche introuvable ou déjà anonymisée.");
-    await tx.member.update({ where: { id }, data: { deletedAt: new Date() } });
-    return null;
+  async ({ id }, { tx, audit }) => ({ mode: await deleteMember(tx, id, audit, DELETE_REASON) }),
+);
+
+/** Suppression groupée depuis la liste des adhérents. */
+export const deleteMembersAction = adminAction(
+  {
+    schema: z.object({
+      ids: z.array(z.string().min(1)).min(1, "Aucune fiche sélectionnée.").max(100),
+    }),
+    tags: [TAGS.stats, TAGS.photos],
+  },
+  async ({ ids }, { tx, audit }) => {
+    let deleted = 0;
+    let anonymized = 0;
+    for (const id of ids) {
+      const mode = await deleteMember(tx, id, audit, DELETE_REASON);
+      if (mode === "deleted") deleted++;
+      else anonymized++;
+    }
+    return { deleted, anonymized };
   },
 );
 
