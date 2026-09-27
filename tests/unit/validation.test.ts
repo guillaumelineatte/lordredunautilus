@@ -12,7 +12,6 @@ describe("validation des formulaires", () => {
     const r = memberInput.safeParse({
       firstName: " Inès ",
       lastName: "Martin",
-      birthYear: "2012",
       isMinor: "on",
       imageRightsGallery: "on",
       imageRightsGallerySource: "SIGNED_PAPER",
@@ -21,7 +20,6 @@ describe("validation des formulaires", () => {
     expect(r.success).toBe(true);
     if (r.success) {
       expect(r.data.firstName).toBe("Inès");
-      expect(r.data.birthYear).toBe(2012);
       expect(r.data.isMinor).toBe(true);
       expect(r.data.imageRightsSocial).toBe(false);
       expect(r.data.gameIds).toHaveLength(1);

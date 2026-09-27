@@ -19,7 +19,7 @@ import {
   LinkButton,
   PageHeader,
 } from "@/components/admin/ui";
-import { dbDateToDay, parisDay, todayParis } from "@/lib/dates";
+import { addDays, dbDateToDay, parisDay, todayParis } from "@/lib/dates";
 import { formatBytes, formatDateTime, formatDay, formatMoney } from "@/lib/format";
 import {
   auditActionLabel,
@@ -79,6 +79,7 @@ export default async function MemberPage({
     return (
       <>
         <PageHeader
+          back={{ href: "/timonerie/adherents", label: "Adhérents" }}
           kicker="Adhérents"
           title="Ancien membre"
           description={`Fiche anonymisée le ${formatDateTime(member.anonymizedAt)}.`}
@@ -98,12 +99,15 @@ export default async function MemberPage({
   }
 
   const fullName = `${member.firstName} ${member.lastName}`;
-  const age = member.birthYear ? Number(today.slice(0, 4)) - member.birthYear : null;
-  const minorLooksOutdated = member.isMinor && age != null && age >= 18;
+  // Aucun âge conservé : la case « mineur » se revérifie en personne chaque saison.
+  const minorNeedsReview =
+    member.isMinor &&
+    (!member.minorReviewedAt || parisDay(member.minorReviewedAt) < addDays(today, -365));
 
   return (
     <>
       <PageHeader
+        back={{ href: "/timonerie/adherents", label: "Adhérents" }}
         kicker="Adhérent"
         title={`${member.firstName} ${member.lastName}`}
         description={
@@ -174,11 +178,11 @@ export default async function MemberPage({
         }
       />
 
-      {minorLooksOutdated ? (
+      {minorNeedsReview ? (
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-m border border-warn/40 bg-warn/10 px-4 py-3 text-sm text-warn">
           <span>
-            Né·e en {member.birthYear} : {member.firstName} a peut-être 18 ans cette année. Vérifiez
-            la case « mineur ».
+            La case « mineur » de {member.firstName} n&apos;a pas été vérifiée depuis plus d&apos;un
+            an : confirmez-la en personne lors de sa prochaine venue.
           </span>
           <span className="flex gap-2">
             <ActionButton
@@ -208,7 +212,6 @@ export default async function MemberPage({
               id: member.id,
               firstName: member.firstName,
               lastName: member.lastName,
-              birthYear: member.birthYear,
               isMinor: member.isMinor,
               cardNumber: member.cardNumber,
               status: member.status,
@@ -229,10 +232,6 @@ export default async function MemberPage({
                   items={[
                     ["Prénom", member.firstName],
                     ["Nom", member.lastName],
-                    [
-                      "Année de naissance",
-                      member.birthYear ? `${member.birthYear} (${age} ans cette année)` : "—",
-                    ],
                     [
                       "Mineur",
                       member.isMinor

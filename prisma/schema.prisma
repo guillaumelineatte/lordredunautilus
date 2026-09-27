@@ -134,7 +134,6 @@ model Member {
   id              String       @id @default(cuid())
   firstName       String       @db.VarChar(80)
   lastName        String       @db.VarChar(80)
-  birthYear       Int?         @db.SmallInt // année seule, jamais la date complète
   isMinor         Boolean      @default(false) // saisi à la main
   minorReviewedAt DateTime? // dernière révision de la case « mineur » (rappel annuel)
   cardNumber      String?      @unique

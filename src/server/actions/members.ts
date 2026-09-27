@@ -42,7 +42,6 @@ export const saveMember = adminAction(
     const data = {
       firstName: input.firstName,
       lastName: input.lastName,
-      birthYear: input.birthYear,
       isMinor: input.isMinor,
       cardNumber: input.cardNumber,
       notes: input.notes,

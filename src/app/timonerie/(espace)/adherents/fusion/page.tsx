@@ -15,6 +15,7 @@ export default async function MergePage() {
   return (
     <>
       <PageHeader
+        back={{ href: "/timonerie/adherents", label: "Adhérents" }}
         kicker="Adhérents"
         title="Fusionner des doublons"
         description="Adhésions, inscriptions, identifiants de jeu et autorisations passent sur la fiche conservée ; l'autre fiche est supprimée."

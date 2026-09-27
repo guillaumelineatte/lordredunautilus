@@ -24,7 +24,7 @@ export const PROCESSINGS: Processing[] = [
     people: "Adhérents, dont mineurs avec autorisation parentale.",
     data: [
       "Nom, prénom",
-      "Année de naissance (pas la date complète) et case « mineur »",
+      "Case « mineur » (aucune date ni année de naissance : l'âge est vérifié en personne)",
       "Identifiants de joueur par jeu (Konami ID, Bandai TCG+ ID…)",
       "Périodes d'adhésion, formule, montant, mode de paiement, référence PayPal facultative",
       "Numéro de carte physique",

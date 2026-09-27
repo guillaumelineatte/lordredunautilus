@@ -36,7 +36,7 @@ export default async function MembersPage({
       <PageHeader
         kicker="Adhérents"
         title="Les membres de l'équipage"
-        description="Seules les données nécessaires sont conservées : nom, prénom, année de naissance, identifiants de jeu, adhésions, carte et autorisations."
+        description="Seules les données nécessaires sont conservées : nom, prénom, identifiants de jeu, adhésions, carte et autorisations."
         actions={
           <>
             <LinkButton href="/api/timonerie/export/adherents" prefetch={false}>

@@ -5,7 +5,6 @@
 export const IMPORTABLE_FIELDS = [
   "firstName",
   "lastName",
-  "birthYear",
   "isMinor",
   "cardNumber",
   "notes",
@@ -14,7 +13,6 @@ export const IMPORTABLE_FIELDS = [
 export const importableFieldLabel: Record<(typeof IMPORTABLE_FIELDS)[number], string> = {
   firstName: "Prénom",
   lastName: "Nom",
-  birthYear: "Année de naissance",
   isMinor: "Mineur (oui/non)",
   cardNumber: "Numéro de carte",
   notes: "Notes internes",

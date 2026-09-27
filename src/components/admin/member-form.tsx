@@ -29,7 +29,6 @@ export type MemberFormValues = {
   id?: string;
   firstName: string;
   lastName: string;
-  birthYear: number | null;
   isMinor: boolean;
   cardNumber: string | null;
   status: MemberStatus;
@@ -69,7 +68,6 @@ export function MemberForm({
   const [social, setSocial] = useState(initial?.imageRightsSocial ?? false);
   const [gameIds, setGameIds] = useState(initial?.gameIds ?? []);
   const available = games.filter((g) => !gameIds.some((e) => e.gameId === g.id));
-  const currentYear = new Date().getFullYear();
 
   return (
     <ActionForm
@@ -102,16 +100,6 @@ export function MemberForm({
           defaultValue={initial?.lastName}
           autoComplete="off"
           required
-        />
-        <TextField
-          label="Année de naissance"
-          name="birthYear"
-          type="number"
-          inputMode="numeric"
-          min={1900}
-          max={currentYear}
-          defaultValue={initial?.birthYear ?? ""}
-          hint="L'année seule, jamais la date complète."
         />
         <TextField
           label="Numéro de carte"

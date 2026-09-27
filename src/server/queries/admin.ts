@@ -84,7 +84,6 @@ export async function dashboardData() {
         id: true,
         firstName: true,
         lastName: true,
-        birthYear: true,
         minorReviewedAt: true,
         parentalDocumentReceived: true,
       },
@@ -92,14 +91,9 @@ export async function dashboardData() {
     db.cronRun.findFirst({ orderBy: { startedAt: "desc" } }),
   ]);
 
-  const year = Number(today.slice(0, 4));
+  // Case « mineur » à revérifier en personne chaque saison (aucun âge n'est conservé).
   const yearAgo = new Date(Date.now() - 365 * 86_400_000);
-  const minorsToReview = minors.filter(
-    (m) =>
-      (m.birthYear != null && year - m.birthYear >= 18) ||
-      !m.minorReviewedAt ||
-      m.minorReviewedAt < yearAgo,
-  );
+  const minorsToReview = minors.filter((m) => !m.minorReviewedAt || m.minorReviewedAt < yearAgo);
   const missingParental = minors.filter((m) => !m.parentalDocumentReceived);
 
   const cronLate = !lastCron || Date.now() - lastCron.startedAt.getTime() > 36 * 3600_000;

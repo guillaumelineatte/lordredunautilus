@@ -44,9 +44,7 @@ async function build(document: string, params: URLSearchParams): Promise<Built |
         associationName,
         associationAddress: settings.legal.siege || formatAddress(settings.address),
         contactEmail: settings.contactEmail,
-        child: member
-          ? { firstName: member.firstName, lastName: member.lastName, birthYear: member.birthYear }
-          : null,
+        child: member ? { firstName: member.firstName, lastName: member.lastName } : null,
         date: formatDay(todayParis()),
       }) as ReactElement<DocumentProps>,
       filename: member

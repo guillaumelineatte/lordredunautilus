@@ -21,8 +21,6 @@ import {
   time,
 } from "./fields";
 
-const currentYear = new Date().getFullYear();
-
 export const MEMBER_STATUSES = ["ACTIVE", "EXPIRED", "SUSPENDED"] as const;
 export const CONSENT_SOURCES = ["SIGNED_PAPER", "VERBAL", "FORM"] as const;
 export const PAYMENT_METHODS = ["PAYPAL", "CASH", "BANK_TRANSFER"] as const;
@@ -46,7 +44,6 @@ export const memberInput = z
     id: optionalId,
     firstName: text(80, "Indiquez le prénom."),
     lastName: text(80, "Indiquez le nom."),
-    birthYear: optionalInt(1900, currentYear, "Année invalide."),
     isMinor: checkbox,
     minorReviewed: checkbox,
     cardNumber: optionalText(40),

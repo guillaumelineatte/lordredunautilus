@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
+import { ArrowLeftIcon } from "./icons";
 
 type Variant = "primary" | "ghost" | "danger" | "subtle";
 
@@ -79,17 +80,29 @@ export function Badge({
 export function PageHeader({
   kicker,
   title,
+  back,
   description,
   actions,
 }: {
   kicker?: string;
   title: string;
+  /** Lien de retour affiché au-dessus du titre (petite flèche). */
+  back?: { href: string; label: string };
   description?: ReactNode;
   actions?: ReactNode;
 }) {
   return (
     <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
       <div className="grid gap-1.5">
+        {back ? (
+          <Link
+            href={back.href}
+            className="mb-1 inline-flex w-fit items-center gap-1.5 font-head text-xs tracking-[0.06em] text-ivory-3 transition-colors hover:text-rose"
+          >
+            <ArrowLeftIcon />
+            {back.label}
+          </Link>
+        ) : null}
         {kicker ? <p className="kicker">{kicker}</p> : null}
         <h1 className="text-3xl">{title}</h1>
         {description ? <p className="max-w-2xl text-sm text-ivory-2">{description}</p> : null}

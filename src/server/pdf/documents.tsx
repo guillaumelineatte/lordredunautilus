@@ -81,7 +81,7 @@ export type ParentalConsentData = {
   associationName: string;
   associationAddress: string;
   contactEmail: string;
-  child?: { firstName: string; lastName: string; birthYear: number | null } | null;
+  child?: { firstName: string; lastName: string } | null;
   date: string;
 };
 
@@ -109,16 +109,11 @@ export function ParentalConsentPdf({
           <Fill label="Prénom :" value={child?.firstName} width="48%" />
           <Fill label="Nom :" value={child?.lastName} width="48%" />
         </View>
-        <Fill
-          label="Année de naissance :"
-          value={child?.birthYear ? String(child.birthYear) : null}
-          width="50%"
-        />
 
         <Text style={base.h2}>Autorisations (cochez chaque ligne séparément)</Text>
         <Check>
           J&apos;autorise mon enfant à adhérer à l&apos;association et l&apos;enregistrement de ses
-          nom, prénom, année de naissance et identifiants de jeu — nécessaire à toute inscription.
+          nom, prénom et identifiants de jeu — nécessaire à toute inscription.
         </Check>
         <Check>
           J&apos;autorise la publication de photos de mon enfant dans la galerie du site de
@@ -157,9 +152,9 @@ export function ParentalConsentPdf({
           </Text>
           <Text style={base.small}>
             Finalité : gestion de l&apos;adhésion et, si vous l&apos;avez autorisé, publication de
-            photos. Données conservées : nom, prénom, année de naissance, identifiants de jeu,
-            périodes d&apos;adhésion, numéro de carte et vos choix ci-dessus. Aucune adresse, aucun
-            téléphone, aucun e-mail n&apos;est enregistré.
+            photos. Données conservées : nom, prénom, identifiants de jeu, périodes d&apos;adhésion,
+            numéro de carte et vos choix ci-dessus. Aucune adresse, aucun téléphone, aucun e-mail
+            n&apos;est enregistré.
             {` Durée : ${RETENTION.memberYears} ans après la dernière adhésion, puis anonymisation.`}{" "}
             Vous pouvez retirer chaque autorisation à tout moment, et exercer vos droits
             d&apos;accès, de rectification, d&apos;effacement et d&apos;opposition, en écrivant à{" "}

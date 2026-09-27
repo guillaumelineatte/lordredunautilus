@@ -26,7 +26,6 @@ async function membersCsv() {
     return {
       Nom: m.lastName,
       Prénom: m.firstName,
-      "Année de naissance": m.birthYear ?? "",
       Mineur: m.isMinor ? "oui" : "non",
       "N° de carte": m.cardNumber ?? "",
       Statut: memberStatusLabel[m.status],
@@ -123,7 +122,6 @@ async function memberDataJson(memberId: string) {
     identite: {
       prenom: m.firstName,
       nom: m.lastName,
-      anneeDeNaissance: m.birthYear,
       mineur: m.isMinor,
       numeroDeCarte: m.cardNumber,
     },

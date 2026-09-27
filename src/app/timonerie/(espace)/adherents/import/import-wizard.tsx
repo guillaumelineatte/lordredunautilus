@@ -16,7 +16,6 @@ function guess(header: string, games: Game[]): string {
   const h = normalize(header);
   if (/^(prenom|first ?name)/.test(h)) return "firstName";
   if (/^(nom|last ?name|surname)/.test(h)) return "lastName";
-  if (/(annee|naissance|birth)/.test(h)) return "birthYear";
   if (/(mineur|minor)/.test(h)) return "isMinor";
   if (/(carte|card)/.test(h)) return "cardNumber";
   if (/(note|remarque)/.test(h)) return "notes";

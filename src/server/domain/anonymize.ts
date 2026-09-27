@@ -6,7 +6,7 @@ export const FORMER_MEMBER = { firstName: "Ancien", lastName: "membre" } as cons
 
 /**
  * Anonymisation d'une fiche (suppression d'une fiche qui a des adhésions, et cron : même code).
- * - identité, année de naissance, carte, notes, droits, identifiants de jeu, scan : effacés ;
+ * - identité, carte, notes, droits, identifiants de jeu, scan : effacés ;
  * - inscriptions liées : anonymisées ; photos où il est identifié : dépubliées ;
  * - adhésions : conservées (montant, dates, formule) pour la comptabilité, sans la référence PayPal.
  */
@@ -53,7 +53,6 @@ export async function anonymizeMember(
     where: { id: memberId },
     data: {
       ...FORMER_MEMBER,
-      birthYear: null,
       isMinor: false,
       minorReviewedAt: null,
       cardNumber: null,
