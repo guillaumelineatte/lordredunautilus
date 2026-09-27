@@ -137,14 +137,14 @@ export default async function EventAdminPage({ params }: { params: Promise<{ id:
               actions={
                 <span className="flex gap-2">
                   <LinkButton
-                    href={`/api/admin/pdf/emargement?evenement=${event.id}`}
+                    href={`/api/timonerie/pdf/emargement?evenement=${event.id}`}
                     prefetch={false}
                     size="sm"
                   >
                     Feuille d&apos;émargement
                   </LinkButton>
                   <LinkButton
-                    href={`/api/admin/export/inscrits?evenement=${event.id}`}
+                    href={`/api/timonerie/export/inscrits?evenement=${event.id}`}
                     prefetch={false}
                     size="sm"
                   >
@@ -266,7 +266,7 @@ export default async function EventAdminPage({ params }: { params: Promise<{ id:
                   input={{ id: event.id }}
                   variant="subtle"
                   confirm="Mettre l'événement à la corbeille ?"
-                  redirectTo="/admin/evenements"
+                  redirectTo="/timonerie/evenements"
                 >
                   Corbeille
                 </ActionButton>
@@ -289,7 +289,7 @@ export default async function EventAdminPage({ params }: { params: Promise<{ id:
               l&apos;événement.
             </p>
             <Link
-              href={`/admin/galerie?evenement=${event.id}`}
+              href={`/timonerie/galerie?evenement=${event.id}`}
               className="mt-3 inline-block text-xs text-rose"
             >
               Gérer les photos de la soirée →

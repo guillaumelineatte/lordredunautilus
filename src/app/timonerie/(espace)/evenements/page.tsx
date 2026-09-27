@@ -42,7 +42,7 @@ export default async function EventsPage({
         title="L'agenda"
         description="Brouillon → publié : seuls les événements publiés apparaissent sur le site. Les événements passés passent en « terminé » chaque nuit."
         actions={
-          <LinkButton href="/admin/evenements/nouveau" variant="primary" data-shortcut="new">
+          <LinkButton href="/timonerie/evenements/nouveau" variant="primary" data-shortcut="new">
             Nouvel événement <kbd className="text-[0.65rem] opacity-70">n</kbd>
           </LinkButton>
         }
@@ -95,7 +95,7 @@ export default async function EventsPage({
                   </td>
                   <td>
                     <Link
-                      href={`/admin/evenements/${e.id}`}
+                      href={`/timonerie/evenements/${e.id}`}
                       className="font-semibold hover:text-rose"
                     >
                       {e.title}

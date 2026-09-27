@@ -415,11 +415,11 @@ export async function auditTargets(rows: { entity: string; entityId: string | nu
   for (const m of members) {
     map.set(`Member:${m.id}`, {
       label: m.anonymizedAt ? "Ancien membre" : `${m.firstName} ${m.lastName}`,
-      href: `/admin/adherents/${m.id}`,
+      href: `/timonerie/adherents/${m.id}`,
     });
   }
   for (const e of events)
-    map.set(`Event:${e.id}`, { label: e.title, href: `/admin/evenements/${e.id}` });
+    map.set(`Event:${e.id}`, { label: e.title, href: `/timonerie/evenements/${e.id}` });
   return map;
 }
 

@@ -27,7 +27,7 @@ export default async function DocumentsPage() {
             Une fois signée, cochez les cases miroir sur la fiche et joignez le scan.
           </p>
           <div className="grid gap-3">
-            <LinkButton href="/api/admin/pdf/autorisation-parentale" prefetch={false}>
+            <LinkButton href="/api/timonerie/pdf/autorisation-parentale" prefetch={false}>
               Télécharger le modèle vierge
             </LinkButton>
             <DocumentPickers
@@ -76,7 +76,7 @@ export default async function DocumentsPage() {
           <p className="mb-4 text-sm text-ivory-2">
             Registre RGPD pré-rédigé d&apos;après le modèle CNIL.
           </p>
-          <LinkButton href="/api/admin/pdf/registre" prefetch={false}>
+          <LinkButton href="/api/timonerie/pdf/registre" prefetch={false}>
             Exporter le registre en PDF
           </LinkButton>
         </Card>

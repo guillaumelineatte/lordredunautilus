@@ -71,7 +71,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
         title="Journal d'activité"
         description="Lecture seule. Chaque écriture de l'administration y est tracée ; les valeurs personnelles sont masquées. Conservation : 12 mois."
         actions={
-          <LinkButton href={`/api/admin/export/journal?${exportParams}`} prefetch={false}>
+          <LinkButton href={`/api/timonerie/export/journal?${exportParams}`} prefetch={false}>
             Exporter en CSV
           </LinkButton>
         }

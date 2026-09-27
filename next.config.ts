@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@react-pdf/renderer", "sharp", "@node-rs/argon2"],
   // Polices et logo lus sur disque par la génération des PDF
   outputFileTracingIncludes: {
-    "/api/admin/pdf/[document]": ["./assets/fonts/**", "./public/logo.png"],
+    "/api/timonerie/pdf/[document]": ["./assets/fonts/**", "./public/logo.png"],
   },
   experimental: {
     globalNotFound: true,

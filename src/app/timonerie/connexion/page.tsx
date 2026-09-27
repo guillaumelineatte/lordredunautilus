@@ -7,7 +7,7 @@ import { LoginForm } from "./login-form";
 export const metadata: Metadata = { title: "Connexion" };
 
 export default async function LoginPage() {
-  if (await getAdminSession()) redirect("/admin");
+  if (await getAdminSession()) redirect("/timonerie");
   return (
     <main className="grid min-h-svh place-items-center bg-[radial-gradient(ellipse_80%_60%_at_50%_110%,#1E3A5A_0%,#132438_55%,#0C1826_100%)] px-4">
       <div className="w-full max-w-sm">

@@ -79,7 +79,7 @@ export async function membershipJob(today = todayParis()): Promise<Report> {
       sections: ([0, 7, 30] as const)
         .map((t) => ({ heading: `Fin ${tierLabel[t]}`, items: toAlert[t] }))
         .filter((s) => s.items.length > 0),
-      cta: { label: "Ouvrir le tableau de bord", href: siteUrl("/admin") },
+      cta: { label: "Ouvrir le tableau de bord", href: siteUrl("/timonerie") },
     });
   }
 
@@ -253,7 +253,7 @@ export async function digestJob(now = new Date(), today = todayParis()): Promise
         empty: "Boîte de réception à jour.",
       },
     ],
-    cta: { label: "Ouvrir l'administration", href: siteUrl("/admin") },
+    cta: { label: "Ouvrir l'administration", href: siteUrl("/timonerie") },
   });
   return { aRenouveler: toRenew.length, inscriptionsVeille: registrations.length };
 }

@@ -12,6 +12,6 @@ export const getAdminSession = cache(async () => {
 /** À appeler en tête de chaque page admin protégée. */
 export async function requireAdminPage() {
   const session = await getAdminSession();
-  if (!session) redirect("/admin/connexion");
+  if (!session) redirect("/timonerie/connexion");
   return session;
 }

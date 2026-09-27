@@ -13,7 +13,7 @@ test("galerie : upload, publication bloquée sans droits, publication, suppressi
     .toBuffer();
   const alt = `Photo de test ${run}`;
 
-  await page.goto("/admin/galerie");
+  await page.goto("/timonerie/galerie");
   const before = await page.locator("ul li.card").count();
   await page
     .locator("input[type=file]")
@@ -38,7 +38,7 @@ test("galerie : upload, publication bloquée sans droits, publication, suppressi
   await page.goto("/galerie");
   await expect(page.getByRole("img", { name: alt })).toBeVisible();
 
-  await page.goto("/admin/galerie");
+  await page.goto("/timonerie/galerie");
   await page.locator("ul li.card").last().getByRole("button", { name: "Supprimer" }).click();
   await expect(page.locator("ul li.card")).toHaveCount(before);
 });

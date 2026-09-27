@@ -16,7 +16,7 @@ Schéma de données : [`prisma/schema.prisma`](../prisma/schema.prisma). Mode d'
 | Conservation          | Inscriptions 12 mois ; messages non traités 12 mois ; fiche sans adhésion anonymisée 3 ans après création ; corbeille anonymisée à 30 jours.                                             |
 | Photos                | Identification possible pour tous les membres ; publication bloquée si un membre identifié n'a pas donné son accord (papier signé pour un mineur). Dépublication automatique au retrait. |
 | Verrouillage          | 5 échecs → 15 min ; 10 échecs → 1 h ; déblocage d'urgence en ligne de commande.                                                                                                          |
-| Accès à l'admin       | Adresse secrète `/acces/<ADMIN_ACCESS_CODE>` qui dépose un cookie signé (HMAC) ; sans lui, `/admin/*`, `/api/admin/*` et `/api/auth/*` répondent 404 (proxy).                            |
+| Accès à l'admin       | Administration sous `/timonerie` (dossier `src/app/timonerie`, API `src/app/api/timonerie`) ; `/admin` n'existe pas.                                                                     |
 | Scans parentaux       | En base (`PrivateFile`), servis uniquement par une route admin authentifiée et tracée.                                                                                                   |
 
 ## 2. Arborescence
@@ -32,14 +32,14 @@ Schéma de données : [`prisma/schema.prisma`](../prisma/schema.prisma). Mode d'
 ├── assets/fonts/                # polices des PDF (OFL)
 ├── scripts/                     # admin-reset, backup, restore, screenshots
 ├── src/
-│   ├── proxy.ts                 # clé d'accès secrète de l'admin, redirection vers la connexion
+│   ├── proxy.ts                 # redirection vers /timonerie/connexion sans session
 │   ├── app/
 │   │   ├── (site)/              # site public (layout racine n° 1, site.css d'origine)
 │   │   │   ├── page.tsx         # accueil
 │   │   │   ├── evenements/      # agenda filtrable + [slug] (inscription, JSON-LD Event)
 │   │   │   ├── inscription/annuler/[token]/
 │   │   │   ├── adherer/  galerie/  mentions-legales/  confidentialite/
-│   │   ├── admin/               # administration (layout racine n° 2, Tailwind)
+│   │   ├── timonerie/           # administration (layout racine n° 2, Tailwind)
 │   │   │   ├── connexion/
 │   │   │   └── (espace)/        # session vérifiée côté serveur
 │   │   │       ├── adherents/ (liste, [id], nouveau, import, fusion)
@@ -48,7 +48,7 @@ Schéma de données : [`prisma/schema.prisma`](../prisma/schema.prisma). Mode d'
 │   │   ├── api/
 │   │   │   ├── auth/[...all]/   # Better Auth
 │   │   │   ├── cron/quotidien/  # tâches planifiées (CRON_SECRET)
-│   │   │   └── admin/           # pdf/[document], export/[entite], fichiers/[id], photos
+│   │   │   └── timonerie/       # pdf/[document], export/[entite], fichiers/[id], photos
 │   │   ├── uploads/[...path]/   # photos locales quand Blob n'est pas configuré
 │   │   ├── global-not-found.tsx  sitemap.ts  robots.ts  icon.png
 │   ├── components/

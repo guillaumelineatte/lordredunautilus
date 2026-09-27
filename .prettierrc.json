@@ -2,10 +2,10 @@
   "printWidth": 100,
   "overrides": [
     {
-      "files": ["src/app/admin/**", "src/components/admin/**"],
+      "files": ["src/app/timonerie/**", "src/components/admin/**"],
       "options": {
         "plugins": ["prettier-plugin-tailwindcss"],
-        "tailwindStylesheet": "./src/app/admin/admin.css",
+        "tailwindStylesheet": "./src/app/timonerie/admin.css",
         "tailwindPreserveWhitespace": true
       }
     }

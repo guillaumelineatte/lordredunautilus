@@ -127,21 +127,21 @@ export default async function MemberPage({
         actions={
           <>
             <LinkButton
-              href={`/api/admin/pdf/carte?adherent=${member.id}`}
+              href={`/api/timonerie/pdf/carte?adherent=${member.id}`}
               prefetch={false}
               size="sm"
             >
               Carte de membre (CR80)
             </LinkButton>
             <LinkButton
-              href={`/api/admin/pdf/carte?adherent=${member.id}&format=a6`}
+              href={`/api/timonerie/pdf/carte?adherent=${member.id}&format=a6`}
               prefetch={false}
               size="sm"
             >
               Carte A6
             </LinkButton>
             <LinkButton
-              href={`/api/admin/export/fiche?adherent=${member.id}`}
+              href={`/api/timonerie/export/fiche?adherent=${member.id}`}
               prefetch={false}
               size="sm"
               title="Droit d'accès et portabilité (RGPD)"
@@ -150,7 +150,7 @@ export default async function MemberPage({
             </LinkButton>
             {member.isMinor ? (
               <LinkButton
-                href={`/api/admin/pdf/autorisation-parentale?adherent=${member.id}`}
+                href={`/api/timonerie/pdf/autorisation-parentale?adherent=${member.id}`}
                 prefetch={false}
                 size="sm"
               >
@@ -163,7 +163,7 @@ export default async function MemberPage({
               variant="danger"
               confirm={deleteConfirmation(fullName, member.memberships.length)}
               success="Fiche supprimée."
-              redirectTo="/admin/adherents"
+              redirectTo="/timonerie/adherents"
               size="icon"
               title="Supprimer la fiche"
               ariaLabel="Supprimer la fiche"
@@ -372,7 +372,7 @@ export default async function MemberPage({
               {member.parentalDocumentFile ? (
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm">
                   <a
-                    href={`/api/admin/fichiers/${member.parentalDocumentFile.id}`}
+                    href={`/api/timonerie/fichiers/${member.parentalDocumentFile.id}`}
                     target="_blank"
                     rel="noopener"
                     className="text-rose hover:underline"
@@ -407,7 +407,7 @@ export default async function MemberPage({
               <ul className="divide-y divide-line text-sm">
                 {member.registrations.map((r) => (
                   <li key={r.id} className="flex justify-between gap-2 py-2">
-                    <Link href={`/admin/evenements/${r.event.id}`} className="hover:text-rose">
+                    <Link href={`/timonerie/evenements/${r.event.id}`} className="hover:text-rose">
                       {r.event.title}
                     </Link>
                     <span className="text-xs text-ivory-3">
@@ -480,7 +480,7 @@ export default async function MemberPage({
                 variant="danger"
                 confirm={deleteConfirmation(fullName, member.memberships.length)}
                 success="Fiche supprimée."
-                redirectTo="/admin/adherents"
+                redirectTo="/timonerie/adherents"
               >
                 Supprimer définitivement
               </ActionButton>

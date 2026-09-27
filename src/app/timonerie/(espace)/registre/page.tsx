@@ -14,7 +14,7 @@ export default async function RegisterPage() {
         title="Registre des activités de traitement"
         description={`Responsable du traitement : ${settings.legal.associationName}, représentée par ${settings.legal.president}. Contact : ${settings.contactEmail}.`}
         actions={
-          <LinkButton href="/api/admin/pdf/registre" prefetch={false} variant="primary">
+          <LinkButton href="/api/timonerie/pdf/registre" prefetch={false} variant="primary">
             Exporter en PDF
           </LinkButton>
         }

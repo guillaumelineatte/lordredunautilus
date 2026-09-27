@@ -9,16 +9,16 @@ import { authClient } from "@/lib/auth-client";
 import { ToastProvider } from "./toast";
 
 const NAV = [
-  { href: "/admin", label: "Tableau de bord", exact: true },
-  { href: "/admin/adherents", label: "Adhérents" },
-  { href: "/admin/evenements", label: "Événements" },
-  { href: "/admin/galerie", label: "Galerie" },
-  { href: "/admin/contenus", label: "Contenus" },
-  { href: "/admin/messages", label: "Messages" },
-  { href: "/admin/documents", label: "Documents" },
-  { href: "/admin/journal", label: "Journal" },
-  { href: "/admin/registre", label: "Registre RGPD" },
-  { href: "/admin/compte", label: "Mon compte" },
+  { href: "/timonerie", label: "Tableau de bord", exact: true },
+  { href: "/timonerie/adherents", label: "Adhérents" },
+  { href: "/timonerie/evenements", label: "Événements" },
+  { href: "/timonerie/galerie", label: "Galerie" },
+  { href: "/timonerie/contenus", label: "Contenus" },
+  { href: "/timonerie/messages", label: "Messages" },
+  { href: "/timonerie/documents", label: "Documents" },
+  { href: "/timonerie/journal", label: "Journal" },
+  { href: "/timonerie/registre", label: "Registre RGPD" },
+  { href: "/timonerie/compte", label: "Mon compte" },
 ];
 
 function isTyping(target: EventTarget | null) {
@@ -43,7 +43,7 @@ function Shortcuts() {
         const link = document.querySelector<HTMLAnchorElement>("[data-shortcut='new']");
         if (link) {
           e.preventDefault();
-          router.push(link.getAttribute("href") ?? "/admin");
+          router.push(link.getAttribute("href") ?? "/timonerie");
         }
       }
     }
@@ -63,7 +63,7 @@ export function AdminShell({ children, unread }: { children: ReactNode; unread: 
 
   async function signOut() {
     await authClient.signOut();
-    router.push("/admin/connexion");
+    router.push("/timonerie/connexion");
     router.refresh();
   }
 
@@ -83,7 +83,7 @@ export function AdminShell({ children, unread }: { children: ReactNode; unread: 
             open ? "translate-x-0" : "-translate-x-full",
           )}
         >
-          <Link href="/admin" className="mb-8 flex items-center gap-3 px-2">
+          <Link href="/timonerie" className="mb-8 flex items-center gap-3 px-2">
             <Image src="/logo.png" alt="" width={36} height={36} className="rounded-full" />
             <span className="font-head text-sm tracking-[0.08em]">
               L&apos;Ordre du <b className="font-normal text-rose">Nautilus</b>
@@ -105,7 +105,7 @@ export function AdminShell({ children, unread }: { children: ReactNode; unread: 
                   )}
                 >
                   {item.label}
-                  {item.href === "/admin/messages" && unread > 0 ? (
+                  {item.href === "/timonerie/messages" && unread > 0 ? (
                     <span className="rounded-full bg-rose px-1.5 text-[0.65rem] text-abyss">
                       {unread}
                     </span>

@@ -3,7 +3,7 @@
 Site et administration de **L'Ordre du Nautilus**, association amiénoise de jeux de cartes à collectionner (Magic, Pokémon, Yu-Gi-Oh!, Lorcana, One Piece, Flesh and Blood).
 
 - **Site public** : le site vitrine d'origine, à l'identique, mais alimenté par la base. On y trouve l'agenda filtrable, l'inscription aux événements sans compte, la page « Adhérer » (paiement PayPal hors site), la galerie, le contact et les pages légales.
-- **Administration** (`/admin`) : un compte unique pour gérer adhérents, adhésions, événements, inscrits, galerie, contenus, documents PDF, messages et journal d'activité.
+- **Administration** (`/timonerie`) : un compte unique pour gérer adhérents, adhésions, événements, inscrits, galerie, contenus, documents PDF, messages et journal d'activité.
 - **RGPD par construction** : l'association ne stocke d'un adhérent que le strict nécessaire. Anonymisation automatique au bout de 3 ans, journal d'audit immuable sans valeurs personnelles.
 
 ![Accueil](docs/captures/site-accueil.jpg)
@@ -53,7 +53,7 @@ SEED_DEMO=true npm run db:seed      # contenus de démonstration + adhérents fi
 npm run dev                         # http://localhost:3001
 ```
 
-L'administration s'ouvre par son **adresse d'accès secrète** : <http://localhost:3001/acces/CODE>, où `CODE` est la valeur de `ADMIN_ACCESS_CODE` dans `.env` (voir [Connexion et sécurité](#connexion-et-sécurité)). Identifiant : `ADMIN_EMAIL`, mot de passe : `ADMIN_INITIAL_PASSWORD` (tous deux dans `.env`). Changez ce mot de passe dès la première connexion (**Mon compte**).
+L'administration est sur <http://localhost:3001/timonerie> (même adresse en production : `https://<domaine>/timonerie`). Identifiant : `ADMIN_EMAIL`, mot de passe : `ADMIN_INITIAL_PASSWORD` (tous deux dans `.env`). Changez ce mot de passe dès la première connexion (**Mon compte**).
 
 > Le site tourne sur le port **3001** : le 3000 est souvent déjà pris par un autre projet.
 >
@@ -61,21 +61,20 @@ L'administration s'ouvre par son **adresse d'accès secrète** : <http://localho
 
 ## 2. Variables d'environnement
 
-| Variable                                 | Obligatoire | Rôle                                                                                                                                                 |
-| ---------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                           | oui         | URL PostgreSQL **poolée** (Neon : hôte `-pooler`), utilisée par l'application                                                                        |
-| `DIRECT_URL`                             | oui         | URL **directe**, utilisée par les migrations et scripts. Sur Vercel avec l'intégration Neon, `DATABASE_URL_UNPOOLED` est aussi reconnue              |
-| `NEXT_PUBLIC_SITE_URL`                   | oui         | URL publique du site (liens des e-mails, sitemap, JSON-LD)                                                                                           |
-| `BETTER_AUTH_URL`                        | oui         | Même valeur que `NEXT_PUBLIC_SITE_URL`                                                                                                               |
-| `BETTER_AUTH_SECRET`                     | oui         | Secret de session : `openssl rand -base64 32`                                                                                                        |
-| `ADMIN_ACCESS_CODE`                      | oui         | Code de l'adresse d'accès secrète `/acces/<code>` : `openssl rand -base64 18 \| tr '+/' '-_' \| tr -d '='`. Sans lui, l'administration reste fermée. |
-| `ADMIN_EMAIL` / `ADMIN_INITIAL_PASSWORD` | au seed     | Compte administrateur créé par `npm run db:seed` (12 caractères minimum)                                                                             |
-| `ADMIN_NOTIFY_EMAIL`                     | conseillé   | Destinataire des alertes (à défaut : l'e-mail du compte admin)                                                                                       |
-| `RESEND_API_KEY` / `MAIL_FROM`           | en prod     | Envoi des e-mails (alertes admin, confirmations d'inscription)                                                                                       |
-| `BLOB_READ_WRITE_TOKEN`                  | en prod     | Stockage des photos sur Vercel Blob                                                                                                                  |
-| `CRON_SECRET`                            | en prod     | Protège `/api/cron/quotidien` : `openssl rand -hex 24`                                                                                               |
-| `IP_HASH_SECRET`                         | en prod     | Clé de hachage des IP pour la limitation de débit : `openssl rand -hex 24`                                                                           |
-| `DISCORD_WEBHOOK_URL`                    | non         | Annonce des événements publiés (à activer aussi dans Réglages → Options)                                                                             |
+| Variable                                 | Obligatoire | Rôle                                                                                                                                    |
+| ---------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                           | oui         | URL PostgreSQL **poolée** (Neon : hôte `-pooler`), utilisée par l'application                                                           |
+| `DIRECT_URL`                             | oui         | URL **directe**, utilisée par les migrations et scripts. Sur Vercel avec l'intégration Neon, `DATABASE_URL_UNPOOLED` est aussi reconnue |
+| `NEXT_PUBLIC_SITE_URL`                   | oui         | URL publique du site (liens des e-mails, sitemap, JSON-LD)                                                                              |
+| `BETTER_AUTH_URL`                        | oui         | Même valeur que `NEXT_PUBLIC_SITE_URL`                                                                                                  |
+| `BETTER_AUTH_SECRET`                     | oui         | Secret de session : `openssl rand -base64 32`                                                                                           |
+| `ADMIN_EMAIL` / `ADMIN_INITIAL_PASSWORD` | au seed     | Compte administrateur créé par `npm run db:seed` (12 caractères minimum)                                                                |
+| `ADMIN_NOTIFY_EMAIL`                     | conseillé   | Destinataire des alertes (à défaut : l'e-mail du compte admin)                                                                          |
+| `RESEND_API_KEY` / `MAIL_FROM`           | en prod     | Envoi des e-mails (alertes admin, confirmations d'inscription)                                                                          |
+| `BLOB_READ_WRITE_TOKEN`                  | en prod     | Stockage des photos sur Vercel Blob                                                                                                     |
+| `CRON_SECRET`                            | en prod     | Protège `/api/cron/quotidien` : `openssl rand -hex 24`                                                                                  |
+| `IP_HASH_SECRET`                         | en prod     | Clé de hachage des IP pour la limitation de débit : `openssl rand -hex 24`                                                              |
+| `DISCORD_WEBHOOK_URL`                    | non         | Annonce des événements publiés (à activer aussi dans Réglages → Options)                                                                |
 
 ## 3. Commandes utiles
 
@@ -114,7 +113,7 @@ Un hook Husky lance ESLint et Prettier sur les fichiers modifiés à chaque comm
 5. **Cron** : déjà déclaré dans `vercel.json`. Ajoutez simplement `CRON_SECRET` : Vercel l'envoie automatiquement dans l'en-tête `Authorization` (voir section 5).
 6. **Domaine** : ajoutez `ordredunautilus.fr` dans Vercel, puis mettez à jour `NEXT_PUBLIC_SITE_URL` et `BETTER_AUTH_URL`.
 7. Après le premier déploiement :
-   - ouvrez `https://<domaine>/acces/<ADMIN_ACCESS_CODE>` (mettez l'adresse en favori), connectez-vous et changez le mot de passe ;
+   - ouvrez `https://<domaine>/timonerie`, connectez-vous et changez le mot de passe ;
    - activez la double authentification ;
    - complétez **Contenus → Réglages** : adresse, PayPal, RNA, présidence, hébergeur, réseaux.
 
@@ -169,15 +168,7 @@ Les sauvegardes contiennent des données personnelles : stockez-les chiffrées e
 
 <img src="docs/captures/admin-connexion.jpg" alt="Page de connexion" width="600">
 
-**Adresse d'accès secrète.** L'administration n'a pas d'adresse devinable :
-
-- `/admin`, `/admin/connexion` et l'API de connexion répondent « page introuvable » (404), exactement comme une adresse qui n'existe pas ;
-- on entre par `https://<domaine>/acces/<code>` (code = variable `ADMIN_ACCESS_CODE`). Cette adresse dépose sur le navigateur un cookie d'accès signé, valable 400 jours, puis ouvre la page de connexion ;
-- l'adresse est rappelée dans **Mon compte**, pour l'administrateur connecté. Mettez-la en favori et ne la partagez pas ;
-- pour la changer (départ d'un membre du bureau, fuite) : modifiez `ADMIN_ACCESS_CODE` sur Vercel et redéployez. L'ancienne adresse et les cookies d'accès existants cessent aussitôt de fonctionner ;
-- les liens vers l'administration contenus dans les e-mails d'alerte ne s'ouvrent que depuis un navigateur déjà passé par l'adresse d'accès.
-
-Cette adresse évite d'exposer la page de connexion aux robots et aux curieux ; la protection du compte reste assurée par le mot de passe, la double authentification et le verrouillage.
+**Adresse de l'administration** : `https://<domaine>/timonerie` (en local : <http://localhost:3001/timonerie>). L'adresse `/admin`, que les robots testent en premier, n'existe pas (404). Sans session, toute page de la timonerie renvoie vers la page de connexion.
 
 - Un seul compte, qui a tous les droits. Après **5 échecs**, le compte est verrouillé 15 minutes (1 heure à partir de 10 échecs).
 - **Mon compte** : changer le mot de passe (les autres sessions sont alors fermées), activer la **double authentification** et voir ou révoquer les sessions ouvertes.
@@ -311,7 +302,6 @@ Toutes les écritures (créations, modifications, suppressions, connexions, expo
 
 ### Dépannage
 
-- **Adresse d'accès perdue** : c'est la valeur de `ADMIN_ACCESS_CODE`, dans les variables d'environnement Vercel (ou le fichier `.env` en local). L'adresse est `https://<domaine>/acces/<cette valeur>`.
 - **Compte verrouillé** : attendez 15 minutes, ou lancez `npm run admin:reset` depuis un poste qui a accès à la base.
 - **Mot de passe oublié** : `npm run admin:reset -- --generate`.
 - **Application d'authentification perdue** : utilisez un code de secours, ou `npm run admin:reset -- --disable-2fa`.
@@ -323,7 +313,7 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
 **Mise en route**
 
 - [ ] Compléter **Réglages → Mentions légales** : RNA, siège, présidence (responsable de traitement), hébergeur.
-- [ ] Relire le **Registre des traitements** (`/admin/registre`) en bureau, le compléter si l'association tient d'autres fichiers (papier, tableur, groupe de discussion), l'exporter en PDF et le dater.
+- [ ] Relire le **Registre des traitements** (`/timonerie/registre`) en bureau, le compléter si l'association tient d'autres fichiers (papier, tableur, groupe de discussion), l'exporter en PDF et le dater.
 - [ ] Vérifier les contrats de sous-traitance (DPA) :
   - Vercel (hébergement, États-Unis, Data Privacy Framework) ;
   - Neon (base de données, région Francfort) ;
@@ -374,7 +364,7 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
   - règles de publication photo, masquage du journal ;
   - validation des formulaires.
 - **Parcours critiques** (`npm run test:e2e`, 21 tests Playwright), qui couvrent :
-  - adresse d'accès secrète (administration et API de connexion introuvables sans elle), connexion ;
+  - administration sous `/timonerie` (`/admin` introuvable), connexion ;
   - adhérent de bout en bout (adhésion, renouvellement, carte, anonymisation) ;
   - suppression de fiches depuis la liste, une par une et par sélection ;
   - modification d'une fiche (suspension, numéro de carte en doublon) et correction d'une adhésion ;
@@ -398,19 +388,19 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
 
 ## 10. Choix techniques et écarts avec le cahier des charges
 
-| Sujet                        | Choix                                                                                                               | Pourquoi                                                                                                                                                                                                                     |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Next.js                      | **16** (au lieu de 15)                                                                                              | Version courante au démarrage du projet ; `proxy.ts` remplace `middleware.ts`, `updateTag` pour l'invalidation immédiate.                                                                                                    |
-| Authentification             | **Better Auth** (au lieu d'Auth.js v5)                                                                              | Auth.js v5 n'est jamais sorti de bêta et ne gère pas « identifiant + mot de passe » avec sessions en base. Better Auth le fait nativement, avec 2FA TOTP et codes de secours ; argon2id et verrouillage branchés par-dessus. |
-| Classement et résultats      | **Supprimés**                                                                                                       | Gérés dans les logiciels officiels des éditeurs (décision du 26/09/2026).                                                                                                                                                    |
-| Formule Découverte           | Carte d'information seule                                                                                           | Ne crée jamais d'adhésion ; renvoie vers les soirées découverte.                                                                                                                                                             |
-| Reçu fiscal                  | Retiré de la formule Soutien                                                                                        | Décision de l'association.                                                                                                                                                                                                   |
-| Scans parentaux              | Stockés en base (`PrivateFile`)                                                                                     | Privés par construction, sauvegardés avec la base, supprimés avec la fiche. Aucune URL publique possible.                                                                                                                    |
-| Journal d'audit              | Valeurs personnelles masquées, purge à 12 mois                                                                      | Sinon une fiche anonymisée resterait lisible dans un journal immuable.                                                                                                                                                       |
-| Contraste                    | `--ivory-3` passé de 48 % à 56 % d'opacité                                                                          | Les petits textes secondaires atteignent 5,6:1 (AA) au lieu de 4,4:1.                                                                                                                                                        |
-| Intro du hero                | Chorégraphie reproduite en CSS                                                                                      | Mêmes durées et courbes que la timeline GSAP d'origine, sans attendre le JavaScript (meilleur LCP). GSAP garde les animations au défilement.                                                                                 |
-| Scène 3D (React Three Fiber) | Chargée à la première interaction (ou après 4 s sur ordinateur), jamais en rendu logiciel                           | three.js pèse environ 250 Ko compressés ; le charger d'emblée faisait tomber la note mobile sous 40.                                                                                                                         |
-| Adresse de l'administration  | Adresse d'accès secrète `/acces/<code>` ; `/admin` et l'API de connexion répondent 404 sans le cookie d'accès signé | La page de connexion et l'API ne sont pas exposées aux robots ni aux tentatives de mot de passe.                                                                                                                             |
-| Limitation de débit          | En base (IP hachée)                                                                                                 | Fonctionne en serverless sans service supplémentaire.                                                                                                                                                                        |
+| Sujet                        | Choix                                                                                     | Pourquoi                                                                                                                                                                                                                     |
+| ---------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Next.js                      | **16** (au lieu de 15)                                                                    | Version courante au démarrage du projet ; `proxy.ts` remplace `middleware.ts`, `updateTag` pour l'invalidation immédiate.                                                                                                    |
+| Authentification             | **Better Auth** (au lieu d'Auth.js v5)                                                    | Auth.js v5 n'est jamais sorti de bêta et ne gère pas « identifiant + mot de passe » avec sessions en base. Better Auth le fait nativement, avec 2FA TOTP et codes de secours ; argon2id et verrouillage branchés par-dessus. |
+| Classement et résultats      | **Supprimés**                                                                             | Gérés dans les logiciels officiels des éditeurs (décision du 26/09/2026).                                                                                                                                                    |
+| Formule Découverte           | Carte d'information seule                                                                 | Ne crée jamais d'adhésion ; renvoie vers les soirées découverte.                                                                                                                                                             |
+| Reçu fiscal                  | Retiré de la formule Soutien                                                              | Décision de l'association.                                                                                                                                                                                                   |
+| Scans parentaux              | Stockés en base (`PrivateFile`)                                                           | Privés par construction, sauvegardés avec la base, supprimés avec la fiche. Aucune URL publique possible.                                                                                                                    |
+| Journal d'audit              | Valeurs personnelles masquées, purge à 12 mois                                            | Sinon une fiche anonymisée resterait lisible dans un journal immuable.                                                                                                                                                       |
+| Contraste                    | `--ivory-3` passé de 48 % à 56 % d'opacité                                                | Les petits textes secondaires atteignent 5,6:1 (AA) au lieu de 4,4:1.                                                                                                                                                        |
+| Intro du hero                | Chorégraphie reproduite en CSS                                                            | Mêmes durées et courbes que la timeline GSAP d'origine, sans attendre le JavaScript (meilleur LCP). GSAP garde les animations au défilement.                                                                                 |
+| Scène 3D (React Three Fiber) | Chargée à la première interaction (ou après 4 s sur ordinateur), jamais en rendu logiciel | three.js pèse environ 250 Ko compressés ; le charger d'emblée faisait tomber la note mobile sous 40.                                                                                                                         |
+| Adresse de l'administration  | `/timonerie` au lieu de `/admin` (qui répond 404)                                         | Un mot moins attendu pour ne pas exposer la page de connexion aux robots qui testent `/admin`, identique en local et en production.                                                                                          |
+| Limitation de débit          | En base (IP hachée)                                                                       | Fonctionne en serverless sans service supplémentaire.                                                                                                                                                                        |
 
 L'arborescence et le détail des décisions sont dans [docs/architecture.md](docs/architecture.md) ; le site vitrine d'origine est conservé dans [docs/reference/site-vitrine.html](docs/reference/site-vitrine.html).

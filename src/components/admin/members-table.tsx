@@ -114,7 +114,7 @@ export function MembersTable({ rows, head }: { rows: MemberRow[]; head: ReactNod
                   </td>
                   <td>
                     <Link
-                      href={`/admin/adherents/${m.id}`}
+                      href={`/timonerie/adherents/${m.id}`}
                       className="font-semibold hover:text-rose"
                     >
                       {m.lastName}
@@ -138,7 +138,7 @@ export function MembersTable({ rows, head }: { rows: MemberRow[]; head: ReactNod
                   </td>
                   <td className="text-right whitespace-nowrap">
                     <Link
-                      href={`/admin/adherents/${m.id}?modifier=1`}
+                      href={`/timonerie/adherents/${m.id}?modifier=1`}
                       className={buttonClass("subtle", "icon")}
                       title="Modifier"
                       aria-label={`Modifier la fiche de ${name}`}
