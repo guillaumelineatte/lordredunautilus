@@ -43,7 +43,7 @@ export default async function EventsPage({
         description="Brouillon → publié : seuls les événements publiés apparaissent sur le site. Les événements passés passent en « terminé » chaque nuit."
         actions={
           <LinkButton href="/timonerie/evenements/nouveau" variant="primary" data-shortcut="new">
-            Nouvel événement <kbd className="text-[0.65rem] opacity-70">n</kbd>
+            Nouvel événement
           </LinkButton>
         }
       />
