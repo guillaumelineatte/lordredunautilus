@@ -26,7 +26,7 @@ export default async function MembersPage({
   const params = parseListParams(sp, {
     sorts: ["lastName", "firstName", "cardNumber", "status", "createdAt"],
     defaultSort: "lastName",
-    filters: ["status", "jeu", "mineur"],
+    filters: ["status", "jeu"],
   });
   const [{ total, rows }, games] = await Promise.all([listMembers(params), gameOptions()]);
   const today = todayParis();
@@ -66,11 +66,6 @@ export default async function MembersPage({
           label="Tous les jeux"
           options={games.map((g) => ({ value: g.slug, label: g.name }))}
         />
-        <FilterSelect
-          name="mineur"
-          label="Majeurs et mineurs"
-          options={[{ value: "oui", label: "Mineurs uniquement" }]}
-        />
       </div>
 
       {rows.length === 0 ? (
@@ -97,7 +92,6 @@ export default async function MembersPage({
               id: m.id,
               firstName: m.firstName,
               lastName: m.lastName,
-              isMinor: m.isMinor,
               games: m.gameIds.map((g) => g.game.name).join(", "),
               cardNumber: m.cardNumber,
               lastMembership: last

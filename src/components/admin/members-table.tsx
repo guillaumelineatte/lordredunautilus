@@ -14,7 +14,6 @@ export type MemberRow = {
   id: string;
   firstName: string;
   lastName: string;
-  isMinor: boolean;
   games: string;
   cardNumber: string | null;
   lastMembership: string | null;
@@ -119,11 +118,6 @@ export function MembersTable({ rows, head }: { rows: MemberRow[]; head: ReactNod
                     >
                       {m.lastName}
                     </Link>
-                    {m.isMinor ? (
-                      <Badge tone="rose" className="ml-2">
-                        mineur
-                      </Badge>
-                    ) : null}
                   </td>
                   <td>{m.firstName}</td>
                   <td className="text-ivory-2">{m.games || "—"}</td>

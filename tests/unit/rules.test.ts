@@ -33,7 +33,6 @@ describe("verrouillage après 5 échecs", () => {
 const member = (over: Partial<TaggedMember> = {}): TaggedMember => ({
   firstName: "Inès",
   lastName: "Martin",
-  isMinor: false,
   imageRightsGallery: true,
   imageRightsGallerySource: "VERBAL",
   anonymizedAt: null,
@@ -64,19 +63,11 @@ describe("règles de publication des photos", () => {
     });
     expect(r[0]).toMatch(/n'a pas autorisé/);
   });
-  it("mineur : l'autorisation orale ne suffit pas", () => {
+  it("membre identifié ayant autorisé la galerie : publiable", () => {
     const r = publicationBlockers({
       alt: "x",
       imageRightsChecked: true,
-      taggedMembers: [member({ isMinor: true })],
-    });
-    expect(r[0]).toMatch(/papier signé/);
-  });
-  it("mineur avec papier signé : publiable", () => {
-    const r = publicationBlockers({
-      alt: "x",
-      imageRightsChecked: true,
-      taggedMembers: [member({ isMinor: true, imageRightsGallerySource: "SIGNED_PAPER" })],
+      taggedMembers: [member()],
     });
     expect(r).toEqual([]);
   });

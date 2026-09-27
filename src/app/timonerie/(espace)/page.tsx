@@ -196,31 +196,6 @@ export default async function DashboardPage() {
           )}
         </Card>
 
-        <Card title="Mineurs : à vérifier">
-          {d.minorsToReview.length === 0 && d.missingParental.length === 0 ? (
-            <EmptyState>Toutes les fiches de mineurs sont à jour.</EmptyState>
-          ) : (
-            <ul className="grid gap-2 text-sm">
-              {d.missingParental.map((m) => (
-                <li key={`p-${m.id}`}>
-                  <Link href={`/timonerie/adherents/${m.id}`} className="hover:text-rose">
-                    {fullName(m)}
-                  </Link>{" "}
-                  <Badge tone="danger">autorisation parentale manquante</Badge>
-                </li>
-              ))}
-              {d.minorsToReview.map((m) => (
-                <li key={`r-${m.id}`}>
-                  <Link href={`/timonerie/adherents/${m.id}`} className="hover:text-rose">
-                    {fullName(m)}
-                  </Link>{" "}
-                  <Badge tone="warn">case « mineur » à revérifier</Badge>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
-
         <Card
           title="Dernières actions"
           className="lg:col-span-2"

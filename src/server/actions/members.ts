@@ -24,25 +24,20 @@ import { mergeMembers } from "../domain/merge";
 import { adminAction } from "../service/admin-action";
 import { fail } from "../service/errors";
 
-const MAX_SCAN_BYTES = 5 * 1024 * 1024;
-const SCAN_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
-
 const dayOrNull = (v: string | null) => (v ? dayToDbDate(v) : null);
 
 /**
  * Création ou modification d'une fiche.
  * - statut : suspendu si coché, sinon déduit des adhésions (actif / échu) ;
  * - numéro de carte unique, identifiants de jeu validés par la regex du jeu ;
- * - autorisation photo retirée (ou mineur sans papier signé) : photos dépubliées.
+ * - autorisation photo retirée : photos où le membre est identifié dépubliées.
  */
 export const saveMember = adminAction(
   { schema: memberInput, tags: [TAGS.stats, TAGS.photos] },
   async (input, { tx, audit }) => {
-    const now = new Date();
     const data = {
       firstName: input.firstName,
       lastName: input.lastName,
-      isMinor: input.isMinor,
       cardNumber: input.cardNumber,
       notes: input.notes,
       imageRightsGallery: input.imageRightsGallery,
@@ -55,12 +50,6 @@ export const saveMember = adminAction(
       imageRightsSocialAt: input.imageRightsSocial
         ? (dayOrNull(input.imageRightsSocialAt) ?? dayToDbDate(todayParis()))
         : null,
-      parentalDocumentReceived: input.isMinor ? input.parentalDocumentReceived : false,
-      parentalDocumentReceivedAt:
-        input.isMinor && input.parentalDocumentReceived
-          ? (dayOrNull(input.parentalDocumentReceivedAt) ?? dayToDbDate(todayParis()))
-          : null,
-      ...(input.minorReviewed ? { minorReviewedAt: now } : {}),
     };
 
     await assertCardNumberFree(tx, input.cardNumber, input.id ?? undefined);
@@ -81,7 +70,6 @@ export const saveMember = adminAction(
         ...data,
         // Pas encore d'adhésion : « échu » jusqu'à l'enregistrement de la première.
         status: input.suspended ? "SUSPENDED" : "EXPIRED",
-        minorReviewedAt: input.isMinor ? now : null,
       },
     });
     await audit.created("Member", created);
@@ -222,72 +210,6 @@ export const deleteMembership = adminAction(
     await tx.membership.delete({ where: { id } });
     await audit.deleted("Membership", before);
     await recomputeMemberStatus(tx, before.memberId, audit);
-    return null;
-  },
-);
-
-export const markMinorReviewed = adminAction(
-  { schema: z.object({ id: z.string(), isMinor: z.boolean() }) },
-  async ({ id, isMinor }, { tx, audit }) => {
-    const before = await tx.member.findUnique({ where: { id } });
-    if (!before) fail("Fiche introuvable.");
-    const after = await tx.member.update({
-      where: { id },
-      data: { isMinor, minorReviewedAt: new Date() },
-    });
-    await audit.updated("Member", before, after);
-    return null;
-  },
-);
-
-const uploadScanInput = z.object({
-  memberId: z.string().min(1),
-  file: z
-    .instanceof(File, { message: "Choisissez un fichier." })
-    .refine((f) => f.size > 0, "Fichier vide.")
-    .refine((f) => f.size <= MAX_SCAN_BYTES, "5 Mo maximum.")
-    .refine((f) => SCAN_TYPES.includes(f.type), "Format accepté : PDF, JPEG, PNG ou WebP."),
-});
-
-/** Scan de l'autorisation parentale, stocké en base (jamais d'URL publique). */
-export const uploadParentalDocument = adminAction(
-  { schema: uploadScanInput },
-  async ({ memberId, file }, { tx, audit }) => {
-    const before = await tx.member.findUnique({ where: { id: memberId } });
-    if (!before || before.anonymizedAt) fail("Fiche introuvable.");
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const stored = await tx.privateFile.create({
-      data: {
-        filename: file.name.slice(0, 200),
-        mimeType: file.type,
-        size: file.size,
-        data: bytes,
-      },
-    });
-    const after = await tx.member.update({
-      where: { id: memberId },
-      data: {
-        parentalDocumentFileId: stored.id,
-        parentalDocumentReceived: true,
-        parentalDocumentReceivedAt: before.parentalDocumentReceivedAt ?? dayToDbDate(todayParis()),
-      },
-    });
-    if (before.parentalDocumentFileId) {
-      await tx.privateFile.delete({ where: { id: before.parentalDocumentFileId } });
-    }
-    await audit.updated("Member", before, after);
-    return null;
-  },
-);
-
-export const removeParentalDocument = adminAction(
-  { schema: idInput },
-  async ({ id }, { tx, audit }) => {
-    const before = await tx.member.findUnique({ where: { id } });
-    if (!before?.parentalDocumentFileId) fail("Aucun document joint.");
-    const after = await tx.member.update({ where: { id }, data: { parentalDocumentFileId: null } });
-    await tx.privateFile.delete({ where: { id: before.parentalDocumentFileId } });
-    await audit.updated("Member", before, after);
     return null;
   },
 );

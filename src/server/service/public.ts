@@ -60,7 +60,6 @@ export async function registerPublic(
           lastName: input.lastName,
           playerId: input.playerId,
           email: input.email,
-          isMinor: input.isMinor,
           source: "PUBLIC",
         }),
       { maxWait: 10_000, timeout: 20_000 },
@@ -84,7 +83,6 @@ export async function registerPublic(
             when,
             where,
             status,
-            isMinor: registration.isMinor,
             cancelUrl: siteUrl(`/inscription/annuler/${cancelToken}`),
           }),
         );

@@ -176,9 +176,6 @@ export async function deleteMember(
   }
   // Identifiants de jeu supprimés en cascade, inscriptions détachées, étiquettes photo retirées.
   await tx.member.delete({ where: { id: memberId } });
-  if (member.parentalDocumentFileId) {
-    await tx.privateFile.delete({ where: { id: member.parentalDocumentFileId } });
-  }
   const { _count, taggedPhotos: _photos, ...row } = member;
   await audit.deleted("Member", row);
   return "deleted";

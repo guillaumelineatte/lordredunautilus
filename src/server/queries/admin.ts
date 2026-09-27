@@ -30,7 +30,6 @@ export async function dashboardData() {
     lastMessages,
     upcoming,
     lastAudit,
-    minors,
     lastCron,
   ] = await Promise.all([
     db.membership.findMany({
@@ -78,23 +77,8 @@ export async function dashboardData() {
       take: 6,
     }),
     db.auditLog.findMany({ orderBy: { createdAt: "desc" }, take: 8 }),
-    db.member.findMany({
-      where: { ...ACTIVE_MEMBER, isMinor: true },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        minorReviewedAt: true,
-        parentalDocumentReceived: true,
-      },
-    }),
     db.cronRun.findFirst({ orderBy: { startedAt: "desc" } }),
   ]);
-
-  // Case « mineur » à revérifier en personne chaque saison (aucun âge n'est conservé).
-  const yearAgo = new Date(Date.now() - 365 * 86_400_000);
-  const minorsToReview = minors.filter((m) => !m.minorReviewedAt || m.minorReviewedAt < yearAgo);
-  const missingParental = minors.filter((m) => !m.parentalDocumentReceived);
 
   const cronLate = !lastCron || Date.now() - lastCron.startedAt.getTime() > 36 * 3600_000;
 
@@ -106,8 +90,6 @@ export async function dashboardData() {
     lastMessages,
     upcoming,
     lastAudit,
-    minorsToReview,
-    missingParental,
     lastCron,
     cronLate,
   };
@@ -122,7 +104,6 @@ export async function listMembers(p: ListParams) {
     deletedAt: trash ? { not: null } : null,
     ...(p.filters.status && !trash ? { status: p.filters.status as MemberStatus } : {}),
     ...(p.filters.jeu ? { gameIds: { some: { game: { slug: p.filters.jeu } } } } : {}),
-    ...(p.filters.mineur === "oui" ? { isMinor: true } : {}),
     ...(p.q
       ? {
           OR: [
@@ -180,9 +161,6 @@ export async function getMemberDetail(id: string) {
         orderBy: { createdAt: "desc" },
         take: 15,
       },
-      parentalDocumentFile: {
-        select: { id: true, filename: true, size: true, mimeType: true, createdAt: true },
-      },
       _count: { select: { taggedPhotos: true } },
     },
   });
@@ -224,7 +202,6 @@ export function memberOptions() {
       id: true,
       firstName: true,
       lastName: true,
-      isMinor: true,
       imageRightsGallery: true,
       imageRightsGallerySource: true,
       cardNumber: true,
@@ -326,7 +303,6 @@ export function listPhotos() {
           id: true,
           firstName: true,
           lastName: true,
-          isMinor: true,
           imageRightsGallery: true,
           imageRightsGallerySource: true,
           anonymizedAt: true,
@@ -474,7 +450,7 @@ export async function documentOptions() {
   const [members, events] = await Promise.all([
     db.member.findMany({
       where: ACTIVE_MEMBER,
-      select: { id: true, firstName: true, lastName: true, isMinor: true },
+      select: { id: true, firstName: true, lastName: true },
       orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
     }),
     db.event.findMany({
@@ -487,5 +463,5 @@ export async function documentOptions() {
       orderBy: { startsAt: "asc" },
     }),
   ]);
-  return { members, minors: members.filter((m) => m.isMinor), events };
+  return { members, events };
 }

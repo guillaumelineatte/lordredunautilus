@@ -8,7 +8,6 @@ import { env } from "./env";
  * Fichiers publics (photos de la galerie).
  * - Production : Vercel Blob (BLOB_READ_WRITE_TOKEN).
  * - Local : dossier storage/uploads, servi par la route /uploads/[...path].
- * Les fichiers sensibles (scans) ne passent jamais par ici : voir PrivateFile.
  */
 
 const LOCAL_ROOT = path.join(process.cwd(), "storage", "uploads");

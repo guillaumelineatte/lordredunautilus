@@ -185,7 +185,6 @@ On y trouve :
 - les adhésions qui expirent sous 30 jours, et celles échues depuis moins de 3 mois sans renouvellement ;
 - les inscriptions du jour et le remplissage des prochains événements ;
 - les messages non traités ;
-- les mineurs à vérifier : autorisation parentale manquante, case « mineur » à revoir ;
 - les dernières actions du journal.
 
 ### Adhérents
@@ -203,12 +202,12 @@ On y trouve :
 3. Cochez **Carte remise en main propre** quand vous la donnez, ou cliquez plus tard sur « Marquer la carte remise ».
 4. Imprimez la carte : bouton **Carte de membre (CR80)** ou **A6**.
 
-**Modifier une fiche** : bouton **Modifier** dans « Paramètres de l'adhérent », en haut de la fiche, ou icône crayon dans la liste. Tous les paramètres se modifient au même endroit : identité, case mineur, numéro de carte, suspension, notes, identifiants de jeu, autorisations photo et parentale. **Enregistrer les modifications** revient au récapitulatif ; **Annuler** abandonne les changements. Contrôles appliqués à l'enregistrement :
+**Modifier une fiche** : bouton **Modifier** dans « Paramètres de l'adhérent », en haut de la fiche, ou icône crayon dans la liste. Tous les paramètres se modifient au même endroit : identité, numéro de carte, suspension, notes, identifiants de jeu, autorisations photo. **Enregistrer les modifications** revient au récapitulatif ; **Annuler** abandonne les changements. Contrôles appliqués à l'enregistrement :
 
 - le **statut** actif ou échu est calculé d'après les adhésions ; seule la case « Adhérent suspendu » se règle à la main ;
 - le **numéro de carte** doit être unique : le message indique à qui il est déjà attribué ;
 - chaque **identifiant de jeu** doit respecter le format de son jeu et ne pas appartenir à une autre fiche ;
-- si une **autorisation photo** est retirée (ou si la fiche passe en mineur sans papier signé), les photos où la personne est identifiée sont retirées de la galerie, et un message le signale.
+- si une **autorisation photo** est retirée, les photos où la personne est identifiée sont retirées de la galerie, et un message le signale.
 
 **Corriger une adhésion** : icône crayon sur la ligne de l'adhésion. On peut modifier la formule, le début, la fin (avec un lien pour la recalculer d'après la formule), le montant, le mode de paiement et la référence. Les dates ne doivent pas chevaucher une autre adhésion du membre. Si la fin change, les alertes d'échéance repartent de zéro et le statut est recalculé. L'icône poubelle supprime une adhésion saisie par erreur.
 
@@ -218,16 +217,11 @@ On y trouve :
 
 **Retour à la liste** : la petite flèche « ← Adhérents », au-dessus du titre de chaque fiche (et « ← Événements » sur les pages d'événement).
 
-**Âge et mineurs** : le site ne conserve aucune date ni année de naissance. L'âge se vérifie en personne, auprès des parents, lors des soirées et des tournois ; seule la case « mineur » est cochée sur la fiche, et le tableau de bord rappelle de la revérifier chaque saison.
+**Mineurs** : tout se traite en personne, lors des soirées et des tournois. Le site ne conserve aucune information permettant de savoir qu'un adhérent est mineur : ni date ou année de naissance, ni case « mineur », ni suivi d'autorisation parentale. Pour un nouvel adhérent mineur :
 
-**Adhérent mineur** :
-
-1. Cochez « Mineur ».
-2. Imprimez l'**autorisation parentale pré-remplie** et faites-la signer.
-3. Cochez les cases miroir sur la fiche (autorisation reçue, galerie, réseaux, avec la source « papier signé »).
-4. Joignez le scan, facultatif. Il est stocké en base et n'est jamais accessible par une adresse publique.
-
-Ce sont ces cases qui autorisent ou bloquent la publication de photos. Chaque saison, confirmez la case « mineur » ; le tableau de bord signale les fiches à revoir.
+1. Imprimez l'**autorisation parentale** (bouton sur la fiche, ou page Documents) et faites-la signer sur place ; l'âge se vérifie auprès des parents.
+2. Conservez le papier signé avec les documents de l'association, hors du site.
+3. Reportez sur la fiche uniquement les autorisations photo (galerie, réseaux), avec la source « papier signé ».
 
 **Import CSV** : associez chaque colonne à un champ autorisé. Les colonnes e-mail, téléphone ou adresse ne peuvent pas être importées.
 
@@ -272,7 +266,7 @@ Dans les deux cas, les photos où la personne était identifiée repassent en br
    - soirée de rattachement ;
    - membres identifiables sur la photo ;
    - case **Droits à l'image vérifiés**.
-3. **Publier**. La publication reste bloquée tant que la case n'est pas cochée ou qu'un membre identifié n'a pas donné son accord. Pour un mineur, il faut un papier signé.
+3. **Publier**. La publication reste bloquée tant que la case n'est pas cochée ou qu'un membre identifié n'a pas donné son accord. Pour un mineur, vérifiez en personne l'autorisation parentale signée avant de cocher la case.
 
 Si un membre retire son accord, ses photos sont dépubliées automatiquement. Glissez les vignettes pour changer l'ordre.
 
@@ -296,7 +290,7 @@ Boîte de réception du formulaire de contact : **Répondre par e-mail** ouvre v
 
 ![Documents](docs/captures/admin-documents.jpg)
 
-Autorisation parentale (vierge ou pré-remplie), carte de membre, feuille d'émargement et registre des traitements, en PDF.
+Autorisation parentale (vierge ou pré-remplie au nom d'un adhérent, à faire signer sur place), carte de membre, feuille d'émargement et registre des traitements, en PDF.
 
 ### Journal d'activité
 
@@ -341,7 +335,7 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
 
 **Demande d'effacement (art. 17) ou d'opposition** :
 
-1. Fiche → icône poubelle (en haut à droite). L'effacement est immédiat : identité, identifiants, scan et inscriptions liées ; les photos où la personne était identifiée sont dépubliées. Si la personne a eu des adhésions, seuls les montants et dates restent, sans nom, pour la comptabilité.
+1. Fiche → icône poubelle (en haut à droite). L'effacement est immédiat : identité, identifiants et inscriptions liées ; les photos où la personne était identifiée sont dépubliées. Si la personne a eu des adhésions, seuls les montants et dates restent, sans nom, pour la comptabilité.
 2. Supprimer aussi, si besoin, la photo de la galerie et les éventuelles copies hors site (Discord, sauvegardes locales).
 3. Répondre à la personne dans un délai d'un mois.
 
@@ -351,18 +345,18 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
 
 **Durées de conservation**
 
-| Donnée                             | Durée                                                            |
-| ---------------------------------- | ---------------------------------------------------------------- |
-| Fiche adhérent                     | 3 ans après la dernière adhésion, puis anonymisation automatique |
-| Autorisations photo, scan parental | Jusqu'au retrait, au plus tard avec l'anonymisation              |
-| Inscriptions                       | E-mail : 7 jours après l'événement ; le reste : 12 mois          |
-| Messages de contact                | 6 mois après traitement (12 mois s'ils ne sont jamais traités)   |
-| Journal d'administration           | 12 mois                                                          |
-| Compteurs anti-abus (IP hachée)    | 24 heures                                                        |
+| Donnée                          | Durée                                                            |
+| ------------------------------- | ---------------------------------------------------------------- |
+| Fiche adhérent                  | 3 ans après la dernière adhésion, puis anonymisation automatique |
+| Autorisations photo             | Jusqu'au retrait, au plus tard avec l'anonymisation              |
+| Inscriptions                    | E-mail : 7 jours après l'événement ; le reste : 12 mois          |
+| Messages de contact             | 6 mois après traitement (12 mois s'ils ne sont jamais traités)   |
+| Journal d'administration        | 12 mois                                                          |
+| Compteurs anti-abus (IP hachée) | 24 heures                                                        |
 
 ## 9. Tests et qualité
 
-- **Unitaires** (`npm test`, 46 tests), qui couvrent :
+- **Unitaires** (`npm test`, 45 tests), qui couvrent :
   - dates en heure de Paris, fin et renouvellement d'adhésion ;
   - paliers d'alerte, verrouillage ;
   - règles de publication photo, masquage du journal ;
@@ -399,7 +393,7 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
 | Classement et résultats      | **Supprimés**                                                                             | Gérés dans les logiciels officiels des éditeurs (décision du 26/09/2026).                                                                                                                                                    |
 | Formule Découverte           | Carte d'information seule                                                                 | Ne crée jamais d'adhésion ; renvoie vers les soirées découverte.                                                                                                                                                             |
 | Reçu fiscal                  | Retiré de la formule Soutien                                                              | Décision de l'association.                                                                                                                                                                                                   |
-| Scans parentaux              | Stockés en base (`PrivateFile`)                                                           | Privés par construction, sauvegardés avec la base, supprimés avec la fiche. Aucune URL publique possible.                                                                                                                    |
+| Mineurs                      | Aucune information sur le site (ni âge, ni case « mineur », ni scan)                      | Tout se traite en personne ; les autorisations parentales restent sur papier.                                                                                                                                                |
 | Journal d'audit              | Valeurs personnelles masquées, purge à 12 mois                                            | Sinon une fiche anonymisée resterait lisible dans un journal immuable.                                                                                                                                                       |
 | Contraste                    | `--ivory-3` passé de 48 % à 56 % d'opacité                                                | Les petits textes secondaires atteignent 5,6:1 (AA) au lieu de 4,4:1.                                                                                                                                                        |
 | Intro du hero                | Chorégraphie reproduite en CSS                                                            | Mêmes durées et courbes que la timeline GSAP d'origine, sans attendre le JavaScript (meilleur LCP). GSAP garde les animations au défilement.                                                                                 |

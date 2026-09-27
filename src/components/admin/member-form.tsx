@@ -29,7 +29,6 @@ export type MemberFormValues = {
   id?: string;
   firstName: string;
   lastName: string;
-  isMinor: boolean;
   cardNumber: string | null;
   status: MemberStatus;
   notes: string | null;
@@ -39,8 +38,6 @@ export type MemberFormValues = {
   imageRightsSocial: boolean;
   imageRightsSocialSource: ConsentSource | null;
   imageRightsSocialAt: string | null;
-  parentalDocumentReceived: boolean;
-  parentalDocumentReceivedAt: string | null;
   gameIds: { gameId: string; value: string }[];
 };
 
@@ -63,7 +60,6 @@ export function MemberForm({
 }) {
   const { notify } = useToast();
   const editing = Boolean(initial?.id);
-  const [isMinor, setIsMinor] = useState(initial?.isMinor ?? false);
   const [gallery, setGallery] = useState(initial?.imageRightsGallery ?? false);
   const [social, setSocial] = useState(initial?.imageRightsSocial ?? false);
   const [gameIds, setGameIds] = useState(initial?.gameIds ?? []);
@@ -107,21 +103,6 @@ export function MemberForm({
           defaultValue={initial?.cardNumber ?? ""}
           placeholder="NAU-2026-001"
         />
-        <div className="grid gap-2">
-          <CheckboxField
-            label="Mineur"
-            name="isMinor"
-            checked={isMinor}
-            onChange={(e) => setIsMinor(e.target.checked)}
-            hint="Case saisie à la main, à revoir chaque année."
-          />
-          {initial?.id && initial.isMinor ? (
-            <CheckboxField
-              label="J'ai vérifié la case « mineur » pour cette saison"
-              name="minorReviewed"
-            />
-          ) : null}
-        </div>
         <CheckboxField
           label="Adhérent suspendu"
           name="suspended"
@@ -234,11 +215,6 @@ export function MemberForm({
               />
             </div>
           ) : null}
-          {gallery && isMinor ? (
-            <p className="text-xs text-warn">
-              Pour un mineur, seule une autorisation « papier signé » permet de publier une photo.
-            </p>
-          ) : null}
         </div>
         <div className="grid gap-3">
           <CheckboxField
@@ -266,27 +242,6 @@ export function MemberForm({
           ) : null}
         </div>
       </fieldset>
-
-      {isMinor ? (
-        <fieldset className="card grid gap-4 p-5 md:grid-cols-2">
-          <legend className="kicker px-1">Autorisation parentale</legend>
-          <CheckboxField
-            label="Autorisation parentale signée reçue (ligne « adhésion » cochée)"
-            name="parentalDocumentReceived"
-            defaultChecked={initial?.parentalDocumentReceived}
-          />
-          <TextField
-            label="Reçue le"
-            name="parentalDocumentReceivedAt"
-            type="date"
-            defaultValue={initial?.parentalDocumentReceivedAt ?? ""}
-          />
-          <p className="text-xs text-ivory-3 md:col-span-2">
-            Générez le formulaire pré-rempli depuis la fiche, faites-le signer, puis cochez ici les
-            cases miroir et joignez le scan.
-          </p>
-        </fieldset>
-      ) : null}
 
       <div className="flex justify-end gap-2">
         {onCancel ? (

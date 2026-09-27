@@ -131,14 +131,12 @@ model Game {
 // ─────────────────────────────────────────────────────────────
 
 model Member {
-  id              String       @id @default(cuid())
-  firstName       String       @db.VarChar(80)
-  lastName        String       @db.VarChar(80)
-  isMinor         Boolean      @default(false) // saisi à la main
-  minorReviewedAt DateTime? // dernière révision de la case « mineur » (rappel annuel)
-  cardNumber      String?      @unique
-  status          MemberStatus @default(ACTIVE)
-  notes           String?      @db.VarChar(500) // notes internes courtes
+  id         String       @id @default(cuid())
+  firstName  String       @db.VarChar(80)
+  lastName   String       @db.VarChar(80)
+  cardNumber String?      @unique
+  status     MemberStatus @default(ACTIVE)
+  notes      String?      @db.VarChar(500) // notes internes courtes
 
   // Droit à l'image : cases miroir de l'autorisation signée.
   // Ce sont elles qui pilotent les règles de publication de la galerie.
@@ -149,17 +147,10 @@ model Member {
   imageRightsSocialAt      DateTime?
   imageRightsSocialSource  ConsentSource?
 
-  // Mineurs : autorisation parentale reçue (ligne 1 cochée) et scan facultatif.
-  parentalDocumentReceived   Boolean   @default(false)
-  parentalDocumentReceivedAt DateTime?
-  parentalDocumentFileId     String?   @unique // scan stocké en base, jamais exposé publiquement
-
   anonymizedAt DateTime?
   deletedAt    DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
-
-  parentalDocumentFile PrivateFile? @relation(fields: [parentalDocumentFileId], references: [id], onDelete: SetNull)
 
   gameIds       MemberGameId[]
   memberships   Membership[]
@@ -280,7 +271,6 @@ model EventRegistration {
   dedupeKey       String // nom + prénom normalisés (minuscules, sans accents)
   playerId        String?            @db.VarChar(100)
   email           String?            @db.VarChar(254) // facultatif, effacé 7 jours après l'événement
-  isMinor         Boolean            @default(false)
   status          RegistrationStatus
   source          RegistrationSource
   cancelTokenHash String?            @unique // SHA-256 du jeton envoyé par e-mail
@@ -318,7 +308,7 @@ model Photo {
   isPublished        Boolean   @default(false)
   publishedAt        DateTime?
   // Publication refusée tant que cette case n'est pas cochée ET que chaque
-  // membre identifié n'a pas imageRightsGallery (source SIGNED_PAPER s'il est mineur).
+  // membre identifié n'a pas imageRightsGallery.
   imageRightsChecked Boolean   @default(false)
   deletedAt          DateTime?
   createdAt          DateTime  @default(now())
@@ -499,20 +489,6 @@ model RateLimitHit {
   count       Int      @default(1)
 
   @@id([key, windowStart])
-}
-
-// Fichiers sensibles (scans d'autorisation parentale) : stockés en base pour
-// rester privés par construction, sauvegardés avec elle et supprimés avec la fiche.
-model PrivateFile {
-  id        String   @id @default(cuid())
-  filename  String
-  mimeType  String
-  size      Int
-  data      Bytes
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  member Member?
 }
 
 // Trace de chaque passage du cron (affichée sur le tableau de bord).

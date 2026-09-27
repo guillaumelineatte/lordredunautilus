@@ -179,7 +179,6 @@ export const addRegistration = adminAction(
       lastName: input.lastName,
       playerId: input.playerId,
       email: null,
-      isMinor: input.isMinor,
       memberId: input.memberId,
       source: "ADMIN",
     });
@@ -243,7 +242,6 @@ export const promoteRegistration = adminAction(
             when,
             where,
             status: "PROMOTED",
-            isMinor: before.isMinor,
           }),
         ),
       );

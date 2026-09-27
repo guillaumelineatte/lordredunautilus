@@ -35,11 +35,12 @@ export default async function PrivacyPage() {
           <p>
             Pour un adhérent, l&apos;association conserve uniquement : nom, prénom, identifiant(s)
             de joueur par jeu, périodes d&apos;adhésion (début, fin, formule, renouvellement),
-            numéro de carte physique, une case « mineur » et les autorisations relatives aux photos.
-            Aucune date ni année de naissance : l&apos;âge des mineurs est vérifié en personne,
-            auprès des parents. <strong>Ni e-mail, ni téléphone, ni adresse.</strong> Aucun paiement
-            n&apos;est traité sur le site : l&apos;adhésion se règle par PayPal, et seule la
-            référence de la transaction peut être notée.
+            numéro de carte physique et les autorisations relatives aux photos. Le site ne conserve
+            aucune information permettant de savoir qu&apos;un adhérent est mineur : ni date ni
+            année de naissance, ni case « mineur ».{" "}
+            <strong>Ni e-mail, ni téléphone, ni adresse.</strong> Aucun paiement n&apos;est traité
+            sur le site : l&apos;adhésion se règle par PayPal, et seule la référence de la
+            transaction peut être notée.
           </p>
 
           <h3>Finalités, bases légales et durées</h3>
@@ -76,11 +77,12 @@ export default async function PrivacyPage() {
 
           <h3>Mineurs</h3>
           <p>
-            L&apos;adhésion d&apos;un mineur nécessite une autorisation parentale signée, qui
-            distingue trois accords : l&apos;adhésion elle-même, la publication de photos dans la
-            galerie, et leur diffusion sur les réseaux. Une photo sur laquelle un mineur est
-            identifiable n&apos;est publiée qu&apos;avec l&apos;autorisation écrite de son
-            responsable légal.
+            Tout ce qui concerne les mineurs se traite en personne, lors des soirées et des tournois
+            : l&apos;âge est vérifié auprès des parents, et l&apos;autorisation parentale est signée
+            sur papier. Elle distingue trois accords : l&apos;adhésion elle-même, la publication de
+            photos dans la galerie, et leur diffusion sur les réseaux. Une photo sur laquelle un
+            mineur est identifiable n&apos;est publiée qu&apos;avec l&apos;autorisation écrite de
+            son responsable légal.
           </p>
 
           <h3>Destinataires</h3>

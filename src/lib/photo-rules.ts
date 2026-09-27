@@ -3,7 +3,6 @@ import type { ConsentSource } from "@/generated/prisma/enums";
 export type TaggedMember = {
   firstName: string;
   lastName: string;
-  isMinor: boolean;
   imageRightsGallery: boolean;
   imageRightsGallerySource: ConsentSource | null;
   anonymizedAt: Date | string | null;
@@ -18,8 +17,7 @@ export type PublishablePhoto = {
 /**
  * Raisons qui bloquent la publication d'une photo (tableau vide = publiable).
  * - droits à l'image vérifiés (case obligatoire) ;
- * - chaque membre identifié a autorisé la galerie ;
- * - un mineur identifié doit avoir une autorisation parentale papier signée.
+ * - chaque membre identifié a autorisé la galerie.
  */
 export function publicationBlockers(photo: PublishablePhoto): string[] {
   const reasons: string[] = [];
@@ -33,10 +31,6 @@ export function publicationBlockers(photo: PublishablePhoto): string[] {
     }
     if (!m.imageRightsGallery) {
       reasons.push(`${name} n'a pas autorisé la publication dans la galerie.`);
-    } else if (m.isMinor && m.imageRightsGallerySource !== "SIGNED_PAPER") {
-      reasons.push(
-        `${name} est mineur : l'autorisation doit venir d'un papier signé par un responsable légal.`,
-      );
     }
   }
   return reasons;

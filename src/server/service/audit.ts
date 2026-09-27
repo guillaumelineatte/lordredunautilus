@@ -16,7 +16,7 @@ export const MASK = "[masqué]";
  * une fiche anonymisée resterait lisible dans le journal immuable.
  */
 export const PERSONAL_FIELDS: Record<string, readonly string[]> = {
-  Member: ["firstName", "lastName", "cardNumber", "notes", "parentalDocumentFileId"],
+  Member: ["firstName", "lastName", "cardNumber", "notes"],
   MemberGameId: ["value"],
   Membership: ["transactionRef"],
   EventRegistration: ["firstName", "lastName", "dedupeKey", "playerId", "email", "cancelTokenHash"],
