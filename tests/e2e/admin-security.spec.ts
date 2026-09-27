@@ -17,8 +17,9 @@ test("les routes admin refusent une requête sans session", async ({ playwright 
     baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3001",
     storageState: { cookies: [], origins: [] },
   });
-  expect((await anonymous.get("/api/admin/export/adherents")).status()).toBe(401);
-  expect((await anonymous.get("/api/admin/pdf/registre")).status()).toBe(401);
+  // Sans cookie d'accès : 404 (le proxy ne laisse même pas deviner que la route existe)
+  expect((await anonymous.get("/api/admin/export/adherents")).status()).toBe(404);
+  expect((await anonymous.get("/api/admin/pdf/registre")).status()).toBe(404);
   await anonymous.dispose();
 });
 

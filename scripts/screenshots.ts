@@ -14,7 +14,15 @@ const out = "docs/captures";
 async function shot(page: Page, name: string, path: string, full = false) {
   await page.goto(`${base}${path}`, { waitUntil: "networkidle" });
   await page.waitForTimeout(800);
-  await page.screenshot({ path: `${out}/${name}.jpg`, type: "jpeg", quality: 78, fullPage: full });
+  // Les blocs <code> (adresse d'accès secrète…) sont masqués : jamais de secret dans les images.
+  await page.screenshot({
+    path: `${out}/${name}.jpg`,
+    type: "jpeg",
+    quality: 78,
+    fullPage: full,
+    mask: [page.locator("code")],
+    maskColor: "#243D5A",
+  });
   console.log(`✔ ${name}`);
 }
 
@@ -32,7 +40,8 @@ async function main() {
   await shot(page, "site-agenda", "/evenements");
   await shot(page, "site-adherer", "/adherer", true);
 
-  await page.goto(`${base}/admin/connexion`);
+  await page.goto(`${base}/acces/${process.env.ADMIN_ACCESS_CODE ?? ""}`);
+  await page.waitForURL(`${base}/admin/connexion`);
   await page.screenshot({ path: `${out}/admin-connexion.jpg`, type: "jpeg", quality: 78 });
   await page.getByLabel("Identifiant (e-mail)").fill(process.env.ADMIN_EMAIL ?? "");
   await page.getByLabel("Mot de passe").fill(process.env.ADMIN_INITIAL_PASSWORD ?? "");

@@ -2,9 +2,26 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { run } from "./helpers";
 
-test("l'administration redirige vers la connexion", async ({ page }) => {
-  await page.goto("/admin/adherents");
-  await expect(page).toHaveURL(/\/admin\/connexion/);
+test("sans l'adresse d'accès, l'administration et l'API de connexion sont introuvables", async ({
+  page,
+  request,
+}) => {
+  for (const path of ["/admin", "/admin/connexion", "/admin/adherents", "/acces/mauvais-code"]) {
+    const response = await page.goto(path);
+    expect(response?.status(), path).toBe(404);
+    await expect(page.getByText("Perdu dans les abysses.")).toBeVisible();
+  }
+  const api = await request.post("/api/auth/sign-in/email", {
+    data: { email: process.env.ADMIN_EMAIL, password: process.env.ADMIN_INITIAL_PASSWORD },
+  });
+  expect(api.status()).toBe(404);
+  const robots = await request.get("/robots.txt");
+  expect(await robots.text()).not.toContain("/admin");
+});
+
+test("l'adresse d'accès ouvre la connexion ; mauvais mot de passe refusé", async ({ page }) => {
+  await page.goto(`/acces/${process.env.ADMIN_ACCESS_CODE}`);
+  await expect(page).toHaveURL(/\/admin\/connexion$/);
   await page
     .getByLabel("Identifiant (e-mail)")
     .fill(process.env.ADMIN_EMAIL ?? "admin@ordredunautilus.fr");
