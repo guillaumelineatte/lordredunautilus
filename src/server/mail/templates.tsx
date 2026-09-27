@@ -127,7 +127,6 @@ export type RegistrationEmailProps = {
   where: string;
   status: "REGISTERED" | "WAITLISTED" | "PROMOTED" | "CANCELLED_BY_EVENT";
   cancelUrl?: string;
-  isMinor?: boolean;
 };
 
 /** E-mail au participant (seulement s'il a laissé une adresse, effacée ensuite). */
@@ -138,7 +137,6 @@ export function RegistrationEmail({
   where,
   status,
   cancelUrl,
-  isMinor,
 }: RegistrationEmailProps) {
   const title =
     status === "WAITLISTED"
@@ -169,7 +167,7 @@ export function RegistrationEmail({
           </Text>
         </Section>
       ) : null}
-      {isMinor ? (
+      {status !== "CANCELLED_BY_EVENT" ? (
         <Text style={{ fontSize: 14, lineHeight: "20px" }}>
           Rappel : les moins de 16 ans doivent être accompagnés d&apos;un adulte pendant toute la
           soirée.

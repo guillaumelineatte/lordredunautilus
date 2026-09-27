@@ -21,7 +21,6 @@ type Tagged = {
   id: string;
   firstName: string;
   lastName: string;
-  isMinor: boolean;
   imageRightsGallery: boolean;
   imageRightsGallerySource: ConsentSource | null;
   anonymizedAt: string | null;
@@ -163,7 +162,6 @@ function PhotoEditor({
         : {
             firstName: "?",
             lastName: "",
-            isMinor: false,
             imageRightsGallery: false,
             imageRightsGallerySource: null,
             anonymizedAt: null,
@@ -219,7 +217,6 @@ function PhotoEditor({
                   className="inline-flex items-center gap-1 rounded-full border border-line-strong px-2 py-0.5 text-xs"
                 >
                   {m ? `${m.firstName} ${m.lastName}` : "Ancien membre"}
-                  {m?.isMinor ? " (mineur)" : ""}
                   <button
                     type="button"
                     aria-label="Retirer"
@@ -244,7 +241,6 @@ function PhotoEditor({
               .map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.lastName} {m.firstName}
-                  {m.isMinor ? " — mineur" : ""}
                   {!m.imageRightsGallery ? " — galerie refusée" : ""}
                 </option>
               ))}
@@ -379,9 +375,6 @@ export function GalleryManager({
               <div className="grid gap-2 p-3">
                 <div className="flex flex-wrap items-center gap-1">
                   {p.isPublished ? <Badge tone="ok">publiée</Badge> : <Badge>brouillon</Badge>}
-                  {p.taggedMembers.some((m) => m.isMinor) ? (
-                    <Badge tone="rose">mineur identifié</Badge>
-                  ) : null}
                   {!p.imageRightsChecked ? <Badge tone="warn">droits à vérifier</Badge> : null}
                 </div>
                 <p className="line-clamp-1 text-xs text-ivory-3">

@@ -106,10 +106,9 @@ export default async function JoinPage() {
             </div>
             <div className="notice">
               <strong>Vos données.</strong> L&apos;association conserve uniquement : nom, prénom,
-              identifiant(s) de jeu, périodes d&apos;adhésion, numéro de carte, une case « mineur »
-              le cas échéant, et vos choix concernant les photos. Ni adresse, ni téléphone, ni
-              e-mail. Conservation : {RETENTION.memberYears} ans après votre dernière adhésion, puis
-              anonymisation.{" "}
+              identifiant(s) de jeu, périodes d&apos;adhésion, numéro de carte et vos choix
+              concernant les photos. Ni adresse, ni téléphone, ni e-mail. Conservation :{" "}
+              {RETENTION.memberYears} ans après votre dernière adhésion, puis anonymisation.{" "}
               <Link href="/confidentialite" style={{ textDecoration: "underline" }}>
                 En savoir plus
               </Link>

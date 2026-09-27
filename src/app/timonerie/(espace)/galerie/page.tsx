@@ -25,7 +25,7 @@ export default async function GalleryAdminPage({
       <PageHeader
         kicker="Galerie"
         title="Les soirs de tables pleines"
-        description="Une photo n'est publiable que si les droits à l'image ont été vérifiés ; un mineur identifié doit avoir une autorisation parentale papier signée pour la galerie."
+        description="Une photo n'est publiable que si les droits à l'image ont été vérifiés et que chaque membre identifié a autorisé la galerie (pour un mineur : autorisation parentale signée, vérifiée en personne)."
       />
       <GalleryManager
         key={eventId ?? "all"}
@@ -49,7 +49,6 @@ export default async function GalleryAdminPage({
           id: m.id,
           firstName: m.firstName,
           lastName: m.lastName,
-          isMinor: m.isMinor,
           imageRightsGallery: m.imageRightsGallery,
           imageRightsGallerySource: m.imageRightsGallerySource,
         }))}

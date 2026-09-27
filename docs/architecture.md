@@ -4,20 +4,20 @@ Schéma de données : [`prisma/schema.prisma`](../prisma/schema.prisma). Mode d'
 
 ## 1. Décisions
 
-| Sujet                 | Décision                                                                                                                                                                                 |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Classement, résultats | Supprimés : gérés dans les logiciels officiels des éditeurs.                                                                                                                             |
-| Page `/adherer`       | Marche à suivre PayPal uniquement : montant, adresse, note (nom, prénom, identifiants de jeu). Aucun paiement intégré.                                                                   |
-| Formule Découverte    | Carte d'information (`PlanKind.DISCOVERY`), jamais enregistrée comme adhésion.                                                                                                           |
-| Paiement              | Mode + montant + référence PayPal facultative (effacée à l'anonymisation).                                                                                                               |
-| Reçu fiscal           | Retiré.                                                                                                                                                                                  |
-| Stack                 | Next.js 16, Better Auth, Prisma 7 (adaptateur `pg`), Tailwind 4 pour l'admin, CSS d'origine pour le site.                                                                                |
-| Journal d'audit       | Immuable (trigger PostgreSQL), valeurs personnelles masquées, purge à 12 mois.                                                                                                           |
-| Conservation          | Inscriptions 12 mois ; messages non traités 12 mois ; fiche sans adhésion anonymisée 3 ans après création ; corbeille anonymisée à 30 jours.                                             |
-| Photos                | Identification possible pour tous les membres ; publication bloquée si un membre identifié n'a pas donné son accord (papier signé pour un mineur). Dépublication automatique au retrait. |
-| Verrouillage          | 5 échecs → 15 min ; 10 échecs → 1 h ; déblocage d'urgence en ligne de commande.                                                                                                          |
-| Accès à l'admin       | Administration sous `/timonerie` (dossier `src/app/timonerie`, API `src/app/api/timonerie`) ; `/admin` n'existe pas.                                                                     |
-| Scans parentaux       | En base (`PrivateFile`), servis uniquement par une route admin authentifiée et tracée.                                                                                                   |
+| Sujet                 | Décision                                                                                                                                                  |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Classement, résultats | Supprimés : gérés dans les logiciels officiels des éditeurs.                                                                                              |
+| Page `/adherer`       | Marche à suivre PayPal uniquement : montant, adresse, note (nom, prénom, identifiants de jeu). Aucun paiement intégré.                                    |
+| Formule Découverte    | Carte d'information (`PlanKind.DISCOVERY`), jamais enregistrée comme adhésion.                                                                            |
+| Paiement              | Mode + montant + référence PayPal facultative (effacée à l'anonymisation).                                                                                |
+| Reçu fiscal           | Retiré.                                                                                                                                                   |
+| Stack                 | Next.js 16, Better Auth, Prisma 7 (adaptateur `pg`), Tailwind 4 pour l'admin, CSS d'origine pour le site.                                                 |
+| Journal d'audit       | Immuable (trigger PostgreSQL), valeurs personnelles masquées, purge à 12 mois.                                                                            |
+| Conservation          | Inscriptions 12 mois ; messages non traités 12 mois ; fiche sans adhésion anonymisée 3 ans après création ; corbeille anonymisée à 30 jours.              |
+| Photos                | Identification possible pour tous les membres ; publication bloquée si un membre identifié n'a pas donné son accord Dépublication automatique au retrait. |
+| Verrouillage          | 5 échecs → 15 min ; 10 échecs → 1 h ; déblocage d'urgence en ligne de commande.                                                                           |
+| Accès à l'admin       | Administration sous `/timonerie` (dossier `src/app/timonerie`, API `src/app/api/timonerie`) ; `/admin` n'existe pas.                                      |
+| Mineurs               | Aucune information permettant de savoir qui est mineur (ni âge, ni case, ni scan) : tout se traite en personne, autorisations parentales sur papier.      |
 
 ## 2. Arborescence
 

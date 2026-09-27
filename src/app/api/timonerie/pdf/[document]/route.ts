@@ -95,7 +95,6 @@ async function build(document: string, params: URLSearchParams): Promise<Built |
       firstName: r.firstName,
       lastName: r.lastName,
       playerId: r.playerId,
-      isMinor: r.isMinor,
       status: r.status,
     });
     const registered = event.registrations.filter((r) => r.status !== "WAITLISTED").map(toRow);

@@ -4,11 +4,7 @@ import { useState } from "react";
 import { membershipEnd, renewalStart } from "@/lib/dates";
 import { formatAmount, formatDay } from "@/lib/format";
 import { paymentMethodLabel } from "@/lib/labels";
-import {
-  recordMembershipAction,
-  renewMembershipAction,
-  uploadParentalDocument,
-} from "@/server/actions/members";
+import { recordMembershipAction, renewMembershipAction } from "@/server/actions/members";
 import { ActionForm, CheckboxField, Field, SelectField, SubmitButton, TextField } from "./form";
 
 type Plan = {
@@ -185,32 +181,6 @@ export function RenewMembershipForm({
       </div>
       <div className="flex justify-end">
         <SubmitButton>Renouveler</SubmitButton>
-      </div>
-    </ActionForm>
-  );
-}
-
-export function ParentalUploadForm({ memberId }: { memberId: string }) {
-  return (
-    <ActionForm
-      action={uploadParentalDocument}
-      success="Scan joint à la fiche."
-      extra={{ memberId }}
-      resetOnSuccess
-      className="gap-3"
-    >
-      <Field label="Scan de l'autorisation signée (PDF ou image, 5 Mo max)" name="file">
-        {(p) => (
-          <input
-            {...p}
-            type="file"
-            accept="application/pdf,image/jpeg,image/png,image/webp"
-            className="field-input file:mr-3 file:rounded-full file:border-0 file:bg-surface-2 file:px-3 file:py-1 file:text-ivory"
-          />
-        )}
-      </Field>
-      <div>
-        <SubmitButton variant="ghost">Joindre le scan</SubmitButton>
       </div>
     </ActionForm>
   );

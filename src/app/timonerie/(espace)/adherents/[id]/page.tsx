@@ -6,11 +6,7 @@ import { ActionButton } from "@/components/admin/action-button";
 import { TrashIcon } from "@/components/admin/icons";
 import { MemberSheet } from "@/components/admin/member-sheet";
 import { MembershipsTable } from "@/components/admin/memberships-table";
-import {
-  ParentalUploadForm,
-  RecordMembershipForm,
-  RenewMembershipForm,
-} from "@/components/admin/membership-forms";
+import { RecordMembershipForm, RenewMembershipForm } from "@/components/admin/membership-forms";
 import {
   Badge,
   Card,
@@ -19,8 +15,8 @@ import {
   LinkButton,
   PageHeader,
 } from "@/components/admin/ui";
-import { addDays, dbDateToDay, parisDay, todayParis } from "@/lib/dates";
-import { formatBytes, formatDateTime, formatDay, formatMoney } from "@/lib/format";
+import { dbDateToDay, parisDay, todayParis } from "@/lib/dates";
+import { formatDateTime, formatDay, formatMoney } from "@/lib/format";
 import {
   auditActionLabel,
   consentSourceLabel,
@@ -28,13 +24,7 @@ import {
   registrationStatusLabel,
 } from "@/lib/labels";
 import { deleteConfirmation } from "@/lib/member-deletion";
-import {
-  deleteMemberAction,
-  markMinorReviewed,
-  removeParentalDocument,
-  restoreMember,
-  trashMember,
-} from "@/server/actions/members";
+import { deleteMemberAction, restoreMember, trashMember } from "@/server/actions/members";
 import { gameOptions, getMemberDetail, planOptions } from "@/server/queries/admin";
 
 export async function generateMetadata({
@@ -99,10 +89,6 @@ export default async function MemberPage({
   }
 
   const fullName = `${member.firstName} ${member.lastName}`;
-  // Aucun âge conservé : la case « mineur » se revérifie en personne chaque saison.
-  const minorNeedsReview =
-    member.isMinor &&
-    (!member.minorReviewedAt || parisDay(member.minorReviewedAt) < addDays(today, -365));
 
   return (
     <>
@@ -119,7 +105,6 @@ export default async function MemberPage({
             >
               {memberStatusLabel[member.status]}
             </Badge>
-            {member.isMinor ? <Badge tone="rose">mineur</Badge> : null}
             {member.deletedAt ? (
               <Badge tone="danger">dans la corbeille depuis le {formatDay(member.deletedAt)}</Badge>
             ) : null}
@@ -152,15 +137,13 @@ export default async function MemberPage({
             >
               Exporter ses données
             </LinkButton>
-            {member.isMinor ? (
-              <LinkButton
-                href={`/api/timonerie/pdf/autorisation-parentale?adherent=${member.id}`}
-                prefetch={false}
-                size="sm"
-              >
-                Autorisation parentale pré-remplie
-              </LinkButton>
-            ) : null}
+            <LinkButton
+              href={`/api/timonerie/pdf/autorisation-parentale?adherent=${member.id}`}
+              prefetch={false}
+              size="sm"
+            >
+              Autorisation parentale (PDF)
+            </LinkButton>
             <ActionButton
               action={deleteMemberAction}
               input={{ id: member.id }}
@@ -178,31 +161,6 @@ export default async function MemberPage({
         }
       />
 
-      {minorNeedsReview ? (
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-m border border-warn/40 bg-warn/10 px-4 py-3 text-sm text-warn">
-          <span>
-            La case « mineur » de {member.firstName} n&apos;a pas été vérifiée depuis plus d&apos;un
-            an : confirmez-la en personne lors de sa prochaine venue.
-          </span>
-          <span className="flex gap-2">
-            <ActionButton
-              action={markMinorReviewed}
-              input={{ id: member.id, isMinor: false }}
-              success="Fiche passée en majeur."
-            >
-              Passer en majeur
-            </ActionButton>
-            <ActionButton
-              action={markMinorReviewed}
-              input={{ id: member.id, isMinor: true }}
-              success="Case confirmée pour cette saison."
-            >
-              Toujours mineur
-            </ActionButton>
-          </span>
-        </div>
-      ) : null}
-
       <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
         <div className="grid content-start gap-6">
           <MemberSheet
@@ -212,7 +170,6 @@ export default async function MemberPage({
               id: member.id,
               firstName: member.firstName,
               lastName: member.lastName,
-              isMinor: member.isMinor,
               cardNumber: member.cardNumber,
               status: member.status,
               notes: member.notes,
@@ -222,8 +179,6 @@ export default async function MemberPage({
               imageRightsSocial: member.imageRightsSocial,
               imageRightsSocialSource: member.imageRightsSocialSource,
               imageRightsSocialAt: dayOrNull(member.imageRightsSocialAt),
-              parentalDocumentReceived: member.parentalDocumentReceived,
-              parentalDocumentReceivedAt: dayOrNull(member.parentalDocumentReceivedAt),
               gameIds: member.gameIds.map((g) => ({ gameId: g.gameId, value: g.value })),
             }}
             summary={
@@ -232,12 +187,6 @@ export default async function MemberPage({
                   items={[
                     ["Prénom", member.firstName],
                     ["Nom", member.lastName],
-                    [
-                      "Mineur",
-                      member.isMinor
-                        ? `Oui${member.minorReviewedAt ? ` · vérifié le ${formatDay(member.minorReviewedAt)}` : ""}`
-                        : "Non",
-                    ],
                     ["N° de carte", member.cardNumber ?? "—"],
                     [
                       "Statut",
@@ -284,16 +233,6 @@ export default async function MemberPage({
                           member.imageRightsSocialAt,
                         ),
                       ],
-                      ...(member.isMinor
-                        ? ([
-                            [
-                              "Autorisation parentale",
-                              member.parentalDocumentReceived
-                                ? `Reçue${member.parentalDocumentReceivedAt ? ` le ${formatDay(member.parentalDocumentReceivedAt)}` : ""}`
-                                : "Manquante",
-                            ],
-                          ] as [string, React.ReactNode][])
-                        : []),
                     ]}
                   />
                 </div>
@@ -366,39 +305,6 @@ export default async function MemberPage({
         </div>
 
         <div className="grid content-start gap-6">
-          {member.isMinor ? (
-            <Card title="Autorisation parentale">
-              {member.parentalDocumentFile ? (
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm">
-                  <a
-                    href={`/api/timonerie/fichiers/${member.parentalDocumentFile.id}`}
-                    target="_blank"
-                    rel="noopener"
-                    className="text-rose hover:underline"
-                  >
-                    {member.parentalDocumentFile.filename}
-                  </a>
-                  <span className="text-xs text-ivory-3">
-                    {formatBytes(member.parentalDocumentFile.size)} · joint le{" "}
-                    {formatDay(member.parentalDocumentFile.createdAt)}
-                  </span>
-                  <ActionButton
-                    action={removeParentalDocument}
-                    input={{ id: member.id }}
-                    variant="subtle"
-                    confirm="Retirer le scan de la fiche ?"
-                    success="Scan retiré."
-                  >
-                    Retirer
-                  </ActionButton>
-                </div>
-              ) : (
-                <p className="mb-3 text-sm text-ivory-3">Aucun scan joint (facultatif).</p>
-              )}
-              <ParentalUploadForm memberId={member.id} />
-            </Card>
-          ) : null}
-
           <Card title="Inscriptions récentes">
             {member.registrations.length === 0 ? (
               <p className="text-sm text-ivory-3">Aucune inscription rapprochée de cette fiche.</p>

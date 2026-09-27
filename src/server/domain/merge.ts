@@ -46,18 +46,16 @@ export async function mergeMembers(tx: Tx, keepId: string, dropId: string, audit
   }
 
   const dropCard = drop.cardNumber;
-  const dropFile = drop.parentalDocumentFileId;
   // Libère les valeurs uniques avant de les reporter sur la fiche conservée.
   await tx.member.update({
     where: { id: dropId },
-    data: { cardNumber: null, parentalDocumentFileId: null, taggedPhotos: { set: [] } },
+    data: { cardNumber: null, taggedPhotos: { set: [] } },
   });
 
   const notes = [keep.notes, drop.notes].filter(Boolean).join(" · ").slice(0, 500) || null;
   const updated = await tx.member.update({
     where: { id: keepId },
     data: {
-      isMinor: keep.isMinor || drop.isMinor,
       cardNumber: keep.cardNumber ?? dropCard,
       notes,
       ...(!keep.imageRightsGallery && drop.imageRightsGallery
@@ -74,19 +72,9 @@ export async function mergeMembers(tx: Tx, keepId: string, dropId: string, audit
             imageRightsSocialSource: drop.imageRightsSocialSource,
           }
         : {}),
-      ...(!keep.parentalDocumentReceived && drop.parentalDocumentReceived
-        ? {
-            parentalDocumentReceived: true,
-            parentalDocumentReceivedAt: drop.parentalDocumentReceivedAt,
-          }
-        : {}),
-      parentalDocumentFileId: keep.parentalDocumentFileId ?? dropFile,
       taggedPhotos: { connect: drop.taggedPhotos.map((p) => ({ id: p.id })) },
     },
   });
-  if (keep.parentalDocumentFileId && dropFile) {
-    await tx.privateFile.delete({ where: { id: dropFile } });
-  }
 
   await tx.member.delete({ where: { id: dropId } });
   await audit.updated("Member", keep, updated);

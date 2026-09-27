@@ -21,10 +21,9 @@ export const PROCESSINGS: Processing[] = [
     purpose:
       "Tenir la liste des membres, enregistrer les adhésions et leur renouvellement, remettre la carte de membre, gérer l'accès aux soirées réservées aux membres.",
     legalBasis: "Exécution du contrat d'adhésion (art. 6.1.b RGPD).",
-    people: "Adhérents, dont mineurs avec autorisation parentale.",
+    people: "Adhérents.",
     data: [
       "Nom, prénom",
-      "Case « mineur » (aucune date ni année de naissance : l'âge est vérifié en personne)",
       "Identifiants de joueur par jeu (Konami ID, Bandai TCG+ ID…)",
       "Périodes d'adhésion, formule, montant, mode de paiement, référence PayPal facultative",
       "Numéro de carte physique",
@@ -37,22 +36,20 @@ export const PROCESSINGS: Processing[] = [
       "Accès par compte unique protégé (mot de passe argon2, double authentification), journal des actions, hébergement chiffré.",
   },
   {
-    name: "Droit à l'image et autorisations parentales",
+    name: "Droit à l'image",
     purpose:
-      "Recueillir et conserver la preuve du consentement à la publication de photos (galerie du site, réseaux) et de l'autorisation parentale des mineurs.",
+      "Enregistrer le consentement à la publication de photos (galerie du site, réseaux). Les autorisations parentales des mineurs sont signées sur papier, en personne, et conservées par l'association hors du site.",
     legalBasis:
       "Consentement (art. 6.1.a RGPD), recueilli par écrit auprès du responsable légal pour les mineurs.",
     people: "Adhérents et, pour les mineurs, leurs responsables légaux.",
     data: [
       "Autorisation galerie / réseaux : oui ou non, date, source (papier signé, oral, formulaire)",
-      "Autorisation parentale reçue : oui ou non, date",
-      "Scan du document signé (facultatif)",
     ],
     retention:
       "Jusqu'au retrait du consentement, et au plus tard jusqu'à l'anonymisation de la fiche.",
     recipients: "Bureau de l'association.",
     security:
-      "Scans stockés en base de données, jamais accessibles par une adresse publique ; téléchargement réservé à l'administrateur et tracé.",
+      "Accès réservé à l'administrateur ; aucune information permettant d'identifier un mineur n'est enregistrée sur le site.",
   },
   {
     name: "Inscriptions aux événements",
@@ -62,7 +59,6 @@ export const PROCESSINGS: Processing[] = [
     people: "Participants aux événements (membres ou non).",
     data: [
       "Nom, prénom, identifiant de joueur",
-      "Case « mineur »",
       "E-mail facultatif, uniquement pour la confirmation et le lien d'annulation",
     ],
     retention: `E-mail effacé ${RETENTION.registrationEmailDays} jours après l'événement ; inscription supprimée ${RETENTION.registrationMonths} mois après l'événement.`,

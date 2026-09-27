@@ -8,9 +8,6 @@ import { importInput } from "@/lib/validation/schemas";
 import { adminAction } from "../service/admin-action";
 import { fail } from "../service/errors";
 
-const truthy = (v: string) =>
-  ["1", "oui", "o", "yes", "y", "true", "vrai", "x"].includes(v.trim().toLowerCase());
-
 export const importMembers = adminAction(
   { schema: importInput, tags: [TAGS.stats] },
   async ({ csv, mapping }, { tx, audit }) => {
@@ -51,7 +48,6 @@ export const importMembers = adminAction(
         data: {
           firstName,
           lastName,
-          isMinor: values.isMinor ? truthy(values.isMinor) : false,
           cardNumber,
           notes: values.notes?.slice(0, 500) || null,
           status: "EXPIRED",

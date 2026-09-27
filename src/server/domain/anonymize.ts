@@ -6,7 +6,7 @@ export const FORMER_MEMBER = { firstName: "Ancien", lastName: "membre" } as cons
 
 /**
  * Anonymisation d'une fiche (suppression d'une fiche qui a des adhésions, et cron : même code).
- * - identité, carte, notes, droits, identifiants de jeu, scan : effacés ;
+ * - identité, carte, notes, autorisations photo, identifiants de jeu : effacés ;
  * - inscriptions liées : anonymisées ; photos où il est identifié : dépubliées ;
  * - adhésions : conservées (montant, dates, formule) pour la comptabilité, sans la référence PayPal.
  */
@@ -53,8 +53,6 @@ export async function anonymizeMember(
     where: { id: memberId },
     data: {
       ...FORMER_MEMBER,
-      isMinor: false,
-      minorReviewedAt: null,
       cardNumber: null,
       notes: null,
       imageRightsGallery: false,
@@ -63,17 +61,10 @@ export async function anonymizeMember(
       imageRightsSocial: false,
       imageRightsSocialAt: null,
       imageRightsSocialSource: null,
-      parentalDocumentReceived: false,
-      parentalDocumentReceivedAt: null,
-      parentalDocumentFileId: null,
       anonymizedAt: new Date(),
       taggedPhotos: { set: [] },
     },
   });
-
-  if (member.parentalDocumentFileId) {
-    await tx.privateFile.delete({ where: { id: member.parentalDocumentFileId } });
-  }
 
   await audit.log("ANONYMIZE", "Member", memberId, {
     motif: { before: null, after: reason },

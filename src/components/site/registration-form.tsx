@@ -22,7 +22,6 @@ type Errors = Partial<Record<"firstName" | "lastName" | "playerId" | "email", st
 export function RegistrationForm({ eventId, full, requirePlayerId, game }: Props) {
   const [errors, setErrors] = useState<Errors>({});
   const [failure, setFailure] = useState<string | null>(null);
-  const [minor, setMinor] = useState(false);
   const [done, setDone] = useState<{
     status: "REGISTERED" | "WAITLISTED";
     emailSent: boolean;
@@ -149,21 +148,10 @@ export function RegistrationForm({ eventId, full, requirePlayerId, game }: Props
           {errors.email ?? "Uniquement pour vous confirmer la place, effacé après la soirée."}
         </span>
       </div>
-      <label className="check">
-        <input
-          type="checkbox"
-          name="isMinor"
-          checked={minor}
-          onChange={(e) => setMinor(e.target.checked)}
-        />
-        Je suis mineur
-      </label>
-      {minor ? (
-        <p className="notice warn" role="note">
-          <strong>Moins de 16 ans ?</strong> Un adulte doit t&apos;accompagner pendant toute la
-          soirée. Les tournois avec dotation suivent les règles d&apos;âge de chaque éditeur.
-        </p>
-      ) : null}
+      <p className="notice" role="note">
+        <strong>Moins de 16 ans ?</strong> Un adulte doit t&apos;accompagner pendant toute la
+        soirée. Les tournois avec dotation suivent les règles d&apos;âge de chaque éditeur.
+      </p>
       <div className="hp" aria-hidden="true">
         <label htmlFor="r-website">Ne pas remplir</label>
         <input id="r-website" name="website" tabIndex={-1} autoComplete="off" />

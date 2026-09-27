@@ -273,7 +273,6 @@ export type AttendanceRow = {
   firstName: string;
   lastName: string;
   playerId: string | null;
-  isMinor: boolean;
   status: string;
 };
 
@@ -337,7 +336,9 @@ function AttendanceTable({
             {r ? `${r.lastName.toLocaleUpperCase("fr-FR")} ${r.firstName}` : ""}
           </Text>
           <Text style={[table.cell, { width: COLS.id, fontSize: 8.5 }]}>{r?.playerId ?? ""}</Text>
-          <Text style={[table.cell, { width: COLS.minor }]}>{r?.isMinor ? "oui" : ""}</Text>
+          <View style={[table.cell, { width: COLS.minor }]}>
+            <View style={base.box} />
+          </View>
           <View style={[table.cell, { width: COLS.present }]}>
             <View style={[base.box, r?.status === "PRESENT" ? { backgroundColor: C.navy } : {}]} />
           </View>

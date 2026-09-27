@@ -544,7 +544,6 @@ async function seedDemoMembers() {
       game: ["lorcana", "Ines-L"],
       plan,
       card: "NAU-2026-002",
-      minor: true,
     },
     {
       firstName: "Hugo",
@@ -578,15 +577,11 @@ async function seedDemoMembers() {
       data: {
         firstName: p.firstName,
         lastName: p.lastName,
-        isMinor: Boolean(p.minor),
-        minorReviewedAt: p.minor ? new Date() : null,
         cardNumber: p.card,
         status: endDate >= today ? "ACTIVE" : "EXPIRED",
-        imageRightsGallery: !p.minor,
-        imageRightsGallerySource: p.minor ? null : "VERBAL",
-        imageRightsGalleryAt: p.minor ? null : dayToDbDate(startDate),
-        parentalDocumentReceived: Boolean(p.minor),
-        parentalDocumentReceivedAt: p.minor ? dayToDbDate(startDate) : null,
+        imageRightsGallery: true,
+        imageRightsGallerySource: "VERBAL",
+        imageRightsGalleryAt: dayToDbDate(startDate),
       },
     });
     const gameId = bySlug.get(p.game[0]!);

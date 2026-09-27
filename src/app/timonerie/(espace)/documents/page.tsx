@@ -7,7 +7,7 @@ import { DocumentPickers } from "./pickers";
 export const metadata: Metadata = { title: "Documents" };
 
 export default async function DocumentsPage() {
-  const { members, minors, events } = await documentOptions();
+  const { members, events } = await documentOptions();
   const toOpt = (m: { id: string; firstName: string; lastName: string }) => ({
     value: m.id,
     label: `${m.lastName} ${m.firstName}`,
@@ -33,8 +33,8 @@ export default async function DocumentsPage() {
             <DocumentPickers
               kind="autorisation-parentale"
               param="adherent"
-              label="Pré-remplie pour un mineur"
-              options={minors.map(toOpt)}
+              label="Pré-remplie au nom d'un adhérent"
+              options={members.map(toOpt)}
             />
           </div>
         </Card>

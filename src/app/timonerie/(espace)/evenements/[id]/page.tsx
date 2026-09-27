@@ -45,7 +45,6 @@ export default async function EventAdminPage({ params }: { params: Promise<{ id:
     firstName: r.firstName,
     lastName: r.lastName,
     playerId: r.playerId,
-    isMinor: r.isMinor,
     hasEmail: Boolean(r.email),
     status: r.status,
     source: r.source,
@@ -282,7 +281,6 @@ export default async function EventAdminPage({ params }: { params: Promise<{ id:
                 {event.registrations.filter((r) => r.status === "PRESENT").length}
               </li>
               <li>Liste d&apos;attente : {waitlist.length}</li>
-              <li>Mineurs : {active.filter((r) => r.isMinor).length}</li>
               <li>Photos rattachées : {event._count.photos}</li>
             </ul>
             <p className="mt-3 text-xs text-ivory-3">

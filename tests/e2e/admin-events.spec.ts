@@ -36,7 +36,8 @@ test("événement : publication, inscriptions publiques, liste d'attente, promot
   await v.goto(publicHref ?? "/");
   await v.getByLabel("Prénom").fill("Bruno");
   await v.getByLabel("Nom", { exact: true }).fill(`Second${run}`);
-  await v.getByLabel("Je suis mineur").check();
+  // Aucune case « mineur » : seul le rappel d'accompagnement est affiché, pour tous
+  await expect(v.getByLabel("Je suis mineur")).toHaveCount(0);
   await expect(v.getByText("Un adulte doit t'accompagner")).toBeVisible();
   await v.getByRole("button", { name: /M'inscrire en liste d'attente|Réserver ma place/ }).click();
   await expect(v.getByText("Vous êtes sur liste d'attente")).toBeVisible();

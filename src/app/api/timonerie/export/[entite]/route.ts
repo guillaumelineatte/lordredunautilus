@@ -26,7 +26,6 @@ async function membersCsv() {
     return {
       Nom: m.lastName,
       Prénom: m.firstName,
-      Mineur: m.isMinor ? "oui" : "non",
       "N° de carte": m.cardNumber ?? "",
       Statut: memberStatusLabel[m.status],
       "Identifiants de jeu": m.gameIds.map((g) => `${g.game.name} : ${g.value}`).join(" | "),
@@ -34,11 +33,6 @@ async function membersCsv() {
       "Fin d'adhésion": last ? formatDay(last.endDate) : "",
       "Galerie autorisée": m.imageRightsGallery ? "oui" : "non",
       "Réseaux autorisés": m.imageRightsSocial ? "oui" : "non",
-      "Autorisation parentale": m.isMinor
-        ? m.parentalDocumentReceived
-          ? "reçue"
-          : "manquante"
-        : "",
     };
   });
 }
@@ -94,7 +88,6 @@ async function eventRegistrationsCsv(eventId: string) {
     Nom: r.lastName,
     Prénom: r.firstName,
     Identifiant: r.playerId ?? "",
-    Mineur: r.isMinor ? "oui" : "non",
     Statut: r.status,
     Inscription: formatDateTime(r.createdAt),
   }));
@@ -111,7 +104,6 @@ async function memberDataJson(memberId: string) {
         include: { event: { select: { title: true, startsAt: true } } },
         orderBy: { createdAt: "asc" },
       },
-      parentalDocumentFile: { select: { filename: true, createdAt: true } },
       _count: { select: { taggedPhotos: true } },
     },
   });
@@ -122,7 +114,6 @@ async function memberDataJson(memberId: string) {
     identite: {
       prenom: m.firstName,
       nom: m.lastName,
-      mineur: m.isMinor,
       numeroDeCarte: m.cardNumber,
     },
     statut: memberStatusLabel[m.status],
@@ -152,13 +143,6 @@ async function memberDataJson(memberId: string) {
         le: m.imageRightsSocialAt ? formatDay(m.imageRightsSocialAt) : null,
         source: m.imageRightsSocialSource,
       },
-      autorisationParentale: m.isMinor
-        ? {
-            recue: m.parentalDocumentReceived,
-            le: m.parentalDocumentReceivedAt ? formatDay(m.parentalDocumentReceivedAt) : null,
-            scanJoint: Boolean(m.parentalDocumentFile),
-          }
-        : null,
     },
     inscriptionsAuxEvenements: m.registrations.map((r) => ({
       evenement: r.event.title,

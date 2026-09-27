@@ -27,7 +27,6 @@ export type NewRegistration = {
   lastName: string;
   playerId: string | null;
   email: string | null;
-  isMinor: boolean;
   memberId?: string | null;
   source: RegistrationSource;
 };
@@ -89,7 +88,6 @@ export async function createRegistration(tx: Tx, input: NewRegistration) {
     dedupeKey: key,
     playerId: input.playerId,
     email: input.email,
-    isMinor: input.isMinor,
     memberId: input.memberId ?? null,
     status,
     source: input.source,

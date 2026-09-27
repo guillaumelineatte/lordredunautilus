@@ -44,8 +44,6 @@ export const memberInput = z
     id: optionalId,
     firstName: text(80, "Indiquez le prénom."),
     lastName: text(80, "Indiquez le nom."),
-    isMinor: checkbox,
-    minorReviewed: checkbox,
     cardNumber: optionalText(40),
     suspended: checkbox,
     notes: optionalText(500),
@@ -55,8 +53,6 @@ export const memberInput = z
     imageRightsSocial: checkbox,
     imageRightsSocialSource: optionalConsent,
     imageRightsSocialAt: optionalDay,
-    parentalDocumentReceived: checkbox,
-    parentalDocumentReceivedAt: optionalDay,
     gameIds: json(z.array(gameIdEntry)).default([]),
   })
   .superRefine((v, ctx) => {
@@ -161,7 +157,6 @@ export const publicRegistrationInput = z.object({
   lastName: text(80, "Indiquez votre nom."),
   playerId: optionalText(100),
   email: optionalEmail,
-  isMinor: checkbox,
   website: honeypot,
 });
 
@@ -170,7 +165,6 @@ export const adminRegistrationInput = z.object({
   firstName: text(80, "Indiquez le prénom."),
   lastName: text(80, "Indiquez le nom."),
   playerId: optionalText(100),
-  isMinor: checkbox,
   memberId: optionalId,
 });
 

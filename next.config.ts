@@ -45,8 +45,8 @@ const nextConfig: NextConfig = {
     // CSS du site (≈ 7 Ko compressés) inliné dans le <head> : plus de requête bloquante.
     inlineCss: true,
     serverActions: {
-      // Scans d'autorisation parentale (5 Mo max) + marge multipart
-      bodySizeLimit: "6mb",
+      // Import CSV des adhérents (2 Mo max) + marge
+      bodySizeLimit: "3mb",
     },
   },
   images: {

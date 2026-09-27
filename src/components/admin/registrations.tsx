@@ -13,7 +13,7 @@ import {
   setRegistrationStatus,
 } from "@/server/actions/events";
 import { ActionButton } from "./action-button";
-import { ActionForm, CheckboxField, SelectField, SubmitButton, TextField } from "./form";
+import { ActionForm, SelectField, SubmitButton, TextField } from "./form";
 import { useToast } from "./toast";
 import { Badge } from "./ui";
 
@@ -22,7 +22,6 @@ export type RegistrationRowData = {
   firstName: string;
   lastName: string;
   playerId: string | null;
-  isMinor: boolean;
   hasEmail: boolean;
   status: RegistrationStatus;
   source: RegistrationSource;
@@ -113,11 +112,6 @@ export function RegistrationsTable({
                 <span className="font-semibold">
                   {r.lastName} {r.firstName}
                 </span>
-                {r.isMinor ? (
-                  <Badge tone="rose" className="ml-2">
-                    mineur
-                  </Badge>
-                ) : null}
                 <p className="text-xs text-ivory-3">
                   {registrationSourceLabel[r.source]}
                   {r.hasEmail ? " · e-mail fourni" : ""}
@@ -223,7 +217,6 @@ export function AddRegistrationForm({
           options={members.map((m) => ({ value: m.id, label: `${m.lastName} ${m.firstName}` }))}
           placeholder="Aucune"
         />
-        <CheckboxField label="Mineur" name="isMinor" />
       </div>
       <div className="flex justify-end">
         <SubmitButton variant="ghost">Ajouter le participant</SubmitButton>
