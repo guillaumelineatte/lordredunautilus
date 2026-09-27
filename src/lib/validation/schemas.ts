@@ -247,8 +247,6 @@ export const photoMetaInput = z.object({
   alt: z.string().trim().max(250),
   caption: optionalText(250),
   eventId: optionalId,
-  imageRightsChecked: checkbox,
-  taggedMemberIds: json(z.array(id)).default([]),
 });
 
 export const photoPublishInput = z.object({ id, publish: z.boolean() });

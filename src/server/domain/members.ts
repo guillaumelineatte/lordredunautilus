@@ -1,6 +1,5 @@
 import "server-only";
 import { dayToDbDate, todayParis } from "@/lib/dates";
-import { publicationBlockers } from "@/lib/photo-rules";
 import { matchesPattern } from "@/lib/text";
 import type { Tx } from "../db";
 import type { AuditRecorder } from "../service/audit";
@@ -110,33 +109,6 @@ export async function assertCardNumberFree(tx: Tx, cardNumber: string | null, me
   }
 }
 
-/**
- * Après un changement d'autorisation, dépublie les photos où l'adhérent est
- * identifié et qui ne respectent plus les règles de publication.
- */
-export async function enforcePhotoRules(
-  tx: Tx,
-  memberId: string,
-  audit: AuditRecorder,
-): Promise<number> {
-  const photos = await tx.photo.findMany({
-    where: { isPublished: true, deletedAt: null, taggedMembers: { some: { id: memberId } } },
-    include: { taggedMembers: true },
-  });
-  let unpublished = 0;
-  for (const photo of photos) {
-    if (publicationBlockers(photo).length > 0) {
-      const updated = await tx.photo.update({
-        where: { id: photo.id },
-        data: { isPublished: false, publishedAt: null },
-      });
-      await audit.updated("Photo", photo, updated);
-      unpublished++;
-    }
-  }
-  return unpublished;
-}
-
 export type DeletionMode = "deleted" | "anonymized";
 
 /**
@@ -155,7 +127,6 @@ export async function deleteMember(
     where: { id: memberId },
     include: {
       _count: { select: { memberships: true } },
-      taggedPhotos: { select: { id: true, isPublished: true } },
     },
   });
   if (!member || member.anonymizedAt) fail("Fiche introuvable ou déjà supprimée.");
@@ -166,17 +137,9 @@ export async function deleteMember(
     return "anonymized";
   }
 
-  // Les photos où la personne était identifiée repassent en brouillon, à revérifier.
-  const published = member.taggedPhotos.filter((p) => p.isPublished).map((p) => p.id);
-  if (published.length > 0) {
-    await tx.photo.updateMany({
-      where: { id: { in: published } },
-      data: { isPublished: false, publishedAt: null },
-    });
-  }
-  // Identifiants de jeu supprimés en cascade, inscriptions détachées, étiquettes photo retirées.
+  // Identifiants de jeu supprimés en cascade, inscriptions détachées.
   await tx.member.delete({ where: { id: memberId } });
-  const { _count, taggedPhotos: _photos, ...row } = member;
+  const { _count, ...row } = member;
   await audit.deleted("Member", row);
   return "deleted";
 }

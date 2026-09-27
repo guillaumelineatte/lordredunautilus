@@ -161,7 +161,6 @@ export async function getMemberDetail(id: string) {
         orderBy: { createdAt: "desc" },
         take: 15,
       },
-      _count: { select: { taggedPhotos: true } },
     },
   });
   if (!member) return null;
@@ -298,16 +297,6 @@ export function listPhotos() {
     where: { deletedAt: null },
     include: {
       event: { select: { id: true, title: true, startsAt: true } },
-      taggedMembers: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          imageRightsGallery: true,
-          imageRightsGallerySource: true,
-          anonymizedAt: true,
-        },
-      },
     },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
   });

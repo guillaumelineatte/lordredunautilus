@@ -322,11 +322,6 @@ export default async function MemberPage({
                 ))}
               </ul>
             )}
-            {member._count.taggedPhotos > 0 ? (
-              <p className="mt-3 text-xs text-ivory-3">
-                Identifié·e sur {member._count.taggedPhotos} photo(s) de la galerie.
-              </p>
-            ) : null}
           </Card>
 
           <Card title="Historique de la fiche">

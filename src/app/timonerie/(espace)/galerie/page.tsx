@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { GalleryManager } from "@/components/admin/gallery-manager";
 import { PageHeader } from "@/components/admin/ui";
 import type { SearchParams } from "@/components/admin/table";
-import { eventOptions, listPhotos, memberOptions } from "@/server/queries/admin";
+import { eventOptions, listPhotos } from "@/server/queries/admin";
 
 export const metadata: Metadata = { title: "Galerie" };
 
@@ -13,11 +13,7 @@ export default async function GalleryAdminPage({
 }) {
   const sp = await searchParams;
   const eventId = typeof sp.evenement === "string" ? sp.evenement : undefined;
-  const [photos, members, events] = await Promise.all([
-    listPhotos(),
-    memberOptions(),
-    eventOptions(),
-  ]);
+  const [photos, events] = await Promise.all([listPhotos(), eventOptions()]);
   const shown = eventId ? photos.filter((p) => p.eventId === eventId) : photos;
 
   return (
@@ -25,7 +21,7 @@ export default async function GalleryAdminPage({
       <PageHeader
         kicker="Galerie"
         title="Les soirs de tables pleines"
-        description="Une photo n'est publiable que si les droits à l'image ont été vérifiés et que chaque membre identifié a autorisé la galerie (pour un mineur : autorisation parentale signée, vérifiée en personne)."
+        description="Déposez les photos, complétez la légende si besoin, puis publiez-les. Avant de publier, assurez-vous que les personnes reconnaissables sont d'accord (autorisation parentale signée pour un mineur)."
       />
       <GalleryManager
         key={eventId ?? "all"}
@@ -38,19 +34,7 @@ export default async function GalleryAdminPage({
           alt: p.alt,
           caption: p.caption,
           isPublished: p.isPublished,
-          imageRightsChecked: p.imageRightsChecked,
           event: p.event ? { id: p.event.id, title: p.event.title } : null,
-          taggedMembers: p.taggedMembers.map((m) => ({
-            ...m,
-            anonymizedAt: m.anonymizedAt?.toISOString() ?? null,
-          })),
-        }))}
-        members={members.map((m) => ({
-          id: m.id,
-          firstName: m.firstName,
-          lastName: m.lastName,
-          imageRightsGallery: m.imageRightsGallery,
-          imageRightsGallerySource: m.imageRightsGallerySource,
         }))}
         events={events.map((e) => ({
           id: e.id,

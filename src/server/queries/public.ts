@@ -154,7 +154,8 @@ export const getPhotos = unstable_cache(
       width: p.width,
       height: p.height,
       blurDataUrl: p.blurDataUrl,
-      alt: p.alt,
+      // Texte alternatif facultatif à la saisie : légende, sinon description générique.
+      alt: p.alt.trim() || p.caption?.trim() || "Photo d'une soirée de L'Ordre du Nautilus",
       caption: p.caption,
       event: p.event ? { ...p.event, startsAt: p.event.startsAt.toISOString() } : null,
     }));

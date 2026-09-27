@@ -7,7 +7,7 @@ export const FORMER_MEMBER = { firstName: "Ancien", lastName: "membre" } as cons
 /**
  * Anonymisation d'une fiche (suppression d'une fiche qui a des adhésions, et cron : même code).
  * - identité, carte, notes, autorisations photo, identifiants de jeu : effacés ;
- * - inscriptions liées : anonymisées ; photos où il est identifié : dépubliées ;
+ * - inscriptions liées : anonymisées ;
  * - adhésions : conservées (montant, dates, formule) pour la comptabilité, sans la référence PayPal.
  */
 export async function anonymizeMember(
@@ -18,20 +18,9 @@ export async function anonymizeMember(
 ): Promise<boolean> {
   const member = await tx.member.findUnique({
     where: { id: memberId },
-    include: {
-      taggedPhotos: { select: { id: true, isPublished: true } },
-      registrations: { select: { id: true } },
-    },
+    include: { registrations: { select: { id: true } } },
   });
   if (!member || member.anonymizedAt) return false;
-
-  const publishedIds = member.taggedPhotos.filter((p) => p.isPublished).map((p) => p.id);
-  if (publishedIds.length > 0) {
-    await tx.photo.updateMany({
-      where: { id: { in: publishedIds } },
-      data: { isPublished: false, publishedAt: null },
-    });
-  }
 
   await tx.memberGameId.deleteMany({ where: { memberId } });
   await tx.membership.updateMany({ where: { memberId }, data: { transactionRef: null } });
@@ -62,13 +51,11 @@ export async function anonymizeMember(
       imageRightsSocialAt: null,
       imageRightsSocialSource: null,
       anonymizedAt: new Date(),
-      taggedPhotos: { set: [] },
     },
   });
 
   await audit.log("ANONYMIZE", "Member", memberId, {
     motif: { before: null, after: reason },
-    photosDepubliees: { before: null, after: publishedIds.length },
   });
   return true;
 }
