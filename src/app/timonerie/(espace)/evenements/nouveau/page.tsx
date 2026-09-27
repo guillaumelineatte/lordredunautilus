@@ -12,7 +12,11 @@ export default async function NewEventPage() {
   const [games, settings] = await Promise.all([gameOptions(), getSettings()]);
   return (
     <>
-      <PageHeader kicker="Événements" title="Nouvel événement" />
+      <PageHeader
+        back={{ href: "/timonerie/evenements", label: "Événements" }}
+        kicker="Événements"
+        title="Nouvel événement"
+      />
       <div className="card p-5">
         <EventForm
           games={games}

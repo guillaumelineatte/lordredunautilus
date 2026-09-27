@@ -39,7 +39,6 @@ export const importMembers = adminAction(
         skipped.push(`Ligne ${index + 2} : prénom ou nom manquant`);
         continue;
       }
-      const birthYear = values.birthYear ? Number.parseInt(values.birthYear, 10) : null;
       const cardNumber = values.cardNumber || null;
       if (
         cardNumber &&
@@ -52,10 +51,6 @@ export const importMembers = adminAction(
         data: {
           firstName,
           lastName,
-          birthYear:
-            birthYear && birthYear > 1900 && birthYear <= new Date().getFullYear()
-              ? birthYear
-              : null,
           isMinor: values.isMinor ? truthy(values.isMinor) : false,
           cardNumber,
           notes: values.notes?.slice(0, 500) || null,

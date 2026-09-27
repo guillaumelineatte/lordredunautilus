@@ -203,7 +203,7 @@ On y trouve :
 3. Cochez **Carte remise en main propre** quand vous la donnez, ou cliquez plus tard sur « Marquer la carte remise ».
 4. Imprimez la carte : bouton **Carte de membre (CR80)** ou **A6**.
 
-**Modifier une fiche** : bouton **Modifier** dans « Paramètres de l'adhérent », en haut de la fiche, ou icône crayon dans la liste. Tous les paramètres se modifient au même endroit : identité, année de naissance, case mineur, numéro de carte, suspension, notes, identifiants de jeu, autorisations photo et parentale. **Enregistrer les modifications** revient au récapitulatif ; **Annuler** abandonne les changements. Contrôles appliqués à l'enregistrement :
+**Modifier une fiche** : bouton **Modifier** dans « Paramètres de l'adhérent », en haut de la fiche, ou icône crayon dans la liste. Tous les paramètres se modifient au même endroit : identité, case mineur, numéro de carte, suspension, notes, identifiants de jeu, autorisations photo et parentale. **Enregistrer les modifications** revient au récapitulatif ; **Annuler** abandonne les changements. Contrôles appliqués à l'enregistrement :
 
 - le **statut** actif ou échu est calculé d'après les adhésions ; seule la case « Adhérent suspendu » se règle à la main ;
 - le **numéro de carte** doit être unique : le message indique à qui il est déjà attribué ;
@@ -215,6 +215,10 @@ On y trouve :
 **Renouveler** : la nouvelle adhésion est chaînée à la précédente. Si l'ancienne n'est pas terminée, la nouvelle commence le lendemain de sa fin : ni trou, ni chevauchement.
 
 ![Fiche adhérent](docs/captures/admin-fiche-adherent.jpg)
+
+**Retour à la liste** : la petite flèche « ← Adhérents », au-dessus du titre de chaque fiche (et « ← Événements » sur les pages d'événement).
+
+**Âge et mineurs** : le site ne conserve aucune date ni année de naissance. L'âge se vérifie en personne, auprès des parents, lors des soirées et des tournois ; seule la case « mineur » est cochée sur la fiche, et le tableau de bord rappelle de la revérifier chaque saison.
 
 **Adhérent mineur** :
 

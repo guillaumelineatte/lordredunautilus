@@ -37,3 +37,21 @@ export function PencilIcon({ className = "size-4 shrink-0" }: { className?: stri
     </svg>
   );
 }
+
+/** Petite flèche de retour. */
+export function ArrowLeftIcon({ className = "size-3.5 shrink-0" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M19 12H5M11 6l-6 6 6 6" />
+    </svg>
+  );
+}

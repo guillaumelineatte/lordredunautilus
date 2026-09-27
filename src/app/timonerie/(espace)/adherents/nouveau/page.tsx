@@ -10,6 +10,7 @@ export default async function NewMemberPage() {
   return (
     <>
       <PageHeader
+        back={{ href: "/timonerie/adherents", label: "Adhérents" }}
         kicker="Adhérents"
         title="Nouvel adhérent"
         description="Créez la fiche, puis enregistrez l'adhésion depuis la fiche une fois le paiement PayPal reçu."

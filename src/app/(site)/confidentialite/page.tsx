@@ -35,11 +35,11 @@ export default async function PrivacyPage() {
           <p>
             Pour un adhérent, l&apos;association conserve uniquement : nom, prénom, identifiant(s)
             de joueur par jeu, périodes d&apos;adhésion (début, fin, formule, renouvellement),
-            numéro de carte physique, une case « mineur » et l&apos;année de naissance (jamais la
-            date complète), et les autorisations relatives aux photos.{" "}
-            <strong>Ni e-mail, ni téléphone, ni adresse.</strong> Aucun paiement n&apos;est traité
-            sur le site : l&apos;adhésion se règle par PayPal, et seule la référence de la
-            transaction peut être notée.
+            numéro de carte physique, une case « mineur » et les autorisations relatives aux photos.
+            Aucune date ni année de naissance : l&apos;âge des mineurs est vérifié en personne,
+            auprès des parents. <strong>Ni e-mail, ni téléphone, ni adresse.</strong> Aucun paiement
+            n&apos;est traité sur le site : l&apos;adhésion se règle par PayPal, et seule la
+            référence de la transaction peut être notée.
           </p>
 
           <h3>Finalités, bases légales et durées</h3>

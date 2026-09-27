@@ -11,7 +11,6 @@ test("adhérent : création, adhésion, renouvellement, carte PDF, anonymisation
   await page.goto("/timonerie/adherents/nouveau");
   await page.getByLabel("Prénom").fill(firstName);
   await page.getByLabel("Nom", { exact: true }).fill("Testeuse");
-  await page.getByLabel("Année de naissance").fill("1998");
   await page.getByLabel("Ajouter un jeu").selectOption({ label: "Yu-Gi-Oh!" });
 
   // Identifiant invalide : refusé par la regex du jeu
@@ -21,6 +20,7 @@ test("adhérent : création, adhésion, renouvellement, carte PDF, anonymisation
 
   await page.getByRole("button", { name: "Créer l'adhérent" }).click();
   await expect(page.getByRole("heading", { name: `${firstName} Testeuse` })).toBeVisible();
+  await expect(page.getByText("Année de naissance")).toHaveCount(0);
 
   // Enregistrer une adhésion
   await page.getByLabel("Référence PayPal (facultatif)").first().fill(`E2E${run}`);

@@ -524,7 +524,6 @@ async function seedDemoMembers() {
     {
       firstName: "Camille",
       lastName: "Durand",
-      birthYear: 1996,
       start: -200,
       game: ["pokemon", "1234567"],
       plan,
@@ -533,7 +532,6 @@ async function seedDemoMembers() {
     {
       firstName: "Théo",
       lastName: "Lefèvre",
-      birthYear: 1990,
       start: -350,
       game: ["magic-the-gathering", "Theo#20451"],
       plan: soutien,
@@ -542,7 +540,6 @@ async function seedDemoMembers() {
     {
       firstName: "Inès",
       lastName: "Martin",
-      birthYear: 2012,
       start: -60,
       game: ["lorcana", "Ines-L"],
       plan,
@@ -552,7 +549,6 @@ async function seedDemoMembers() {
     {
       firstName: "Hugo",
       lastName: "Bernard",
-      birthYear: 2001,
       start: -390,
       game: ["yu-gi-oh", "0123456789"],
       plan,
@@ -561,7 +557,6 @@ async function seedDemoMembers() {
     {
       firstName: "Léa",
       lastName: "Petit",
-      birthYear: 1999,
       start: -340,
       game: ["one-piece-card-game", "987654321"],
       plan,
@@ -570,7 +565,6 @@ async function seedDemoMembers() {
     {
       firstName: "Nathan",
       lastName: "Roux",
-      birthYear: 1985,
       start: -10,
       game: ["flesh-and-blood", "4567891"],
       plan: soutien,
@@ -584,7 +578,6 @@ async function seedDemoMembers() {
       data: {
         firstName: p.firstName,
         lastName: p.lastName,
-        birthYear: p.birthYear,
         isMinor: Boolean(p.minor),
         minorReviewedAt: p.minor ? new Date() : null,
         cardNumber: p.card,

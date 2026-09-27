@@ -10,6 +10,7 @@ export default async function ImportPage() {
   return (
     <>
       <PageHeader
+        back={{ href: "/timonerie/adherents", label: "Adhérents" }}
         kicker="Adhérents"
         title="Importer un fichier CSV"
         description="Associez chaque colonne à un champ autorisé. Les autres colonnes (e-mail, téléphone, adresse…) sont ignorées : elles ne peuvent pas être importées."

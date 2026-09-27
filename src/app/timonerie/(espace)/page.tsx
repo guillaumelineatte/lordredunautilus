@@ -214,9 +214,7 @@ export default async function DashboardPage() {
                   <Link href={`/timonerie/adherents/${m.id}`} className="hover:text-rose">
                     {fullName(m)}
                   </Link>{" "}
-                  <Badge tone="warn">
-                    case « mineur » à revoir{m.birthYear ? ` (né·e en ${m.birthYear})` : ""}
-                  </Badge>
+                  <Badge tone="warn">case « mineur » à revérifier</Badge>
                 </li>
               ))}
             </ul>

@@ -57,7 +57,6 @@ export async function mergeMembers(tx: Tx, keepId: string, dropId: string, audit
   const updated = await tx.member.update({
     where: { id: keepId },
     data: {
-      birthYear: keep.birthYear ?? drop.birthYear,
       isMinor: keep.isMinor || drop.isMinor,
       cardNumber: keep.cardNumber ?? dropCard,
       notes,

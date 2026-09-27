@@ -63,6 +63,7 @@ export default async function EventAdminPage({ params }: { params: Promise<{ id:
   return (
     <>
       <PageHeader
+        back={{ href: "/timonerie/evenements", label: "Événements" }}
         kicker="Événement"
         title={event.title}
         description={
