@@ -45,7 +45,7 @@ export default async function MembersPage({
             <LinkButton href="/timonerie/adherents/import">Importer un CSV</LinkButton>
             <LinkButton href="/timonerie/adherents/fusion">Fusionner des doublons</LinkButton>
             <LinkButton href="/timonerie/adherents/nouveau" variant="primary" data-shortcut="new">
-              Nouvel adhérent <kbd className="text-[0.65rem] opacity-70">n</kbd>
+              Nouvel adhérent
             </LinkButton>
           </>
         }
