@@ -12,7 +12,7 @@ import type {
 
 export const memberStatusLabel: Record<MemberStatus, string> = {
   ACTIVE: "Actif",
-  EXPIRED: "Échu",
+  EXPIRED: "Désabonné",
   SUSPENDED: "Suspendu",
 };
 

@@ -27,7 +27,7 @@ const dayOrNull = (v: string | null) => (v ? dayToDbDate(v) : null);
 
 /**
  * Création ou modification d'une fiche.
- * - statut : suspendu si coché, sinon déduit des adhésions (actif / échu) ;
+ * - statut : suspendu si coché, sinon déduit des adhésions (actif / désabonné) ;
  * - numéro de carte unique, identifiants de jeu validés par la regex du jeu ;
  */
 export const saveMember = adminAction(
@@ -65,7 +65,7 @@ export const saveMember = adminAction(
     const created = await tx.member.create({
       data: {
         ...data,
-        // Pas encore d'adhésion : « échu » jusqu'à l'enregistrement de la première.
+        // Pas encore d'adhésion : « désabonné » jusqu'à l'enregistrement de la première.
         status: input.suspended ? "SUSPENDED" : "EXPIRED",
       },
     });

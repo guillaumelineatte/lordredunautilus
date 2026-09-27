@@ -98,7 +98,7 @@ export function MemberForm({
           label="Adhérent suspendu"
           name="suspended"
           defaultChecked={initial?.status === "SUSPENDED"}
-          hint="Sinon, le statut actif / échu est calculé automatiquement d'après les adhésions."
+          hint="Sinon, le statut actif / désabonné est calculé automatiquement d'après les adhésions."
         />
         <TextAreaField
           label="Notes internes"

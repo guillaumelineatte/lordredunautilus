@@ -116,8 +116,8 @@ export function ImportWizard({ games }: { games: Game[] }) {
           </div>
           <div className="mt-4 flex items-center justify-between gap-3">
             <p className="text-xs text-ivory-3">
-              Prénom et nom sont obligatoires. Les fiches importées sont créées au statut « échu »,
-              sans adhésion.
+              Prénom et nom sont obligatoires. Les fiches importées sont créées au statut «
+              désabonné », sans adhésion.
             </p>
             <Button
               variant="primary"

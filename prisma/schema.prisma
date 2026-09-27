@@ -31,7 +31,7 @@ datasource db {
 
 enum MemberStatus {
   ACTIVE // actif
-  EXPIRED // échu
+  EXPIRED // désabonné
   SUSPENDED // suspendu
 }
 

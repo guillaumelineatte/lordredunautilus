@@ -38,7 +38,7 @@ async function latestUnrenewedMemberships() {
   });
 }
 
-/** Alertes J-30 / J-7 / J0, une fois par palier ; statut « échu » le lendemain de la fin. */
+/** Alertes J-30 / J-7 / J0, une fois par palier ; statut « désabonné » le lendemain de la fin. */
 export async function membershipJob(today = todayParis()): Promise<Report> {
   const all = await latestUnrenewedMemberships();
   // Ne garder que la dernière adhésion de chaque membre
@@ -83,7 +83,7 @@ export async function membershipJob(today = todayParis()): Promise<Report> {
     });
   }
 
-  // Passage à « échu » : actifs sans adhésion couvrant aujourd'hui ni à venir.
+  // Passage à « désabonné » : actifs sans adhésion couvrant aujourd'hui ni à venir.
   const expired = await db.member.findMany({
     where: {
       status: "ACTIVE",

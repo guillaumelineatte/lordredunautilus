@@ -125,7 +125,7 @@ Chaque tâche est idempotente et tracée dans la table `CronRun`. Le tableau de 
 
 | Tâche          | Contenu                                                                                                                                                                                                                                                                                                                                                                                   |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `adhesions`    | Alertes à l'admin à J-30, J-7 et J0, une fois par palier (un palier manqué est rattrapé). Passage au statut « échu » le lendemain de la fin.                                                                                                                                                                                                                                              |
+| `adhesions`    | Alertes à l'admin à J-30, J-7 et J0, une fois par palier (un palier manqué est rattrapé). Passage au statut « désabonné » le lendemain de la fin.                                                                                                                                                                                                                                         |
 | `evenements`   | Événements passés → « terminé ». E-mails d'inscription effacés 7 jours après l'événement. Inscriptions supprimées au bout de 12 mois.                                                                                                                                                                                                                                                     |
 | `conservation` | Messages traités supprimés après 6 mois (12 s'ils ne sont jamais traités). **Suppression automatique** des fiches dont la dernière adhésion a pris fin il y a plus de 3 ans, et des fiches en corbeille depuis 30 jours (même règle que le bouton : effacement complet sans adhésion, anonymisation sinon). Purge du journal (12 mois), des compteurs anti-abus et des sessions expirées. |
 | `digest`       | E-mail récapitulatif à l'admin : adhésions à renouveler ce mois-ci, inscriptions de la veille, messages en attente.                                                                                                                                                                                                                                                                       |
@@ -182,7 +182,7 @@ Les sauvegardes contiennent des données personnelles : stockez-les chiffrées e
 
 On y trouve :
 
-- les adhésions qui expirent sous 30 jours, et celles échues depuis moins de 3 mois sans renouvellement ;
+- les adhésions qui expirent sous 30 jours, et les adhérents désabonnés depuis moins de 3 mois (adhésion terminée, non renouvelée) ;
 - les inscriptions du jour et le remplissage des prochains événements ;
 - les messages non traités ;
 - les dernières actions du journal.
@@ -204,7 +204,7 @@ On y trouve :
 
 **Modifier une fiche** : bouton **Modifier** dans « Paramètres de l'adhérent », en haut de la fiche, ou icône crayon dans la liste. Tous les paramètres se modifient au même endroit : identité, numéro de carte, suspension, notes, identifiants de jeu, autorisations photo. **Enregistrer les modifications** revient au récapitulatif ; **Annuler** abandonne les changements. Contrôles appliqués à l'enregistrement :
 
-- le **statut** actif ou échu est calculé d'après les adhésions ; seule la case « Adhérent suspendu » se règle à la main ;
+- le **statut** actif ou désabonné est calculé d'après les adhésions ; seule la case « Adhérent suspendu » se règle à la main ;
 - le **numéro de carte** doit être unique : le message indique à qui il est déjà attribué ;
 - chaque **identifiant de jeu** doit respecter le format de son jeu et ne pas appartenir à une autre fiche ;
 
