@@ -37,7 +37,7 @@ export default async function DashboardPage() {
           value={d.expiring.length}
           tone={d.expiring.length ? "warn" : undefined}
         />
-        <Stat label="Échues non renouvelées (3 mois)" value={d.expiredRecently.length} />
+        <Stat label="Désabonnés depuis moins de 3 mois" value={d.expiredRecently.length} />
         <Stat label="Inscriptions du jour" value={d.todayRegs.length} />
         <Stat label="Messages non traités" value={d.unread} tone={d.unread ? "rose" : undefined} />
       </div>
@@ -77,7 +77,7 @@ export default async function DashboardPage() {
           )}
         </Card>
 
-        <Card title="Échues depuis moins de 3 mois, non renouvelées">
+        <Card title="Désabonnés depuis moins de 3 mois">
           {d.expiredRecently.length === 0 ? (
             <EmptyState>Rien à relancer.</EmptyState>
           ) : (

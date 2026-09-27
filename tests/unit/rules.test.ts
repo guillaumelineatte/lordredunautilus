@@ -13,7 +13,7 @@ describe("alertes d'échéance (J-30 / J-7 / J0)", () => {
   it("rattrape un palier manqué (adhésion saisie tard)", () => expect(alertTier(5, none)).toBe(7));
   it("J0 le jour de la fin", () =>
     expect(alertTier(0, { d30: true, d7: true, d0: false })).toBe(0));
-  it("plus rien une fois échue", () => expect(alertTier(-1, none)).toBeNull());
+  it("plus rien une fois désabonné", () => expect(alertTier(-1, none)).toBeNull());
 });
 
 describe("verrouillage après 5 échecs", () => {
