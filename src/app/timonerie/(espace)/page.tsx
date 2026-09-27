@@ -55,7 +55,7 @@ export default async function DashboardPage() {
                 return (
                   <li key={m.id} className="flex items-center justify-between gap-3 py-2.5">
                     <div>
-                      <Link href={`/admin/adherents/${m.memberId}`} className="hover:text-rose">
+                      <Link href={`/timonerie/adherents/${m.memberId}`} className="hover:text-rose">
                         {fullName(m.member)}
                       </Link>
                       <p className="text-xs text-ivory-3">
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
               {d.expiredRecently.map((m) => (
                 <li key={m.id} className="flex items-center justify-between gap-3 py-2.5">
                   <div>
-                    <Link href={`/admin/adherents/${m.memberId}`} className="hover:text-rose">
+                    <Link href={`/timonerie/adherents/${m.memberId}`} className="hover:text-rose">
                       {fullName(m.member)}
                     </Link>
                     <p className="text-xs text-ivory-3">
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
                 return (
                   <li key={e.id}>
                     <div className="flex items-baseline justify-between gap-2">
-                      <Link href={`/admin/evenements/${e.id}`} className="hover:text-rose">
+                      <Link href={`/timonerie/evenements/${e.id}`} className="hover:text-rose">
                         {e.title}
                       </Link>
                       <span className="text-xs text-ivory-3">
@@ -158,7 +158,7 @@ export default async function DashboardPage() {
                 <li key={r.id} className="flex items-center justify-between gap-3 py-2">
                   <span>
                     {fullName(r)} →{" "}
-                    <Link href={`/admin/evenements/${r.event.id}`} className="hover:text-rose">
+                    <Link href={`/timonerie/evenements/${r.event.id}`} className="hover:text-rose">
                       {r.event.title}
                     </Link>
                   </span>
@@ -174,7 +174,7 @@ export default async function DashboardPage() {
         <Card
           title="Messages non traités"
           actions={
-            <Link href="/admin/messages" className="text-xs text-rose">
+            <Link href="/timonerie/messages" className="text-xs text-rose">
               Tout voir
             </Link>
           }
@@ -203,7 +203,7 @@ export default async function DashboardPage() {
             <ul className="grid gap-2 text-sm">
               {d.missingParental.map((m) => (
                 <li key={`p-${m.id}`}>
-                  <Link href={`/admin/adherents/${m.id}`} className="hover:text-rose">
+                  <Link href={`/timonerie/adherents/${m.id}`} className="hover:text-rose">
                     {fullName(m)}
                   </Link>{" "}
                   <Badge tone="danger">autorisation parentale manquante</Badge>
@@ -211,7 +211,7 @@ export default async function DashboardPage() {
               ))}
               {d.minorsToReview.map((m) => (
                 <li key={`r-${m.id}`}>
-                  <Link href={`/admin/adherents/${m.id}`} className="hover:text-rose">
+                  <Link href={`/timonerie/adherents/${m.id}`} className="hover:text-rose">
                     {fullName(m)}
                   </Link>{" "}
                   <Badge tone="warn">
@@ -227,7 +227,7 @@ export default async function DashboardPage() {
           title="Dernières actions"
           className="lg:col-span-2"
           actions={
-            <Link href="/admin/journal" className="text-xs text-rose">
+            <Link href="/timonerie/journal" className="text-xs text-rose">
               Journal complet
             </Link>
           }

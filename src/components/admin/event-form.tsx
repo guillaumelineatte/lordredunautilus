@@ -44,7 +44,7 @@ export function EventForm({
     <ActionForm
       action={saveEvent}
       success={initial?.id ? "Événement enregistré." : "Événement créé."}
-      redirectTo={initial?.id ? undefined : (d: { id: string }) => `/admin/evenements/${d.id}`}
+      redirectTo={initial?.id ? undefined : (d: { id: string }) => `/timonerie/evenements/${d.id}`}
       extra={initial?.id ? { id: initial.id } : undefined}
     >
       <div className="grid gap-4 md:grid-cols-2">

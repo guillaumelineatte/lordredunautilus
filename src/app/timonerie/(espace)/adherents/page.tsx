@@ -39,12 +39,12 @@ export default async function MembersPage({
         description="Seules les données nécessaires sont conservées : nom, prénom, année de naissance, identifiants de jeu, adhésions, carte et autorisations."
         actions={
           <>
-            <LinkButton href="/api/admin/export/adherents" prefetch={false}>
+            <LinkButton href="/api/timonerie/export/adherents" prefetch={false}>
               Exporter en CSV
             </LinkButton>
-            <LinkButton href="/admin/adherents/import">Importer un CSV</LinkButton>
-            <LinkButton href="/admin/adherents/fusion">Fusionner des doublons</LinkButton>
-            <LinkButton href="/admin/adherents/nouveau" variant="primary" data-shortcut="new">
+            <LinkButton href="/timonerie/adherents/import">Importer un CSV</LinkButton>
+            <LinkButton href="/timonerie/adherents/fusion">Fusionner des doublons</LinkButton>
+            <LinkButton href="/timonerie/adherents/nouveau" variant="primary" data-shortcut="new">
               Nouvel adhérent <kbd className="text-[0.65rem] opacity-70">n</kbd>
             </LinkButton>
           </>

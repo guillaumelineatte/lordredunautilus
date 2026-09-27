@@ -9,7 +9,7 @@ test("événement : publication, inscriptions publiques, liste d'attente, promot
   acceptDialogs(page);
   const title = `Draft E2E ${run}`;
 
-  await page.goto("/admin/evenements/nouveau");
+  await page.goto("/timonerie/evenements/nouveau");
   await page.getByLabel("Titre").fill(title);
   await page.getByLabel("Type").selectOption("DRAFT");
   await page.getByLabel("Date", { exact: true }).fill(inDays(20));
@@ -66,14 +66,14 @@ test("événement : publication, inscriptions publiques, liste d'attente, promot
   await expect(page.getByText("Présent", { exact: true }).first()).toBeVisible();
 
   // Feuille d'émargement
-  const pdf = await request.get(`/api/admin/pdf/emargement?evenement=${eventId}`);
+  const pdf = await request.get(`/api/timonerie/pdf/emargement?evenement=${eventId}`);
   expect(pdf.headers()["content-type"]).toBe("application/pdf");
 
   // Duplication en brouillon, puis corbeille de l'original
   await page.getByRole("button", { name: "Dupliquer" }).click();
   await expect(page.getByText("Copie créée en brouillon")).toBeVisible();
   await page.getByRole("button", { name: "Corbeille" }).click();
-  await expect(page).toHaveURL(/\/admin\/evenements$/);
+  await expect(page).toHaveURL(/\/timonerie\/evenements$/);
 });
 
 test("soirée libre : pas de formulaire d'inscription", async ({ page }) => {

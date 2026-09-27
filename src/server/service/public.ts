@@ -93,7 +93,7 @@ export async function registerPublic(
         await notifyAdmin(`Inscription sur un événement complet : ${event.title}`, {
           title: "Inscription en liste d'attente",
           intro: `${fullName(registration)} s'est inscrit·e à « ${event.title} » (${formatEventDate(event.startsAt)} à ${formatHour(event.startsAt)}), qui est complet. Cette personne est en liste d'attente.`,
-          cta: { label: "Voir les inscrits", href: siteUrl(`/admin/evenements/${event.id}`) },
+          cta: { label: "Voir les inscrits", href: siteUrl(`/timonerie/evenements/${event.id}`) },
         });
       }
     });
@@ -134,7 +134,10 @@ export async function cancelByToken(token: string): Promise<ActionResult<{ event
         notifyAdmin(`Place libérée : ${reg.event.title}`, {
           title: "Une place s'est libérée",
           intro: `${fullName(reg)} a annulé son inscription à « ${reg.event.title} ». ${waiting} personne(s) en liste d'attente : vous pouvez promouvoir la suivante.`,
-          cta: { label: "Gérer les inscrits", href: siteUrl(`/admin/evenements/${reg.eventId}`) },
+          cta: {
+            label: "Gérer les inscrits",
+            href: siteUrl(`/timonerie/evenements/${reg.eventId}`),
+          },
         }),
       );
     }
@@ -161,7 +164,7 @@ export async function submitContact(input: ContactInput): Promise<ActionResult<{
         title: "Nouveau message de contact",
         intro: `${message.firstName} (${message.email})${message.game ? `, intéressé·e par ${message.game}` : ""}, a écrit :`,
         sections: [{ heading: "Message", items: [message.message] }],
-        cta: { label: "Ouvrir la boîte de réception", href: siteUrl("/admin/messages") },
+        cta: { label: "Ouvrir la boîte de réception", href: siteUrl("/timonerie/messages") },
       }),
     );
     return { ok: true, data: { email: message.email } };

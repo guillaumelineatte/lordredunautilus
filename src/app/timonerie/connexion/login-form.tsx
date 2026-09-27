@@ -33,7 +33,7 @@ export function LoginForm() {
         setStep("totp");
         return;
       }
-      router.push("/admin");
+      router.push("/timonerie");
       router.refresh();
     });
   }
@@ -51,7 +51,7 @@ export function LoginForm() {
         setError(res.error.message ?? "Code invalide.");
         return;
       }
-      router.push("/admin");
+      router.push("/timonerie");
       router.refresh();
     });
   }

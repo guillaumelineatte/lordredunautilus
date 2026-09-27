@@ -17,7 +17,7 @@ export function MergeForm({
     <ActionForm
       action={mergeMembersAction}
       success="Fiches fusionnées."
-      redirectTo={(d: { id: string }) => `/admin/adherents/${d.id}`}
+      redirectTo={(d: { id: string }) => `/timonerie/adherents/${d.id}`}
       confirm="Fusionner ces deux fiches ? La seconde sera supprimée."
     >
       <div className="grid gap-3 md:grid-cols-2">

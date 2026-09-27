@@ -5,11 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TABS = [
-  { href: "/admin/contenus/temoignages", label: "Témoignages" },
-  { href: "/admin/contenus/faq", label: "FAQ" },
-  { href: "/admin/contenus/formules", label: "Formules" },
-  { href: "/admin/contenus/jeux", label: "Jeux" },
-  { href: "/admin/contenus/reglages", label: "Réglages du site" },
+  { href: "/timonerie/contenus/temoignages", label: "Témoignages" },
+  { href: "/timonerie/contenus/faq", label: "FAQ" },
+  { href: "/timonerie/contenus/formules", label: "Formules" },
+  { href: "/timonerie/contenus/jeux", label: "Jeux" },
+  { href: "/timonerie/contenus/reglages", label: "Réglages du site" },
 ];
 
 export function ContentTabs() {

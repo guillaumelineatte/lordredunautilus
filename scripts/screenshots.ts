@@ -40,33 +40,32 @@ async function main() {
   await shot(page, "site-agenda", "/evenements");
   await shot(page, "site-adherer", "/adherer", true);
 
-  await page.goto(`${base}/acces/${process.env.ADMIN_ACCESS_CODE ?? ""}`);
-  await page.waitForURL(`${base}/admin/connexion`);
+  await page.goto(`${base}/timonerie/connexion`);
   await page.screenshot({ path: `${out}/admin-connexion.jpg`, type: "jpeg", quality: 78 });
   await page.getByLabel("Identifiant (e-mail)").fill(process.env.ADMIN_EMAIL ?? "");
   await page.getByLabel("Mot de passe").fill(process.env.ADMIN_INITIAL_PASSWORD ?? "");
   await page.getByRole("button", { name: "Se connecter" }).click();
-  await page.waitForURL(`${base}/admin`);
+  await page.waitForURL(`${base}/timonerie`);
 
-  await shot(page, "admin-tableau-de-bord", "/admin", true);
-  await shot(page, "admin-adherents", "/admin/adherents");
+  await shot(page, "admin-tableau-de-bord", "/timonerie", true);
+  await shot(page, "admin-adherents", "/timonerie/adherents");
   const memberHref = await page
-    .locator("table a[href^='/admin/adherents/c']")
+    .locator("table a[href^='/timonerie/adherents/c']")
     .first()
     .getAttribute("href");
   if (memberHref) await shot(page, "admin-fiche-adherent", memberHref, true);
-  await shot(page, "admin-evenements", "/admin/evenements");
+  await shot(page, "admin-evenements", "/timonerie/evenements");
   const eventHref = await page
-    .locator("table a[href^='/admin/evenements/c']")
+    .locator("table a[href^='/timonerie/evenements/c']")
     .nth(1)
     .getAttribute("href");
   if (eventHref) await shot(page, "admin-inscrits", eventHref);
-  await shot(page, "admin-galerie", "/admin/galerie");
-  await shot(page, "admin-reglages", "/admin/contenus/reglages");
-  await shot(page, "admin-documents", "/admin/documents");
-  await shot(page, "admin-messages", "/admin/messages");
-  await shot(page, "admin-journal", "/admin/journal");
-  await shot(page, "admin-compte", "/admin/compte");
+  await shot(page, "admin-galerie", "/timonerie/galerie");
+  await shot(page, "admin-reglages", "/timonerie/contenus/reglages");
+  await shot(page, "admin-documents", "/timonerie/documents");
+  await shot(page, "admin-messages", "/timonerie/messages");
+  await shot(page, "admin-journal", "/timonerie/journal");
+  await shot(page, "admin-compte", "/timonerie/compte");
 
   await browser.close();
 }

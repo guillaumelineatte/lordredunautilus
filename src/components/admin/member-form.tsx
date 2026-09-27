@@ -75,7 +75,7 @@ export function MemberForm({
     <ActionForm
       action={saveMember}
       success={editing ? "Modifications enregistrées." : "Adhérent créé."}
-      redirectTo={editing ? undefined : (data: { id: string }) => `/admin/adherents/${data.id}`}
+      redirectTo={editing ? undefined : (data: { id: string }) => `/timonerie/adherents/${data.id}`}
       onSuccess={(data: { id: string; unpublished: number }) => {
         if (data.unpublished > 0) {
           notify(

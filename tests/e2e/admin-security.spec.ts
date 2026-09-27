@@ -17,15 +17,14 @@ test("les routes admin refusent une requête sans session", async ({ playwright 
     baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3001",
     storageState: { cookies: [], origins: [] },
   });
-  // Sans cookie d'accès : 404 (le proxy ne laisse même pas deviner que la route existe)
-  expect((await anonymous.get("/api/admin/export/adherents")).status()).toBe(404);
-  expect((await anonymous.get("/api/admin/pdf/registre")).status()).toBe(404);
+  expect((await anonymous.get("/api/timonerie/export/adherents")).status()).toBe(401);
+  expect((await anonymous.get("/api/timonerie/pdf/registre")).status()).toBe(401);
   await anonymous.dispose();
 });
 
 test("registre des traitements et documents", async ({ page, request }) => {
-  await page.goto("/admin/registre");
+  await page.goto("/timonerie/registre");
   await expect(page.getByRole("heading", { name: /Gestion des adhérents/ })).toBeVisible();
-  const pdf = await request.get("/api/admin/pdf/autorisation-parentale");
+  const pdf = await request.get("/api/timonerie/pdf/autorisation-parentale");
   expect(pdf.headers()["content-type"]).toBe("application/pdf");
 });

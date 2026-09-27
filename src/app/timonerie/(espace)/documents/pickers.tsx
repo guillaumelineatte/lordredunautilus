@@ -18,7 +18,7 @@ export function DocumentPickers({
 }) {
   const [value, setValue] = useState("");
   const href = value
-    ? `/api/admin/pdf/${kind}?${param}=${encodeURIComponent(value)}${extra ? `&${extra}` : ""}`
+    ? `/api/timonerie/pdf/${kind}?${param}=${encodeURIComponent(value)}${extra ? `&${extra}` : ""}`
     : undefined;
   return (
     <div className="grid gap-1.5">

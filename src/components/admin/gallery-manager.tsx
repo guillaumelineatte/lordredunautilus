@@ -81,7 +81,7 @@ function Uploader({ eventId }: { eventId?: string }) {
       const body = new FormData();
       body.set("file", await prepare(file), file.name.replace(/\.\w+$/, ".jpg"));
       if (eventId) body.set("eventId", eventId);
-      const res = await fetch("/api/admin/photos", { method: "POST", body });
+      const res = await fetch("/api/timonerie/photos", { method: "POST", body });
       if (!res.ok) {
         errors++;
         const data = (await res.json().catch(() => ({}))) as { error?: string };
