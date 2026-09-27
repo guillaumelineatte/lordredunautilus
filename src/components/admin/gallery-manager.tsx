@@ -4,8 +4,6 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition, type DragEvent } from "react";
-import type { ConsentSource } from "@/generated/prisma/enums";
-import { publicationBlockers } from "@/lib/photo-rules";
 import {
   deletePhoto,
   reorderPhotos,
@@ -13,18 +11,9 @@ import {
   updatePhoto,
 } from "@/server/actions/photos";
 import { ActionButton } from "./action-button";
-import { ActionForm, CheckboxField, SelectField, SubmitButton, TextField } from "./form";
+import { ActionForm, SelectField, SubmitButton, TextField } from "./form";
 import { useToast } from "./toast";
 import { Badge, Button } from "./ui";
-
-type Tagged = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  imageRightsGallery: boolean;
-  imageRightsGallerySource: ConsentSource | null;
-  anonymizedAt: string | null;
-};
 
 export type AdminPhoto = {
   id: string;
@@ -34,12 +23,8 @@ export type AdminPhoto = {
   alt: string;
   caption: string | null;
   isPublished: boolean;
-  imageRightsChecked: boolean;
   event: { id: string; title: string } | null;
-  taggedMembers: Tagged[];
 };
-
-type MemberOption = Omit<Tagged, "anonymizedAt">;
 
 const MAX_EDGE = 2400;
 
@@ -137,38 +122,13 @@ function Uploader({ eventId }: { eventId?: string }) {
 
 function PhotoEditor({
   photo,
-  members,
   events,
   onClose,
 }: {
   photo: AdminPhoto;
-  members: MemberOption[];
   events: { id: string; title: string }[];
   onClose: () => void;
 }) {
-  const [tagged, setTagged] = useState<string[]>(photo.taggedMembers.map((m) => m.id));
-  const [rightsChecked, setRightsChecked] = useState(photo.imageRightsChecked);
-  const [alt, setAlt] = useState(photo.alt);
-  const byId = new Map(members.map((m) => [m.id, m]));
-  const blockers = publicationBlockers({
-    alt,
-    imageRightsChecked: rightsChecked,
-    taggedMembers: tagged.map((id) => {
-      const known = photo.taggedMembers.find((t) => t.id === id);
-      if (known) return known;
-      const m = byId.get(id);
-      return m
-        ? { ...m, anonymizedAt: null }
-        : {
-            firstName: "?",
-            lastName: "",
-            imageRightsGallery: false,
-            imageRightsGallerySource: null,
-            anonymizedAt: null,
-          };
-    }),
-  });
-
   return (
     <div className="grid gap-4 md:grid-cols-[14rem_1fr]">
       <Image
@@ -180,18 +140,16 @@ function PhotoEditor({
       />
       <ActionForm
         action={updatePhoto}
-        extra={{ id: photo.id, taggedMemberIds: JSON.stringify(tagged) }}
+        extra={{ id: photo.id }}
         success="Photo enregistrée."
-        onSuccess={(d: { unpublished: boolean }) => {
-          if (!d.unpublished) onClose();
-        }}
+        onSuccess={onClose}
       >
         <TextField
           label="Texte alternatif (décrit la photo pour les lecteurs d'écran)"
           name="alt"
-          value={alt}
-          onChange={(e) => setAlt(e.target.value)}
+          defaultValue={photo.alt}
           maxLength={250}
+          hint="Facultatif : à défaut, la légende (ou une description générique) est utilisée."
         />
         <TextField
           label="Légende (facultatif)"
@@ -206,62 +164,6 @@ function PhotoEditor({
           options={events.map((e) => ({ value: e.id, label: e.title }))}
           placeholder="Aucune"
         />
-        <div className="grid gap-2">
-          <p className="label">Membres identifiables sur la photo</p>
-          <div className="flex flex-wrap gap-2">
-            {tagged.map((id) => {
-              const m = byId.get(id) ?? photo.taggedMembers.find((t) => t.id === id);
-              return (
-                <span
-                  key={id}
-                  className="inline-flex items-center gap-1 rounded-full border border-line-strong px-2 py-0.5 text-xs"
-                >
-                  {m ? `${m.firstName} ${m.lastName}` : "Ancien membre"}
-                  <button
-                    type="button"
-                    aria-label="Retirer"
-                    onClick={() => setTagged(tagged.filter((t) => t !== id))}
-                    className="text-ivory-3 hover:text-danger"
-                  >
-                    ×
-                  </button>
-                </span>
-              );
-            })}
-          </div>
-          <select
-            aria-label="Identifier un membre"
-            value=""
-            onChange={(e) => e.target.value && setTagged([...tagged, e.target.value])}
-            className="field-input"
-          >
-            <option value="">+ Identifier un membre…</option>
-            {members
-              .filter((m) => !tagged.includes(m.id))
-              .map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.lastName} {m.firstName}
-                  {!m.imageRightsGallery ? " — galerie refusée" : ""}
-                </option>
-              ))}
-          </select>
-        </div>
-        <CheckboxField
-          label="Droits à l'image vérifiés"
-          name="imageRightsChecked"
-          checked={rightsChecked}
-          onChange={(e) => setRightsChecked(e.target.checked)}
-          hint="Obligatoire avant publication : vous avez vérifié que chaque personne reconnaissable a donné son accord."
-        />
-        {blockers.length > 0 ? (
-          <ul className="list-disc rounded-s border border-warn/40 bg-warn/10 py-2 pr-3 pl-7 text-xs text-warn">
-            {blockers.map((b) => (
-              <li key={b}>{b}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-xs text-ok">Cette photo peut être publiée.</p>
-        )}
         <div className="flex justify-end gap-2">
           <Button variant="subtle" onClick={onClose}>
             Fermer
@@ -275,12 +177,10 @@ function PhotoEditor({
 
 export function GalleryManager({
   photos,
-  members,
   events,
   eventId,
 }: {
   photos: AdminPhoto[];
-  members: MemberOption[];
   events: { id: string; title: string }[];
   eventId?: string;
 }) {
@@ -314,7 +214,6 @@ export function GalleryManager({
           <PhotoEditor
             key={current.id}
             photo={current}
-            members={members}
             events={events}
             onClose={() => setEditing(null)}
           />
@@ -346,7 +245,6 @@ export function GalleryManager({
 
       <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {ordered.map((p) => {
-          const blockers = publicationBlockers({ ...p, taggedMembers: p.taggedMembers });
           return (
             <li
               key={p.id}
@@ -375,7 +273,6 @@ export function GalleryManager({
               <div className="grid gap-2 p-3">
                 <div className="flex flex-wrap items-center gap-1">
                   {p.isPublished ? <Badge tone="ok">publiée</Badge> : <Badge>brouillon</Badge>}
-                  {!p.imageRightsChecked ? <Badge tone="warn">droits à vérifier</Badge> : null}
                 </div>
                 <p className="line-clamp-1 text-xs text-ivory-3">
                   {p.caption ?? p.event?.title ?? "Sans légende"}
@@ -388,8 +285,6 @@ export function GalleryManager({
                     action={setPhotoPublished}
                     input={{ id: p.id, publish: !p.isPublished }}
                     variant={p.isPublished ? "ghost" : "primary"}
-                    disabled={!p.isPublished && blockers.length > 0}
-                    title={blockers.join(" ")}
                     success={p.isPublished ? "Photo retirée du site." : "Photo publiée."}
                   >
                     {p.isPublished ? "Dépublier" : "Publier"}

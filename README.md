@@ -207,7 +207,6 @@ On y trouve :
 - le **statut** actif ou échu est calculé d'après les adhésions ; seule la case « Adhérent suspendu » se règle à la main ;
 - le **numéro de carte** doit être unique : le message indique à qui il est déjà attribué ;
 - chaque **identifiant de jeu** doit respecter le format de son jeu et ne pas appartenir à une autre fiche ;
-- si une **autorisation photo** est retirée, les photos où la personne est identifiée sont retirées de la galerie, et un message le signale.
 
 **Corriger une adhésion** : icône crayon sur la ligne de l'adhésion. On peut modifier la formule, le début, la fin (avec un lien pour la recalculer d'après la formule), le montant, le mode de paiement et la référence. Les dates ne doivent pas chevaucher une autre adhésion du membre. Si la fin change, les alertes d'échéance repartent de zéro et le statut est recalculé. L'icône poubelle supprime une adhésion saisie par erreur.
 
@@ -232,7 +231,7 @@ On y trouve :
 - **Fiche sans aucune adhésion** (erreur de saisie, doublon, test) : effacée entièrement de la base.
 - **Fiche avec des adhésions** : nom, identifiants de jeu, autorisations et documents sont effacés ; les montants et dates restent en comptabilité sous « Ancien membre ». C'est aussi la réponse à une demande d'effacement RGPD.
 
-Dans les deux cas, les photos où la personne était identifiée repassent en brouillon, et la suppression est tracée dans le journal.
+Dans les deux cas, la suppression est tracée dans le journal ; pensez à retirer vous-même les photos où la personne apparaît.
 
 **Corbeille** (en bas de la fiche) : pour mettre une fiche de côté sans la supprimer tout de suite. Elle disparaît des listes (filtre « Corbeille » pour la retrouver), reste restaurable, puis est supprimée automatiquement après 30 jours.
 
@@ -261,14 +260,10 @@ Dans les deux cas, les photos où la personne était identifiée repassent en br
 ![Galerie](docs/captures/admin-galerie.jpg)
 
 1. Glissez-déposez les photos. Elles arrivent en brouillon, redimensionnées, sans métadonnées (géolocalisation comprise).
-2. **Modifier** chaque photo :
-   - texte alternatif (obligatoire) et légende ;
-   - soirée de rattachement ;
-   - membres identifiables sur la photo ;
-   - case **Droits à l'image vérifiés**.
-3. **Publier**. La publication reste bloquée tant que la case n'est pas cochée ou qu'un membre identifié n'a pas donné son accord. Pour un mineur, vérifiez en personne l'autorisation parentale signée avant de cocher la case.
+2. **Modifier** chaque photo si besoin : texte alternatif, légende, soirée de rattachement. Le texte alternatif est facultatif : à défaut, la légende (ou une description générique) est lue par les lecteurs d'écran.
+3. **Publier**. Seul l'administrateur ajoute et publie les photos : aucune vérification n'est imposée par le site. Avant de publier, assurez-vous que les personnes reconnaissables sont d'accord (autorisation parentale signée pour un mineur), en vous aidant des autorisations notées sur les fiches.
 
-Si un membre retire son accord, ses photos sont dépubliées automatiquement. Glissez les vignettes pour changer l'ordre.
+Si un membre retire son accord, retirez vous-même ses photos (**Dépublier** ou **Supprimer**). Glissez les vignettes pour changer l'ordre.
 
 ### Contenus et réglages
 
@@ -335,11 +330,11 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
 
 **Demande d'effacement (art. 17) ou d'opposition** :
 
-1. Fiche → icône poubelle (en haut à droite). L'effacement est immédiat : identité, identifiants et inscriptions liées ; les photos où la personne était identifiée sont dépubliées. Si la personne a eu des adhésions, seuls les montants et dates restent, sans nom, pour la comptabilité.
+1. Fiche → icône poubelle (en haut à droite). L'effacement est immédiat : identité, identifiants et inscriptions liées. Retirez aussi de la galerie les photos où elle apparaît. Si la personne a eu des adhésions, seuls les montants et dates restent, sans nom, pour la comptabilité.
 2. Supprimer aussi, si besoin, la photo de la galerie et les éventuelles copies hors site (Discord, sauvegardes locales).
 3. Répondre à la personne dans un délai d'un mois.
 
-**Retrait du consentement aux photos** : décocher l'autorisation sur la fiche. Les photos concernées sont dépubliées automatiquement ; retirer aussi celles publiées sur les réseaux.
+**Retrait du consentement aux photos** : décocher l'autorisation sur la fiche, puis dépublier ou supprimer ses photos de la galerie, et retirer aussi celles publiées sur les réseaux.
 
 **Violation de données** (perte d'un ordinateur, accès non autorisé…) : noter les faits. Notifier la CNIL sous **72 heures** si un risque existe pour les personnes, et les prévenir si le risque est élevé.
 
@@ -367,7 +362,7 @@ Chaque réinitialisation ferme toutes les sessions et est tracée dans le journa
   - suppression de fiches depuis la liste, une par une et par sélection ;
   - modification d'une fiche (suspension, numéro de carte en doublon) et correction d'une adhésion ;
   - événement avec inscriptions publiques, liste d'attente, anti-doublon, promotion et émargement ;
-  - galerie (publication bloquée puis autorisée) ;
+  - galerie (dépôt, publication directe, suppression) ;
   - cron protégé, routes admin refusées sans session ;
   - formulaire de contact ;
   - **accessibilité WCAG AA** (axe) sur les pages principales.

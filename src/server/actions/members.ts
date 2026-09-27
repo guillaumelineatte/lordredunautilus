@@ -14,7 +14,6 @@ import {
 import {
   assertCardNumberFree,
   deleteMember,
-  enforcePhotoRules,
   membershipStatus,
   recomputeMemberStatus,
   syncGameIds,
@@ -30,7 +29,6 @@ const dayOrNull = (v: string | null) => (v ? dayToDbDate(v) : null);
  * Création ou modification d'une fiche.
  * - statut : suspendu si coché, sinon déduit des adhésions (actif / échu) ;
  * - numéro de carte unique, identifiants de jeu validés par la regex du jeu ;
- * - autorisation photo retirée : photos où le membre est identifié dépubliées.
  */
 export const saveMember = adminAction(
   { schema: memberInput, tags: [TAGS.stats, TAGS.photos] },
@@ -61,8 +59,7 @@ export const saveMember = adminAction(
       const after = await tx.member.update({ where: { id: input.id }, data: { ...data, status } });
       await audit.updated("Member", before, after);
       await syncGameIds(tx, after.id, input.gameIds, audit);
-      const unpublished = await enforcePhotoRules(tx, after.id, audit);
-      return { id: after.id, unpublished };
+      return { id: after.id };
     }
 
     const created = await tx.member.create({
@@ -74,7 +71,7 @@ export const saveMember = adminAction(
     });
     await audit.created("Member", created);
     await syncGameIds(tx, created.id, input.gameIds, audit);
-    return { id: created.id, unpublished: 0 };
+    return { id: created.id };
   },
 );
 

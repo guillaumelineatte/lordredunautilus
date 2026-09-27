@@ -13,7 +13,7 @@ export async function mergeMembers(tx: Tx, keepId: string, dropId: string, audit
     tx.member.findUnique({ where: { id: keepId }, include: { gameIds: true } }),
     tx.member.findUnique({
       where: { id: dropId },
-      include: { gameIds: true, taggedPhotos: { select: { id: true } } },
+      include: { gameIds: true },
     }),
   ]);
   if (!keep || !drop) fail("Fiche introuvable.");
@@ -49,7 +49,7 @@ export async function mergeMembers(tx: Tx, keepId: string, dropId: string, audit
   // Libère les valeurs uniques avant de les reporter sur la fiche conservée.
   await tx.member.update({
     where: { id: dropId },
-    data: { cardNumber: null, taggedPhotos: { set: [] } },
+    data: { cardNumber: null },
   });
 
   const notes = [keep.notes, drop.notes].filter(Boolean).join(" · ").slice(0, 500) || null;
@@ -72,7 +72,6 @@ export async function mergeMembers(tx: Tx, keepId: string, dropId: string, audit
             imageRightsSocialSource: drop.imageRightsSocialSource,
           }
         : {}),
-      taggedPhotos: { connect: drop.taggedPhotos.map((p) => ({ id: p.id })) },
     },
   });
 

@@ -104,7 +104,6 @@ async function memberDataJson(memberId: string) {
         include: { event: { select: { title: true, startsAt: true } } },
         orderBy: { createdAt: "asc" },
       },
-      _count: { select: { taggedPhotos: true } },
     },
   });
   if (!m || m.anonymizedAt) return null;
@@ -149,7 +148,6 @@ async function memberDataJson(memberId: string) {
       date: formatDay(r.event.startsAt),
       statut: r.status,
     })),
-    photosOuLaPersonneEstIdentifiee: m._count.taggedPhotos,
     creeLe: formatDay(m.createdAt),
   };
 }

@@ -71,12 +71,12 @@ export const PROCESSINGS: Processing[] = [
     purpose: "Montrer la vie de l'association sur le site.",
     legalBasis: "Consentement des personnes identifiables (art. 6.1.a RGPD).",
     people: "Participants photographiés.",
-    data: ["Photographies", "Lien interne entre une photo et les membres identifiés"],
+    data: ["Photographies, légende, soirée de rattachement"],
     retention:
-      "Jusqu'au retrait du consentement ou à la suppression de la photo ; dépublication automatique si l'autorisation est retirée.",
+      "Jusqu'au retrait du consentement ou à la suppression de la photo par l'administrateur.",
     recipients: "Public (photos publiées uniquement).",
     security:
-      "Publication bloquée tant que les droits ne sont pas vérifiés ; métadonnées (dont géolocalisation) supprimées des fichiers.",
+      "Publication par l'administrateur uniquement, après accord des personnes reconnaissables ; métadonnées (dont géolocalisation) supprimées des fichiers.",
   },
   {
     name: "Formulaire de contact",

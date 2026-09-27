@@ -486,7 +486,6 @@ async function seedContent() {
         sortOrder: i,
         isPublished: true,
         publishedAt: new Date(),
-        imageRightsChecked: true,
       },
     });
   }

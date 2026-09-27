@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { lockMinutes, lockUntil } from "@/server/auth/lockout";
 import { alertTier } from "@/lib/membership-alerts";
-import { publicationBlockers, type TaggedMember } from "@/lib/photo-rules";
 import { dedupeKey, matchesPattern, publicName, slugify } from "@/lib/text";
 
 const none = { d30: false, d7: false, d0: false };
@@ -28,49 +27,6 @@ describe("verrouillage après 5 échecs", () => {
     expect(lockUntil(5, now)?.toISOString()).toBe("2026-09-26T10:15:00.000Z");
   });
   it("1 heure à partir de 10 échecs", () => expect(lockMinutes(10)).toBe(60));
-});
-
-const member = (over: Partial<TaggedMember> = {}): TaggedMember => ({
-  firstName: "Inès",
-  lastName: "Martin",
-  imageRightsGallery: true,
-  imageRightsGallerySource: "VERBAL",
-  anonymizedAt: null,
-  ...over,
-});
-
-describe("règles de publication des photos", () => {
-  it("bloquée tant que les droits ne sont pas vérifiés", () => {
-    expect(
-      publicationBlockers({ alt: "Une table", imageRightsChecked: false, taggedMembers: [] }),
-    ).toHaveLength(1);
-  });
-  it("texte alternatif obligatoire", () => {
-    expect(
-      publicationBlockers({ alt: " ", imageRightsChecked: true, taggedMembers: [] })[0],
-    ).toMatch(/texte alternatif/);
-  });
-  it("publiable sans personne identifiée", () => {
-    expect(
-      publicationBlockers({ alt: "Une table", imageRightsChecked: true, taggedMembers: [] }),
-    ).toEqual([]);
-  });
-  it("membre identifié sans autorisation galerie", () => {
-    const r = publicationBlockers({
-      alt: "x",
-      imageRightsChecked: true,
-      taggedMembers: [member({ imageRightsGallery: false })],
-    });
-    expect(r[0]).toMatch(/n'a pas autorisé/);
-  });
-  it("membre identifié ayant autorisé la galerie : publiable", () => {
-    const r = publicationBlockers({
-      alt: "x",
-      imageRightsChecked: true,
-      taggedMembers: [member()],
-    });
-    expect(r).toEqual([]);
-  });
 });
 
 describe("textes", () => {

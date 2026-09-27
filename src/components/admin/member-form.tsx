@@ -14,7 +14,6 @@ import {
   TextAreaField,
   TextField,
 } from "./form";
-import { useToast } from "./toast";
 import { Button } from "./ui";
 
 type Game = {
@@ -58,7 +57,6 @@ export function MemberForm({
   onDone?: () => void;
   onCancel?: () => void;
 }) {
-  const { notify } = useToast();
   const editing = Boolean(initial?.id);
   const [gallery, setGallery] = useState(initial?.imageRightsGallery ?? false);
   const [social, setSocial] = useState(initial?.imageRightsSocial ?? false);
@@ -70,14 +68,7 @@ export function MemberForm({
       action={saveMember}
       success={editing ? "Modifications enregistrées." : "Adhérent créé."}
       redirectTo={editing ? undefined : (data: { id: string }) => `/timonerie/adherents/${data.id}`}
-      onSuccess={(data: { id: string; unpublished: number }) => {
-        if (data.unpublished > 0) {
-          notify(
-            `${data.unpublished} photo(s) où ce membre est identifié ont été retirées de la galerie (autorisation insuffisante).`,
-          );
-        }
-        onDone?.();
-      }}
+      onSuccess={() => onDone?.()}
       extra={{ gameIds: JSON.stringify(gameIds), ...(initial?.id ? { id: initial.id } : {}) }}
       className="gap-6"
     >
