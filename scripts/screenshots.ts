@@ -1,9 +1,6 @@
-/**
- * Captures d'écran du guide d'utilisation (docs/captures), à partir des données
- * de démonstration. Serveur local lancé au préalable (npm run dev).
- *
- *   npx tsx scripts/screenshots.ts
- */
+// Captures pour le guide d'utilisation (docs/captures), faites sur les données de démo.
+// Lancer le serveur avant (npm run dev), puis :
+//   npx tsx scripts/screenshots.ts
 import "dotenv/config";
 import { mkdir } from "node:fs/promises";
 import { chromium, type Page } from "@playwright/test";
@@ -14,7 +11,7 @@ const out = "docs/captures";
 async function shot(page: Page, name: string, path: string, full = false) {
   await page.goto(`${base}${path}`, { waitUntil: "networkidle" });
   await page.waitForTimeout(800);
-  // Les blocs <code> (adresse d'accès secrète…) sont masqués : jamais de secret dans les images.
+  // on masque les blocs <code> pour qu'aucun secret ne traîne sur une capture
   await page.screenshot({
     path: `${out}/${name}.jpg`,
     type: "jpeg",

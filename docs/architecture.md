@@ -1,4 +1,4 @@
-# L'Ordre du Nautilus — architecture
+# Architecture
 
 Schéma de données : [`prisma/schema.prisma`](../prisma/schema.prisma). Mode d'emploi et déploiement : [README](../README.md).
 

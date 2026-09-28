@@ -19,7 +19,7 @@ const LOGIN_PATHS = new Set([
   "/two-factor/verify-backup-code",
 ]);
 
-/** Opérations de compte tracées dans le journal. */
+// actions sur le compte qu'on note dans le journal
 const ACCOUNT_PATHS: Record<string, string> = {
   "/change-password": "Mot de passe modifié",
   "/two-factor/enable": "Activation de la double authentification demandée",
@@ -46,13 +46,13 @@ export const auth = betterAuth({
   verification: { modelName: "adminVerification" },
   emailAndPassword: {
     enabled: true,
-    // Un seul compte, créé par le seed : aucune inscription possible.
+    // un seul compte (créé par le seed), pas d'inscription
     disableSignUp: true,
     minPasswordLength: 12,
     maxPasswordLength: 128,
     password: { hash: hashPassword, verify: verifyPassword },
   },
-  // Limitation de débit gérée par nos soins (en base, compatible serverless).
+  // rate limit stocké en base (ça marche en serverless)
   rateLimit: { enabled: false },
   plugins: [
     twoFactor({ issuer: "L'Ordre du Nautilus", twoFactorTable: "adminTwoFactor" }),

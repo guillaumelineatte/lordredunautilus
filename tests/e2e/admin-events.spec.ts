@@ -24,7 +24,7 @@ test("événement : publication, inscriptions publiques, liste d'attente, promot
     .getAttribute("href");
   expect(publicHref).toBeTruthy();
 
-  // Deux visiteurs s'inscrivent : le second passe en liste d'attente
+  // deux inscrits, le 2e part en liste d'attente
   const visitor = await browser.newContext();
   const v = await visitor.newPage();
   await v.goto(publicHref ?? "/");
@@ -36,13 +36,13 @@ test("événement : publication, inscriptions publiques, liste d'attente, promot
   await v.goto(publicHref ?? "/");
   await v.getByLabel("Prénom").fill("Bruno");
   await v.getByLabel("Nom", { exact: true }).fill(`Second${run}`);
-  // Aucune case « mineur » : seul le rappel d'accompagnement est affiché, pour tous
+  // plus de case mineur, juste le rappel pour tout le monde
   await expect(v.getByLabel("Je suis mineur")).toHaveCount(0);
   await expect(v.getByText("Un adulte doit t'accompagner")).toBeVisible();
   await v.getByRole("button", { name: /M'inscrire en liste d'attente|Réserver ma place/ }).click();
   await expect(v.getByText("Vous êtes sur liste d'attente")).toBeVisible();
 
-  // Anti-doublon nom + prénom
+  // même nom/prénom refusé
   await v.goto(publicHref ?? "/");
   await v.getByLabel("Prénom").fill("alice");
   await v.getByLabel("Nom", { exact: true }).fill(`PREMIERE${run}`);
@@ -50,27 +50,27 @@ test("événement : publication, inscriptions publiques, liste d'attente, promot
   await expect(v.getByText("Une inscription existe déjà à ce nom")).toBeVisible();
   await visitor.close();
 
-  // Côté admin : promotion impossible tant que c'est complet
+  // côté admin, pas de promotion tant que c'est complet
   await page.reload();
   await expect(page.getByText(`Premiere${run} Alice`)).toBeVisible();
   await page.getByRole("button", { name: "Promouvoir" }).click();
   await expect(page.getByText("L'événement est complet").first()).toBeVisible();
 
-  // Annulation de la première inscription, puis promotion
+  // on annule le premier puis on promeut
   await page.getByRole("button", { name: "Annuler", exact: true }).first().click();
   await expect(page.getByText("Absents et annulations (1)")).toBeVisible();
   await page.getByRole("button", { name: "Promouvoir" }).click();
   await expect(page.getByText("Participant promu.")).toBeVisible();
 
-  // Pointage présent
+  // pointage
   await page.getByRole("button", { name: "Présent" }).first().click();
   await expect(page.getByText("Présent", { exact: true }).first()).toBeVisible();
 
-  // Feuille d'émargement
+  // feuille d'émargement
   const pdf = await request.get(`/api/timonerie/pdf/emargement?evenement=${eventId}`);
   expect(pdf.headers()["content-type"]).toBe("application/pdf");
 
-  // Duplication en brouillon, puis corbeille de l'original
+  // duplication en brouillon, puis l'original à la corbeille
   await page.getByRole("button", { name: "Dupliquer" }).click();
   await expect(page.getByText("Copie créée en brouillon")).toBeVisible();
   await page.getByRole("button", { name: "Corbeille" }).click();

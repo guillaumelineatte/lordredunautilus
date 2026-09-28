@@ -15,7 +15,7 @@ const LINKS = [
   { id: "contact", label: "Contact" },
 ];
 
-/** Défilement doux vers une ancre de l'accueil (sinon navigation classique). */
+// scroll doux vers l'ancre si on est sur l'accueil, sinon navigation normale
 export function useAnchorScroll() {
   const pathname = usePathname();
   return (e: MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -45,7 +45,7 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Section active sur l'accueil
+  // section active (accueil)
   useEffect(() => {
     if (pathname !== "/") return;
     const sections = LINKS.map((l) => document.getElementById(l.id)).filter((s): s is HTMLElement =>

@@ -1,7 +1,7 @@
 import "server-only";
 import { auth } from "./auth";
 
-/** Vérifie la session admin dans un Route Handler. */
+// pour les route handlers
 export async function adminFromRequest(req: Request) {
   const session = await auth.api.getSession({ headers: req.headers });
   return session?.user ?? null;
@@ -11,7 +11,7 @@ export function unauthorized() {
   return Response.json({ error: "Session expirée. Reconnectez-vous." }, { status: 401 });
 }
 
-/** Nom de fichier sûr pour Content-Disposition. */
+// nom de fichier propre pour Content-Disposition
 export function attachment(filename: string, inline = false): string {
   const ascii = filename
     .normalize("NFD")

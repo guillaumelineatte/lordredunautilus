@@ -1,7 +1,6 @@
 /*
- * Feuille de style du site public : reprise à l'identique du site vitrine
- * validé (docs/reference/site-vitrine.html), puis compléments pour les
- * nouvelles pages (agenda, inscription, adhésion, galerie, pages légales).
+ * Styles du site public, repris tels quels du site vitrine (docs/reference/site-vitrine.html),
+ * plus ce qu'il a fallu ajouter pour les nouvelles pages.
  */
 :root {
   --abyss: #0c1826;
@@ -1522,9 +1521,7 @@ html.js.no-motion .reveal {
   }
 }
 
-/* =====================================================================
-   Compléments (nouvelles pages et éléments dynamiques)
-   ===================================================================== */
+/* ---------- ajouts (nouvelles pages, éléments dynamiques) ---------- */
 
 .skip-link {
   position: absolute;
@@ -1993,10 +1990,10 @@ dialog#lightbox .lb-next {
   inset: 0;
 }
 
-/* ---------- écran de chargement et intro du hero ----------
-   Même chorégraphie que la timeline GSAP d'origine, jouée en CSS pour ne pas
-   attendre l'hydratation (meilleur LCP). Écran de chargement : première visite
-   de la session uniquement (classe no-loader posée avant le premier rendu). */
+/* ---------- loader + intro du hero ----------
+   Les mêmes anims que la timeline GSAP d'origine mais en CSS, pour ne pas attendre
+   l'hydratation (ça aide le LCP). Le loader ne s'affiche qu'à la première visite
+   de la session (classe no-loader). */
 html:not(.js) #loader,
 html.no-loader #loader,
 html.no-motion #loader {
@@ -2121,7 +2118,7 @@ html.js:not(.no-motion) .reveal.reveal-now {
   animation: nt-reveal 1s var(--out3) both;
 }
 
-/* note sous les formules : bloc centré (le texte l'était déjà) */
+/* note sous les formules, centrée */
 .join-note {
   margin-inline: auto;
 }

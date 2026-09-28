@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Restauration d'une sauvegarde produite par backup.sh.
+# Restaure une sauvegarde faite avec backup.sh.
 #
-#   ./scripts/restore.sh backups/nautilus-20261001-0600.dump "postgres://…cible…"
+#   ./scripts/restore.sh backups/nautilus-20261001-0600.dump "postgres://...cible..."
 #
-# ⚠️ Remplace le contenu de la base cible. Recommandé : restaurer d'abord dans
-# une nouvelle branche Neon, vérifier, puis basculer l'application dessus.
+# Attention, ça écrase la base cible. Le mieux : restaurer dans une nouvelle
+# branche Neon, vérifier, puis faire pointer l'appli dessus.
 set -euo pipefail
 
 dump="${1:?Chemin du fichier .dump attendu}"

@@ -15,13 +15,13 @@ export type AdminContext = {
   audit: AuditRecorder;
   adminId: string;
   meta: RequestMeta;
-  /** Effet à exécuter après la validation de la transaction (e-mails, webhooks). */
+  // lancé une fois la transaction commitée (mails, etc.)
   afterCommit: (effect: () => Promise<unknown>) => void;
 };
 
 type Options<S extends z.ZodType> = {
   schema: S;
-  /** Contenus publics à rafraîchir après l'écriture. */
+  // tags du cache public à invalider après l'écriture
   tags?: CacheTag[];
 };
 
@@ -38,10 +38,8 @@ function toPlain(raw: unknown): unknown {
   return raw;
 }
 
-/**
- * Point d'entrée unique des Server Actions de l'admin :
- * session → validation zod → transaction → journal d'audit → invalidation du cache.
- */
+// Toutes les server actions de l'admin passent par là : on vérifie la session,
+// on valide avec zod, on écrit en transaction avec l'audit, puis on vide le cache.
 export function adminAction<S extends z.ZodType, R>(
   options: Options<S>,
   handler: (input: z.output<S>, ctx: AdminContext) => Promise<R>,

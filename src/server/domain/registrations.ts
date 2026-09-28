@@ -10,7 +10,7 @@ export function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
-/** Verrou ligne sur l'événement : sérialise les inscriptions concurrentes. */
+// lock sur la ligne de l'événement, pour que deux inscriptions en même temps ne dépassent pas la jauge
 async function lockEvent(tx: Tx, eventId: string): Promise<void> {
   await tx.$queryRaw`SELECT id FROM "Event" WHERE id = ${eventId} FOR UPDATE`;
 }
@@ -31,10 +31,8 @@ export type NewRegistration = {
   source: RegistrationSource;
 };
 
-/**
- * Crée (ou réactive après annulation) une inscription. Anti-doublon nom + prénom
- * par événement ; bascule en liste d'attente si l'événement est complet.
- */
+// Crée l'inscription, ou réactive l'ancienne si la personne avait annulé.
+// Refuse les doublons nom/prénom et met en liste d'attente si c'est complet.
 export async function createRegistration(tx: Tx, input: NewRegistration) {
   await lockEvent(tx, input.eventId);
   const event = await tx.event.findUnique({

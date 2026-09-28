@@ -93,7 +93,7 @@ async function eventRegistrationsCsv(eventId: string) {
   }));
 }
 
-/** Droit d'accès / portabilité (art. 15 et 20 RGPD) : toutes les données d'un adhérent, en JSON. */
+// Droit d'accès et portabilité (RGPD art. 15 et 20) : tout ce qu'on a sur un adhérent, en JSON.
 async function memberDataJson(memberId: string) {
   const m = await db.member.findUnique({
     where: { id: memberId },
@@ -206,7 +206,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ entite: 
     meta: metaFromHeaders(req.headers),
   });
 
-  // BOM pour qu'Excel lise correctement les accents ; séparateur « ; » (usage français).
+  // le BOM c'est pour qu'Excel affiche bien les accents, et ; comme séparateur (Excel en français)
   const csv = "﻿" + Papa.unparse(rows, { delimiter: ";" });
   return new Response(csv, {
     headers: {

@@ -53,8 +53,7 @@ export function MemberForm({
 }: {
   games: Game[];
   initial?: MemberFormValues;
-  /** Appelé après un enregistrement réussi (retour au mode lecture). */
-  onDone?: () => void;
+  onDone?: () => void; // après un enregistrement réussi
   onCancel?: () => void;
 }) {
   const editing = Boolean(initial?.id);

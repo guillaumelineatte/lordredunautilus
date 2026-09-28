@@ -14,10 +14,7 @@ type Game = {
   playerIdExample: string | null;
 };
 
-/**
- * Paramètres de l'adhérent : lecture par défaut, bouton « Modifier » pour passer
- * en édition, retour en lecture après enregistrement ou annulation.
- */
+// Fiche en lecture, le bouton Modifier bascule sur le formulaire.
 export function MemberSheet({
   games,
   values,
@@ -26,8 +23,7 @@ export function MemberSheet({
 }: {
   games: Game[];
   values: MemberFormValues;
-  /** Récapitulatif rendu côté serveur (mode lecture). */
-  summary: ReactNode;
+  summary: ReactNode; // rendu côté serveur
   startEditing?: boolean;
 }) {
   const router = useRouter();
@@ -35,7 +31,7 @@ export function MemberSheet({
   const [editing, setEditing] = useState(startEditing);
   const close = () => {
     setEditing(false);
-    // Ouverte depuis la liste (?modifier=1) : on nettoie l'adresse.
+    // ouverte depuis la liste avec ?modifier=1, on nettoie l'url
     if (startEditing) router.replace(pathname, { scroll: false });
   };
 

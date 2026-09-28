@@ -8,7 +8,7 @@ import {
 } from "@/lib/settings";
 import type { Db, Tx } from "./db";
 
-/** Lecture de tous les réglages, fusionnés avec les valeurs par défaut. */
+// tous les réglages, complétés par les valeurs par défaut
 export async function loadSettings(client: Db | Tx): Promise<Settings> {
   const rows = await client.siteSetting.findMany();
   const byKey = new Map(rows.map((r) => [r.key, r.value]));

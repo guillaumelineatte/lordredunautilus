@@ -10,11 +10,8 @@ export type Diff = Record<string, DiffEntry>;
 
 export const MASK = "[masqué]";
 
-/**
- * Champs personnels dont la VALEUR n'est jamais écrite dans le journal :
- * on garde la trace qu'ils ont changé, pas leur contenu. Sans ce masquage,
- * une fiche anonymisée resterait lisible dans le journal immuable.
- */
+// Pour ces champs on note juste qu'ils ont changé, jamais leur valeur.
+// Sinon une fiche anonymisée resterait lisible dans le journal (qu'on ne peut pas modifier).
 export const PERSONAL_FIELDS: Record<string, readonly string[]> = {
   Member: ["firstName", "lastName", "cardNumber", "notes"],
   MemberGameId: ["value"],
@@ -36,13 +33,11 @@ function toScalar(value: unknown): Scalar | undefined {
   if (typeof value === "bigint") return value.toString();
   if (value instanceof Uint8Array) return "[fichier]";
   if (Array.isArray(value)) {
-    // Tableaux de scalaires (formats, avantages…) ; les relations sont ignorées.
+    // tableaux simples (formats, avantages...), on ignore les relations
     return value.every((v) => typeof v !== "object") ? JSON.stringify(value) : undefined;
   }
-  return undefined; // objets imbriqués = relations, ignorées
+  return undefined; // objet imbriqué = relation, on ignore
 }
-
-/** Diff champ à champ entre deux états, valeurs personnelles masquées. */
 export function computeDiff(
   entity: string,
   before: Record<string, unknown> | null,
@@ -92,7 +87,6 @@ export async function writeAudit(client: Db | Tx, input: AuditInput): Promise<vo
 
 type WithId = { id: string } & Record<string, unknown>;
 
-/** Enregistreur lié à une transaction et à une requête : utilisé par toute la couche service. */
 export class AuditRecorder {
   constructor(
     private readonly client: Db | Tx,

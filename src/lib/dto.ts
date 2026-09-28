@@ -1,9 +1,6 @@
 import type { EventType } from "@/generated/prisma/enums";
 
-/**
- * Données publiques telles qu'elles sortent du cache Next (JSON) :
- * aucune Date, uniquement des chaînes ISO.
- */
+// Ce qui sort du cache Next est du JSON, donc pas de Date : que des chaînes ISO.
 
 export type GameDTO = {
   id: string;
@@ -72,7 +69,7 @@ export type PlanDTO = {
 
 export type StatDTO = { label: string; value: number };
 
-/** Places restantes (null = sans limite). */
+// null = pas de limite
 export function placesLeft(e: Pick<EventDTO, "capacity" | "taken">): number | null {
   return e.capacity == null ? null : Math.max(0, e.capacity - e.taken);
 }

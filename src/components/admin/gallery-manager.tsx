@@ -28,7 +28,7 @@ export type AdminPhoto = {
 
 const MAX_EDGE = 2400;
 
-/** Redimensionne dans le navigateur (≤ 2400 px, JPEG) pour passer sous la limite d'envoi. */
+// on réduit l'image dans le navigateur (2400 px max, en JPEG) pour passer sous la limite d'upload
 async function prepare(file: File): Promise<Blob> {
   if (file.size < 3_500_000 && file.type === "image/jpeg") return file;
   try {
@@ -43,7 +43,7 @@ async function prepare(file: File): Promise<Blob> {
     );
     return blob ?? file;
   } catch {
-    return file; // format non décodable par le navigateur (HEIC…) : envoi tel quel
+    return file; // le navigateur ne sait pas lire ce format (HEIC...), on envoie tel quel
   }
 }
 
@@ -192,7 +192,7 @@ export function GalleryManager({
   const [pending, start] = useTransition();
   const byId = new Map(photos.map((p) => [p.id, p]));
   const ordered = order.map((id) => byId.get(id)).filter((p): p is AdminPhoto => Boolean(p));
-  // Nouvelles photos apparues depuis le dernier rendu
+  // photos arrivées depuis le dernier rendu
   for (const p of photos) if (!order.includes(p.id)) ordered.push(p);
   const dirty = ordered.some((p, i) => photos[i]?.id !== p.id);
 

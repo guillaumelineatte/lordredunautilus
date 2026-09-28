@@ -6,7 +6,7 @@ import type { AuditRecorder } from "../service/audit";
 import { fail } from "../service/errors";
 import { anonymizeMember } from "./anonymize";
 
-/** Remplace les identifiants de jeu d'un adhérent, chaque valeur étant validée par la regex du jeu. */
+// Remplace les identifiants de jeu du membre (chaque valeur est vérifiée avec la regex du jeu).
 export async function syncGameIds(
   tx: Tx,
   memberId: string,
@@ -64,7 +64,7 @@ export async function syncGameIds(
   }
 }
 
-/** Statut déduit des adhésions : actif si une adhésion couvre aujourd'hui ou est à venir. */
+// Actif s'il a une adhésion en cours ou à venir, désabonné sinon.
 export async function membershipStatus(
   tx: Tx,
   memberId: string,
@@ -76,7 +76,7 @@ export async function membershipStatus(
   return active > 0 ? "ACTIVE" : "EXPIRED";
 }
 
-/** Recalcule le statut après un changement d'adhésion ; les suspendus restent suspendus. */
+// À appeler après chaque changement d'adhésion. Un suspendu reste suspendu.
 export async function recomputeMemberStatus(
   tx: Tx,
   memberId: string,
@@ -92,7 +92,6 @@ export async function recomputeMemberStatus(
   }
 }
 
-/** Numéro de carte : unique, avec un message qui dit à qui il est attribué. */
 export async function assertCardNumberFree(tx: Tx, cardNumber: string | null, memberId?: string) {
   if (!cardNumber) return;
   const holder = await tx.member.findUnique({
@@ -111,12 +110,8 @@ export async function assertCardNumberFree(tx: Tx, cardNumber: string | null, me
 
 export type DeletionMode = "deleted" | "anonymized";
 
-/**
- * Suppression d'une fiche depuis l'administration :
- * - sans aucune adhésion (erreur de saisie, doublon, test) : effacement définitif ;
- * - avec des adhésions : anonymisation, les montants restant en comptabilité
- *   sous « Ancien membre ».
- */
+// Pas d'adhésion (doublon, erreur de saisie, fiche de test) : on efface tout.
+// Sinon on anonymise, pour que les montants restent en compta sous "Ancien membre".
 export async function deleteMember(
   tx: Tx,
   memberId: string,
@@ -137,7 +132,7 @@ export async function deleteMember(
     return "anonymized";
   }
 
-  // Identifiants de jeu supprimés en cascade, inscriptions détachées.
+  // les identifiants de jeu partent en cascade, les inscriptions sont juste détachées
   await tx.member.delete({ where: { id: memberId } });
   const { _count, ...row } = member;
   await audit.deleted("Member", row);

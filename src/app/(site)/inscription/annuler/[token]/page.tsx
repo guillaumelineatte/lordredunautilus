@@ -3,8 +3,8 @@ import { CancelButton } from "./cancel-button";
 
 export const metadata: Metadata = { title: "Annuler mon inscription", robots: { index: false } };
 
-// La page n'annule rien d'elle-même : un clic est nécessaire (les robots de
-// prévisualisation des messageries ouvrent les liens des e-mails).
+// Il faut cliquer pour annuler : les messageries ouvrent les liens des mails
+// pour faire l'aperçu, sinon ça annulerait tout seul.
 export default async function CancelPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   return (

@@ -41,7 +41,7 @@ export function MembersTable({ rows, head }: { rows: MemberRow[]; head: ReactNod
     const message =
       `Supprimer ${chosen.length} fiche(s) ?\n\n` +
       `• ${chosen.length - withMemberships} sans adhésion : effacées entièrement.\n` +
-      `• ${withMemberships} avec adhésions : nom, identifiants et documents effacés, montants conservés en comptabilité sous « Ancien membre ».\n\n` +
+      `• ${withMemberships} avec adhésions : nom et identifiants effacés, montants conservés en comptabilité sous « Ancien membre ».\n\n` +
       "Cette action est irréversible.";
     if (!window.confirm(message)) return;
     start(async () => {

@@ -11,7 +11,7 @@ import { importMembers } from "@/server/actions/import";
 
 type Game = { slug: string; name: string; label: string };
 
-/** Devine le champ cible d'une colonne d'après son intitulé. */
+// devine le champ à partir du nom de la colonne
 function guess(header: string, games: Game[]): string {
   const h = normalize(header);
   if (/^(prenom|first ?name)/.test(h)) return "firstName";

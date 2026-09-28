@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Administration : même palette que le site, en mode sombre. */
+/* admin : mêmes couleurs que le site, en sombre */
 @theme {
   --color-abyss: #0c1826;
   --color-navy: #132438;

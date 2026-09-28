@@ -1,4 +1,4 @@
-/** Tags de cache des contenus publics, invalidés à chaque écriture admin. */
+// Tags du cache des pages publiques, vidés quand l'admin modifie quelque chose.
 export const TAGS = {
   games: "games",
   events: "events",

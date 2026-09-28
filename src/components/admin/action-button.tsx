@@ -6,10 +6,8 @@ import type { ActionResult } from "@/lib/action-result";
 import { Button, type ButtonSize } from "./ui";
 import { useToast } from "./toast";
 
-/**
- * Bouton qui appelle une Server Action avec des arguments fixes,
- * avec confirmation facultative, notification et rafraîchissement.
- */
+// Bouton qui lance une server action (avec confirmation si besoin), affiche
+// un toast puis rafraîchit la page.
 export function ActionButton<I, T>({
   action,
   input,
@@ -35,7 +33,7 @@ export function ActionButton<I, T>({
   className?: string;
   disabled?: boolean;
   title?: string;
-  /** Nom accessible, indispensable pour un bouton ne contenant qu'une icône. */
+  // obligatoire quand le bouton n'a qu'une icône
   ariaLabel?: string;
 }) {
   const router = useRouter();

@@ -3,7 +3,7 @@
 import { gsap } from "gsap";
 import { useRef, type MouseEvent, type ReactNode } from "react";
 
-/** Accordéon animé : hauteur animée par GSAP, repli instantané si animations réduites. */
+// accordéon animé avec GSAP (sans anim si l'utilisateur a réduit les animations)
 export function FaqList({
   items,
 }: {

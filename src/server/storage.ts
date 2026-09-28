@@ -4,11 +4,8 @@ import path from "node:path";
 import { del, put } from "@vercel/blob";
 import { env } from "./env";
 
-/**
- * Fichiers publics (photos de la galerie).
- * - Production : Vercel Blob (BLOB_READ_WRITE_TOKEN).
- * - Local : dossier storage/uploads, servi par la route /uploads/[...path].
- */
+// Photos de la galerie. En prod sur Vercel Blob (BLOB_READ_WRITE_TOKEN),
+// en local dans storage/uploads, servi par /uploads/[...path].
 
 const LOCAL_ROOT = path.join(process.cwd(), "storage", "uploads");
 

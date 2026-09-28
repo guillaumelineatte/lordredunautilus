@@ -3,10 +3,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = process.env.E2E_BASE_URL ?? "http://localhost:3001";
 
-/**
- * Parcours critiques. Les tests écrivent dans la base pointée par DATABASE_URL :
- * utilisez une branche Neon dédiée (voir README), jamais la production.
- */
+// Attention, les tests écrivent dans la base de DATABASE_URL.
+// Toujours une branche Neon de test (cf. README), jamais la prod !
 export default defineConfig({
   testDir: "tests/e2e",
   fullyParallel: false,

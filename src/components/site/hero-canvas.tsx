@@ -2,15 +2,12 @@
 
 import { useEffect, useState, type ComponentType } from "react";
 
-// three.js (≈ 250 Ko compressés) n'est téléchargé qu'au besoin, après l'intro
-// du hero, et jamais si l'utilisateur a demandé à réduire les animations.
-// import() manuel plutôt que next/dynamic, qui précharge le module d'office.
+// three.js pèse ~250 Ko gzip : on ne le charge qu'après l'intro du hero, et pas
+// du tout si les animations sont réduites. import() à la main parce que
+// next/dynamic précharge le module quoi qu'il arrive.
 
-/**
- * La scène n'est lancée que sur un vrai processeur graphique : en rendu
- * logiciel (SwiftShader, llvmpipe) ou sur un appareil très modeste, chaque
- * image bloquerait le fil principal pendant des centaines de millisecondes.
- */
+// Seulement avec un vrai GPU. En rendu logiciel (SwiftShader, llvmpipe) ou sur
+// un petit appareil, chaque frame bloquerait la page des centaines de ms.
 function capableDevice(): boolean {
   const nav = navigator as Navigator & {
     deviceMemory?: number;
@@ -52,8 +49,8 @@ export function HeroCanvas() {
       cleanup();
       void import("./hero-scene").then((m) => setScene(() => m.default));
     };
-    // Décor : chargé à la première interaction (la souris bouge presque
-    // toujours d'emblée sur ordinateur), sinon après 4 s sur ordinateur.
+    // chargé à la première interaction (sur ordi la souris bouge quasi tout de suite),
+    // sinon au bout de 4 s sur ordi
     const timer = window.matchMedia("(pointer: fine)").matches
       ? window.setTimeout(start, 4000)
       : undefined;

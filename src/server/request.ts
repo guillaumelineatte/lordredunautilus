@@ -16,7 +16,7 @@ export async function requestMeta(): Promise<RequestMeta> {
   return metaFromHeaders(await headers());
 }
 
-/** Empreinte non réversible d'une IP de visiteur (jamais stockée en clair). */
+// On ne stocke jamais l'IP d'un visiteur en clair, seulement ce hash.
 export function hashIp(ip: string | null): string {
   return createHmac("sha256", env.IP_HASH_SECRET)
     .update(ip ?? "inconnue")

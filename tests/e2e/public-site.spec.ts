@@ -10,7 +10,7 @@ test("l'administration est sous /timonerie ; /admin n'existe pas", async ({ page
   expect((await request.get("/robots.txt")).status()).toBe(200);
   expect(await (await request.get("/robots.txt")).text()).not.toContain("timonerie");
 
-  // Sans session, toute page de la timonerie renvoie vers la connexion
+  // sans session, la timonerie renvoie vers la connexion
   await page.goto("/timonerie/adherents");
   await expect(page).toHaveURL(/\/timonerie\/connexion$/);
   await page

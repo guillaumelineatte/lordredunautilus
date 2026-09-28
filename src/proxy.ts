@@ -1,9 +1,8 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse, type NextRequest } from "next/server";
 
-// L'administration vit sous /timonerie (pas d'adresse /admin devinable).
-// Vérification optimiste de la présence du cookie de session : la vraie
-// vérification est faite côté serveur dans chaque page, action et route.
+// On regarde juste si le cookie existe. La vraie vérif de session se fait
+// côté serveur dans chaque page, action et route de la timonerie.
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (pathname !== "/timonerie/connexion" && !getSessionCookie(request)) {

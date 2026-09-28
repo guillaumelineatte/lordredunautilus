@@ -56,7 +56,7 @@ export const saveEvent = adminAction(
   },
 );
 
-/** Copie en brouillon, une semaine plus tard, sans les inscrits. */
+// copie en brouillon une semaine plus tard, sans les inscrits
 export const duplicateEvent = adminAction(
   { schema: idInput, tags: [TAGS.events] },
   async ({ id }, { tx, audit }) => {
@@ -168,7 +168,7 @@ export const restoreEvent = adminAction(
   },
 );
 
-// ── Inscrits ───────────────────────────────────────────────
+// Inscrits
 
 export const addRegistration = adminAction(
   { schema: adminRegistrationInput, tags: [TAGS.events] },
@@ -206,7 +206,7 @@ export const setRegistrationStatus = adminAction(
   },
 );
 
-/** Promotion depuis la liste d'attente (et e-mail si le participant a laissé une adresse). */
+// sort quelqu'un de la liste d'attente (et le prévient par mail s'il en a laissé un)
 export const promoteRegistration = adminAction(
   { schema: idInput, tags: [TAGS.events] },
   async ({ id }, { tx, audit, afterCommit }) => {

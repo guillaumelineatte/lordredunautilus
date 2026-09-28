@@ -14,5 +14,5 @@ export const db = globalForPrisma.prisma ?? createClient();
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;
 
 export type Db = typeof db;
-/** Client disponible à l'intérieur d'une transaction interactive. */
+// le client qu'on reçoit dans db.$transaction(async (tx) => ...)
 export type Tx = Parameters<Parameters<Db["$transaction"]>[0]>[0];

@@ -14,7 +14,7 @@ function authorized(req: Request): boolean {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
-// Vercel Cron appelle cette route chaque jour avec « Authorization: Bearer $CRON_SECRET ».
+// appelée tous les jours par Vercel Cron, avec Authorization: Bearer $CRON_SECRET
 export async function GET(req: Request) {
   if (!authorized(req)) return Response.json({ error: "Non autorisé" }, { status: 401 });
   const results = await runDailyJobs();

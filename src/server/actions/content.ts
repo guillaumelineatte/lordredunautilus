@@ -17,7 +17,7 @@ import {
 import { adminAction } from "../service/admin-action";
 import { fail } from "../service/errors";
 
-// ── Témoignages ────────────────────────────────────────────
+// Témoignages
 
 export const saveTestimonial = adminAction(
   { schema: testimonialInput, tags: [TAGS.testimonials] },
@@ -60,7 +60,7 @@ export const reorderTestimonials = adminAction(
   },
 );
 
-// ── FAQ ────────────────────────────────────────────────────
+// FAQ
 
 export const saveFaq = adminAction(
   { schema: faqInput, tags: [TAGS.faq] },
@@ -101,7 +101,7 @@ export const reorderFaq = adminAction(
   },
 );
 
-// ── Formules ───────────────────────────────────────────────
+// Formules
 
 export const savePlan = adminAction(
   { schema: planInput, tags: [TAGS.plans] },
@@ -169,7 +169,7 @@ export const reorderPlans = adminAction(
   },
 );
 
-// ── Jeux ───────────────────────────────────────────────────
+// Jeux
 
 export const saveGame = adminAction(
   { schema: gameInput, tags: [TAGS.games, TAGS.events] },
@@ -201,7 +201,7 @@ export const reorderGames = adminAction(
   },
 );
 
-// ── Réglages ───────────────────────────────────────────────
+// Réglages
 
 export const saveSetting = adminAction(
   { schema: settingInput, tags: [TAGS.settings, TAGS.stats] },

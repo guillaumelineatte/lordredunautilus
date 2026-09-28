@@ -5,7 +5,7 @@ import { getAdminSession } from "../auth/session";
 import { adminAction } from "../service/admin-action";
 import { fail } from "../service/errors";
 
-/** Révoque une session par son identifiant (le jeton ne quitte jamais le serveur). */
+// on révoque par id pour ne jamais envoyer le jeton au navigateur
 export const revokeSession = adminAction(
   { schema: z.object({ id: z.string() }) },
   async ({ id }, { tx, audit, adminId }) => {

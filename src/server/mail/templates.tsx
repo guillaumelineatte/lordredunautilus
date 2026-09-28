@@ -74,7 +74,7 @@ export type AdminEmailProps = {
   cta?: { label: string; href: string };
 };
 
-/** Gabarit unique des e-mails envoyés à l'administrateur. */
+// un seul gabarit pour tous les mails envoyés à l'admin
 export function AdminEmail({ title, intro, sections = [], cta }: AdminEmailProps) {
   return (
     <Layout preview={intro ?? title} title={title}>
@@ -129,7 +129,7 @@ export type RegistrationEmailProps = {
   cancelUrl?: string;
 };
 
-/** E-mail au participant (seulement s'il a laissé une adresse, effacée ensuite). */
+// mail au participant, seulement s'il a laissé son adresse
 export function RegistrationEmail({
   firstName,
   eventTitle,

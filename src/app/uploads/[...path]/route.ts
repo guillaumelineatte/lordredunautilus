@@ -1,6 +1,6 @@
 import { readLocalUpload } from "@/server/storage";
 
-// Sert les photos déposées en local quand Vercel Blob n'est pas configuré.
+// en local, sans Vercel Blob, les photos sont servies d'ici
 export async function GET(_req: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
   const key = path.join("/");

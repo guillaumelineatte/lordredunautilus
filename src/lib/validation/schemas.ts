@@ -32,7 +32,7 @@ const optionalConsent = z
   .preprocess((v) => (v === "" ? null : v), z.enum(CONSENT_SOURCES).nullable().optional())
   .transform((v) => v ?? null);
 
-// ── Adhérents ──────────────────────────────────────────────
+// Adhérents
 
 export const gameIdEntry = z.object({
   gameId: id,
@@ -123,7 +123,7 @@ export const mergeInput = z
     path: ["dropId"],
   });
 
-// ── Événements ─────────────────────────────────────────────
+// Événements
 
 export const eventInput = z
   .object({
@@ -168,7 +168,7 @@ export const adminRegistrationInput = z.object({
   memberId: optionalId,
 });
 
-// ── Contact ────────────────────────────────────────────────
+// Contact
 
 export const contactInput = z.object({
   firstName: z.string().trim().min(2, "Indiquez votre prénom.").max(80),
@@ -178,7 +178,7 @@ export const contactInput = z.object({
   website: honeypot,
 });
 
-// ── Contenus ───────────────────────────────────────────────
+// Contenus
 
 export const testimonialInput = z.object({
   id: optionalId,

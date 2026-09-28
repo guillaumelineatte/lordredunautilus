@@ -20,7 +20,7 @@ export const updatePhoto = adminAction(
   },
 );
 
-/** Publication libre : seul l'administrateur ajoute et publie les photos. */
+// pas de vérif avant publication, c'est l'admin qui gère les photos
 export const setPhotoPublished = adminAction(
   { schema: photoPublishInput, tags: [TAGS.photos] },
   async ({ id, publish }, { tx, audit }) => {

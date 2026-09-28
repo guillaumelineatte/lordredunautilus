@@ -3,8 +3,8 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
-// Next injecte des scripts inline pour l'hydratation : sans nonce, 'unsafe-inline'
-// reste nécessaire. Tout le reste est verrouillé sur l'origine du site.
+// 'unsafe-inline' obligatoire tant qu'on n'a pas de nonce (Next injecte des scripts
+// inline pour l'hydratation). Le reste est limité à notre domaine.
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
@@ -33,19 +33,19 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  // Racine explicite : un package-lock.json parasite dans un dossier parent ne doit rien changer.
+  // sinon un package-lock.json dans un dossier parent perturbe turbopack
   turbopack: { root: path.resolve(".") },
   serverExternalPackages: ["@react-pdf/renderer", "sharp", "@node-rs/argon2"],
-  // Polices et logo lus sur disque par la génération des PDF
+  // polices et logo lus sur le disque pour les PDF
   outputFileTracingIncludes: {
     "/api/timonerie/pdf/[document]": ["./assets/fonts/**", "./public/logo.png"],
   },
   experimental: {
     globalNotFound: true,
-    // CSS du site (≈ 7 Ko compressés) inliné dans le <head> : plus de requête bloquante.
+    // le CSS du site est petit (~7 Ko gzip), on l'inline dans le head
     inlineCss: true,
     serverActions: {
-      // Import CSV des adhérents (2 Mo max) + marge
+      // import CSV des adhérents (2 Mo max) + un peu de marge
       bodySizeLimit: "3mb",
     },
   },

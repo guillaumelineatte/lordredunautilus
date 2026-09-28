@@ -42,9 +42,9 @@ describe("textes", () => {
   it("identifiants de jeu validés par la regex du jeu", () => {
     expect(matchesPattern("0123456789", "\\d{10}")).toBe(true);
     expect(matchesPattern("012345678", "\\d{10}")).toBe(false);
-    // La regex s'applique à toute la valeur
+    // la regex doit matcher toute la valeur
     expect(matchesPattern("x0123456789", "\\d{10}")).toBe(false);
-    // Le pseudo Wizards refuse les e-mails
+    // pas de mail comme pseudo Wizards
     expect(matchesPattern("nemo@example.com", "[^\\s@]{2,32}(#\\d{4,6})?")).toBe(false);
     expect(matchesPattern("Nemo#12345", "[^\\s@]{2,32}(#\\d{4,6})?")).toBe(true);
   });

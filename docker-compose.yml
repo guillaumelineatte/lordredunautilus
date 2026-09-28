@@ -1,4 +1,4 @@
-# PostgreSQL local (alternative à une branche Neon pour le développement).
+# Postgres en local, si on ne veut pas d'une branche Neon pour le dev
 #   docker compose up -d
 #   DATABASE_URL="postgresql://nautilus:nautilus@localhost:5432/nautilus"
 #   DIRECT_URL="postgresql://nautilus:nautilus@localhost:5432/nautilus"

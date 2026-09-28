@@ -1,6 +1,6 @@
 import { hash, verify } from "@node-rs/argon2";
 
-// Paramètres argon2id recommandés par l'OWASP (19 Mio, 2 passes).
+// réglages argon2id conseillés par l'OWASP (19 Mio, 2 passes)
 const OPTIONS = { memoryCost: 19456, timeCost: 2, parallelism: 1 } as const;
 
 export function hashPassword(password: string): Promise<string> {

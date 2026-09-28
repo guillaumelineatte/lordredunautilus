@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PhotoDTO } from "@/lib/dto";
 
-/** Mosaïque de photos + visionneuse (clavier : ←, →, Échap). */
+// mosaïque + visionneuse (flèches gauche/droite et Échap au clavier)
 export function Gallery({
   photos,
   className = "masonry reveal",

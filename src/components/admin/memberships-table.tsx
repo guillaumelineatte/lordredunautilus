@@ -24,8 +24,7 @@ export type MembershipRow = {
   amountCents: number;
   paymentMethod: PaymentMethod;
   transactionRef: string | null;
-  /** Jour de remise de la carte (AAAA-MM-JJ, heure de Paris). */
-  cardHandedOverAt: string | null;
+  cardHandedOverAt: string | null; // AAAA-MM-JJ
   renewed: boolean;
   ended: boolean;
 };
@@ -51,7 +50,7 @@ function MembershipEditor({
   const [end, setEnd] = useState(row.endDate);
   const plan = plans.find((p) => p.id === planId);
   const computedEnd = plan?.durationDays && start ? membershipEnd(start, plan.durationDays) : null;
-  // La formule d'origine peut avoir été désactivée : on la garde dans la liste.
+  // la formule a pu être désactivée depuis, on la laisse quand même dans la liste
   const options = plans.some((p) => p.id === row.planId)
     ? plans
     : [{ id: row.planId, name: `${row.planName} (inactive)`, durationDays: null }, ...plans];
@@ -141,7 +140,6 @@ function MembershipEditor({
   );
 }
 
-/** Historique des adhésions, avec correction en ligne de chaque période. */
 export function MembershipsTable({ rows, plans }: { rows: MembershipRow[]; plans: Plan[] }) {
   const [editing, setEditing] = useState<string | null>(null);
 

@@ -51,12 +51,11 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-// Classes posées avant le premier rendu : JS actif, animations réduites,
-// écran de chargement déjà vu dans la session.
+// posé avant le premier rendu : js actif, animations réduites, loader déjà vu
 const INIT = `(function(){var d=document.documentElement;d.classList.add('js');try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('no-motion');if(sessionStorage.getItem('nautilus-loaded')==='1')d.classList.add('no-loader')}catch(e){}})();`;
 
-// Éléments « .reveal » déjà visibles à l'ouverture : animés en CSS dès la fin du
-// parsing HTML, sans attendre l'hydratation (GSAP prend le relais pour la suite).
+// Les .reveal visibles au chargement sont animés en CSS tout de suite, sans
+// attendre l'hydratation. GSAP prend le relais ensuite.
 const REVEAL_NOW = `(function(){var d=document.documentElement;if(!d.classList.contains('js')||d.classList.contains('no-motion'))return;var h=innerHeight,i=0;document.querySelectorAll('.reveal').forEach(function(el){var r=el.getBoundingClientRect();if(r.top<h*0.95&&r.bottom>0){el.classList.add('reveal-now');el.style.animationDelay=(0.09*i++)+'s'}})})();`;
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {

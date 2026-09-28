@@ -4,7 +4,7 @@ import { slugify } from "@/lib/text";
 import type { EventInput } from "@/lib/validation/schemas";
 import type { Tx } from "../db";
 
-/** Slug unique « titre-aaaa-mm-jj », suffixé si besoin. */
+// titre-aaaa-mm-jj, avec un suffixe si c'est déjà pris
 export async function uniqueEventSlug(
   tx: Tx,
   title: string,
@@ -21,13 +21,13 @@ export async function uniqueEventSlug(
   return `${base}-${Date.now()}`;
 }
 
-/** Champs d'un événement à partir de la saisie (jour + heures à Paris → instants UTC). */
+// convertit la saisie (jour + heures à Paris) en dates UTC
 export function eventData(input: EventInput) {
   const startsAt = parisToUtc(input.date, input.startTime);
   let endsAt: Date | null = null;
   if (input.endTime) {
     endsAt = parisToUtc(input.date, input.endTime);
-    // Fin après minuit (« 00:30 ») : lendemain.
+    // fin après minuit (00:30), donc le lendemain
     if (endsAt <= startsAt) endsAt = new Date(endsAt.getTime() + 86_400_000);
   }
   return {

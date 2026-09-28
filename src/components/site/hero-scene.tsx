@@ -4,7 +4,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AdditiveBlending, Vector2, type ShaderMaterial } from "three";
 
-/** Générateur pseudo-aléatoire déterministe (mulberry32) : rendu pur et reproductible. */
+// mulberry32 : aléatoire mais reproductible, le rendu reste pur
 function rng(seed: number) {
   let a = seed;
   return () => {
@@ -127,7 +127,7 @@ function Sea({ count, target }: { count: number; target: React.RefObject<Vector2
   );
 }
 
-/** Scène du hero : bulles et rayons de lumière sous-marins (React Three Fiber). */
+// bulles et rayons de lumière sous l'eau
 export default function HeroScene() {
   const wrapper = useRef<HTMLDivElement>(null);
   const target = useRef(new Vector2());

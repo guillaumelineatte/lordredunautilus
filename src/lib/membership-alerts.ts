@@ -1,10 +1,8 @@
 export type AlertTier = 30 | 7 | 0;
 
-/**
- * Palier d'alerte à envoyer pour une adhésion non renouvelée, selon le nombre
- * de jours restants et les paliers déjà signalés. Un palier manqué (cron en
- * panne, adhésion saisie tard) est rattrapé au passage suivant.
- */
+// Quel palier d'alerte envoyer, vu les jours restants et ce qui est déjà parti.
+// Si un palier a sauté (cron en panne, adhésion saisie en retard), on le
+// rattrape au passage suivant.
 export function alertTier(
   daysLeft: number,
   sent: { d30: boolean; d7: boolean; d0: boolean },

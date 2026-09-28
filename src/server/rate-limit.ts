@@ -11,10 +11,8 @@ export const RULES = {
   login: { limit: 10, windowSeconds: 900 },
 } satisfies Record<string, RateLimitRule>;
 
-/**
- * Fenêtre fixe stockée en base (fonctionne en serverless, sans Redis).
- * Renvoie true si la requête est autorisée.
- */
+// Fenêtre fixe stockée en base (ok en serverless, pas besoin de Redis).
+// Renvoie true si on laisse passer.
 export async function rateLimit(scope: keyof typeof RULES, ip: string | null): Promise<boolean> {
   const rule = RULES[scope];
   const windowMs = rule.windowSeconds * 1000;

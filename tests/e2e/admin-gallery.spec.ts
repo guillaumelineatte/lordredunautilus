@@ -19,7 +19,7 @@ test("galerie : upload, publication directe, suppression", async ({ page }) => {
   await expect(page.getByText("photo(s) ajoutée(s) en brouillon")).toBeVisible();
   await expect(page.locator("ul li.card")).toHaveCount(before + 1);
 
-  // Publication directe par l'administrateur, sans vérification préalable
+  // l'admin publie direct, sans vérif
   const card = page.locator("ul li.card").last();
   await expect(card.getByRole("button", { name: "Publier" })).toBeEnabled();
   await card.getByRole("button", { name: "Modifier" }).click();

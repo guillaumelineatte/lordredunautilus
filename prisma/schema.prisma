@@ -1,20 +1,17 @@
-// L'Ordre du Nautilus — schéma de données
-// Prisma 7 : les URL de connexion (DATABASE_URL, DIRECT_URL pour Neon) sont
-// déclarées dans prisma.config.ts, plus dans ce fichier.
+// Schéma de la base du Nautilus.
+// Avec Prisma 7 les url de connexion sont dans prisma.config.ts.
 //
-// Conventions
-// - Montants en centimes (Int), jamais en flottant.
-// - Dates d'adhésion en @db.Date ; horaires d'événement en timestamptz (UTC),
-//   affichés en Europe/Paris.
-// - createdAt / updatedAt partout, sauf AuditLog (immuable) et RateLimitHit.
-// - Soft delete (deletedAt) sur Member, Event, Photo.
+// Quelques règles :
+// - les montants sont en centimes (Int)
+// - dates d'adhésion en @db.Date, horaires d'événement en timestamptz (UTC, affichés heure de Paris)
+// - soft delete (deletedAt) sur Member, Event et Photo
 //
-// Compléments SQL ajoutés à la main dans la migration initiale :
-// - AdminUser : CHECK (singleton) → une seule ligne possible.
-// - AuditLog : trigger qui refuse tout UPDATE, et tout DELETE sur une ligne
-//   de moins de 12 mois (seule la purge du cron passe).
-// - Membership : CHECK ("endDate" >= "startDate").
-// - Event : CHECK (capacity IS NULL OR capacity > 0).
+// Ajouté à la main dans la migration initiale (Prisma ne sait pas le faire) :
+// - AdminUser : CHECK sur singleton, un seul compte possible
+// - AuditLog : trigger qui bloque les UPDATE, et les DELETE de moins de 12 mois
+//   (seule la purge du cron passe)
+// - Membership : CHECK endDate >= startDate
+// - Event : CHECK capacity null ou > 0
 
 generator client {
   provider = "prisma-client"
@@ -25,9 +22,7 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─────────────────────────────────────────────────────────────
-// Énumérations
-// ─────────────────────────────────────────────────────────────
+// ---- Énumérations ----
 
 enum MemberStatus {
   ACTIVE // actif
@@ -42,7 +37,7 @@ enum ConsentSource {
 }
 
 enum PlanKind {
-  DISCOVERY // carte d'information seule (Découverte), jamais enregistrée comme adhésion
+  DISCOVERY // Découverte : juste une carte d'info, jamais une adhésion
   MEMBERSHIP
 }
 
@@ -54,7 +49,7 @@ enum PaymentMethod {
 
 enum EventType {
   DISCOVERY // découverte
-  OPEN_PLAY // libre : pas d'inscription
+  OPEN_PLAY // libre, sans inscription
   DRAFT
   TOURNAMENT // tournoi
 }
@@ -100,9 +95,7 @@ enum AuditActor {
   SYSTEM // tâches planifiées
 }
 
-// ─────────────────────────────────────────────────────────────
-// Jeux
-// ─────────────────────────────────────────────────────────────
+// ---- Jeux ----
 
 model Game {
   id              String   @id @default(cuid())
@@ -110,12 +103,12 @@ model Game {
   slug            String   @unique
   publisher       String
   sigil           String   @db.VarChar(2) // lettre affichée sur la carte du jeu
-  accentColor     String   @db.VarChar(7) // #RRGGBB (teinte de la carte)
-  usualDay        String // « Vendredi », « Samedi mensuel »
-  levels          String // « Débutant à compétitif »
+  accentColor     String   @db.VarChar(7) // couleur de la carte, #RRGGBB
+  usualDay        String // "Vendredi", "Samedi mensuel"...
+  levels          String // ex : "Débutant à compétitif"
   formats         String[]
-  playerIdLabel   String // « Konami ID », « Bandai TCG+ ID »…
-  playerIdPattern String? // source d'une regex, vérifiée à chaque saisie d'identifiant
+  playerIdLabel   String // "Konami ID", "Bandai TCG+ ID"...
+  playerIdPattern String? // regex testée à chaque saisie d'identifiant
   playerIdExample String? // exemple affiché en placeholder
   isActive        Boolean  @default(true)
   sortOrder       Int      @default(0)
@@ -126,9 +119,7 @@ model Game {
   events    Event[]
 }
 
-// ─────────────────────────────────────────────────────────────
-// Adhérents
-// ─────────────────────────────────────────────────────────────
+// ---- Adhérents ----
 
 model Member {
   id         String       @id @default(cuid())
@@ -138,8 +129,7 @@ model Member {
   status     MemberStatus @default(ACTIVE)
   notes      String?      @db.VarChar(500) // notes internes courtes
 
-  // Droit à l'image : cases miroir de l'autorisation signée.
-  // Ce sont elles qui pilotent les règles de publication de la galerie.
+  // droit à l'image, recopié depuis l'autorisation papier
   imageRightsGallery       Boolean        @default(false)
   imageRightsGalleryAt     DateTime?
   imageRightsGallerySource ConsentSource?
@@ -173,14 +163,11 @@ model MemberGameId {
   game   Game   @relation(fields: [gameId], references: [id], onDelete: Restrict)
 
   @@unique([memberId, gameId])
-  // Un identifiant éditeur appartient à une seule personne :
-  // sert aussi à repérer les doublons avant fusion.
+  // un identifiant de jeu = une seule personne (ça aide aussi à repérer les doublons)
   @@unique([gameId, value])
 }
 
-// ─────────────────────────────────────────────────────────────
-// Formules et adhésions
-// ─────────────────────────────────────────────────────────────
+// ---- Formules et adhésions ----
 
 model MembershipPlan {
   id                String   @id @default(cuid())
@@ -189,10 +176,10 @@ model MembershipPlan {
   kind              PlanKind @default(MEMBERSHIP)
   priceCents        Int
   reducedPriceCents Int? // tarif réduit étudiants / moins de 18 ans
-  periodLabel       String // « par an », « une soirée »
-  durationDays      Int? // 365 ; null pour Découverte
+  periodLabel       String // "par an", "une soirée"
+  durationDays      Int? // 365, ou null pour Découverte
   benefits          String[]
-  isFeatured        Boolean  @default(false) // badge « Le plus choisi »
+  isFeatured        Boolean  @default(false) // badge "Le plus choisi"
   isActive          Boolean  @default(true)
   sortOrder         Int      @default(0)
   createdAt         DateTime @default(now())
@@ -212,7 +199,7 @@ model Membership {
   transactionRef   String?       @db.VarChar(64) // référence PayPal facultative, effacée à l'anonymisation
   renewedFromId    String?       @unique // adhésion précédente si renouvellement
   cardHandedOverAt DateTime?
-  // Alertes envoyées à l'admin, une fois par palier
+  // alertes envoyées à l'admin (une fois par palier)
   alertD30SentAt   DateTime?
   alertD7SentAt    DateTime?
   alertD0SentAt    DateTime?
@@ -221,7 +208,7 @@ model Membership {
 
   member      Member         @relation(fields: [memberId], references: [id], onDelete: Restrict)
   plan        MembershipPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
-  // « Renouvelée » = une autre adhésion pointe vers celle-ci
+  // renouvelée si une autre adhésion pointe vers celle-ci
   renewedFrom Membership?    @relation("Renewal", fields: [renewedFromId], references: [id], onDelete: SetNull)
   renewedBy   Membership?    @relation("Renewal")
 
@@ -229,26 +216,24 @@ model Membership {
   @@index([memberId, endDate])
 }
 
-// ─────────────────────────────────────────────────────────────
-// Événements et inscriptions
-// ─────────────────────────────────────────────────────────────
+// ---- Événements et inscriptions ----
 
 model Event {
   id              String      @id @default(cuid())
   title           String      @db.VarChar(120)
   slug            String      @unique
-  gameId          String? // null pour un événement multi-jeux (week-end annuel…)
+  gameId          String? // null si plusieurs jeux (le week-end annuel par ex.)
   type            EventType
   startsAt        DateTime
   endsAt          DateTime?
   location        String? // null = le local (adresse dans les réglages)
   description     String? // markdown
   capacity        Int? // null = sans limite
-  priceCents      Int? // prix d'inscription ; null = gratuit
+  priceCents      Int? // null = gratuit
   status          EventStatus @default(DRAFT)
-  isHot           Boolean     @default(false) // badge « Places limitées »
+  isHot           Boolean     @default(false) // badge "Places limitées"
   publishedAt     DateTime?
-  discordPostedAt DateTime? // webhook Discord (feature flag)
+  discordPostedAt DateTime? // date de l'annonce sur Discord
   deletedAt       DateTime?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
@@ -264,15 +249,15 @@ model Event {
 model EventRegistration {
   id              String             @id @default(cuid())
   eventId         String
-  memberId        String? // rapprochement manuel avec une fiche adhérent
+  memberId        String? // lien manuel avec une fiche adhérent
   firstName       String             @db.VarChar(80)
   lastName        String             @db.VarChar(80)
-  dedupeKey       String // nom + prénom normalisés (minuscules, sans accents)
+  dedupeKey       String // nom + prénom en minuscules sans accents
   playerId        String?            @db.VarChar(100)
   email           String?            @db.VarChar(254) // facultatif, effacé 7 jours après l'événement
   status          RegistrationStatus
   source          RegistrationSource
-  cancelTokenHash String?            @unique // SHA-256 du jeton envoyé par e-mail
+  cancelTokenHash String?            @unique // sha256 du jeton envoyé par mail
   cancelledAt     DateTime?
   checkedInAt     DateTime?
   createdAt       DateTime           @default(now())
@@ -281,15 +266,13 @@ model EventRegistration {
   event  Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   member Member? @relation(fields: [memberId], references: [id], onDelete: SetNull)
 
-  // Anti-doublon nom + prénom par événement (le jeu est celui de l'événement).
-  // Une réinscription après annulation réactive la ligne existante.
+  // pas deux fois le même nom/prénom sur un événement. Si quelqu'un se réinscrit
+  // après avoir annulé, on réactive sa ligne.
   @@unique([eventId, dedupeKey])
   @@index([eventId, status, createdAt]) // liste d'attente = ordre d'arrivée
 }
 
-// ─────────────────────────────────────────────────────────────
-// Galerie
-// ─────────────────────────────────────────────────────────────
+// ---- Galerie ----
 
 model Photo {
   id          String    @id @default(cuid())
@@ -300,7 +283,7 @@ model Photo {
   width       Int
   height      Int
   blurDataUrl String? // placeholder next/image
-  alt         String    @default("") @db.VarChar(250) // obligatoire avant publication
+  alt         String    @default("") @db.VarChar(250) // facultatif, on prend la légende sinon
   caption     String?   @db.VarChar(250)
   eventId     String?
   sortOrder   Int       @default(0)
@@ -316,15 +299,13 @@ model Photo {
   @@index([eventId])
 }
 
-// ─────────────────────────────────────────────────────────────
-// Contenus éditoriaux
-// ─────────────────────────────────────────────────────────────
+// ---- Contenus éditoriaux ----
 
 model Testimonial {
   id          String   @id @default(cuid())
   quote       String   @db.VarChar(600)
   displayName String   @db.VarChar(40) // prénom seul
-  context     String   @db.VarChar(80) // « membre depuis 2025, Pokémon »
+  context     String   @db.VarChar(80) // ex : "membre depuis 2025, Pokémon"
   isPublished Boolean  @default(false)
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
@@ -341,7 +322,7 @@ model FaqItem {
   updatedAt   DateTime @updatedAt
 }
 
-// Valeurs typées côté code par un schéma zod par clé :
+// Une ligne par réglage, chaque clé a son schéma zod (src/lib/settings.ts) :
 // hours, address, contactEmail, paypal, stats, socials, foundedYear,
 // legal (RNA, siège, président·e, hébergeur), privacy, membershipNote, features.
 model SiteSetting {
@@ -365,13 +346,11 @@ model ContactMessage {
   @@index([status, createdAt])
 }
 
-// ─────────────────────────────────────────────────────────────
-// Administration (tables Better Auth, renommées)
-// ─────────────────────────────────────────────────────────────
+// ---- Administration (tables Better Auth, renommées) ----
 
 model AdminUser {
   id               String    @id @default(cuid())
-  singleton        Boolean   @unique @default(true) // + CHECK (singleton) : un seul compte possible
+  singleton        Boolean   @unique @default(true) // + CHECK en SQL, un seul compte possible
   name             String
   email            String    @unique
   emailVerified    Boolean   @default(false)
@@ -404,7 +383,7 @@ model AdminSession {
   @@index([expiresAt])
 }
 
-// Contient le hash argon2id du mot de passe (providerId = "credential")
+// le hash argon2id du mot de passe est ici (providerId = "credential")
 model AdminAccount {
   id                    String    @id @default(cuid())
   accountId             String
@@ -454,13 +433,13 @@ model AdminTwoFactor {
   @@index([userId])
 }
 
-// Immuable. Les valeurs des champs personnels sont masquées dans le diff
-// (« modifié », sans la valeur) pour que l'anonymisation reste réelle.
+// Non modifiable (trigger). Les champs perso sont masqués dans le diff,
+// sinon l'anonymisation ne servirait à rien.
 model AuditLog {
   id        String      @id @default(cuid())
   action    AuditAction
   actor     AuditActor  @default(ADMIN)
-  entity    String // « Member », « Membership », « Event »…
+  entity    String // "Member", "Membership", "Event"...
   entityId  String?
   diff      Json? // { champ: { before, after } }
   ip        String?
@@ -472,28 +451,26 @@ model AuditLog {
   @@index([createdAt])
 }
 
-// ─────────────────────────────────────────────────────────────
-// Technique
-// ─────────────────────────────────────────────────────────────
+// ---- Technique ----
 
-// Limitation de débit des formulaires publics, sans Redis.
-// La clé contient un HMAC de l'IP, jamais l'IP en clair. Purgé chaque jour.
+// Rate limit des formulaires publics, en base pour se passer de Redis.
+// La clé contient un HMAC de l'IP (jamais l'IP en clair). Purgé tous les jours.
 model RateLimitHit {
-  key         String // « contact:<hmac> », « inscription:<hmac> »
+  key         String // "contact:<hmac>", "inscription:<hmac>"
   windowStart DateTime
   count       Int      @default(1)
 
   @@id([key, windowStart])
 }
 
-// Trace de chaque passage du cron (affichée sur le tableau de bord).
+// Un passage du cron (le tableau de bord s'en sert pour voir s'il est en panne).
 model CronRun {
   id         String    @id @default(cuid())
   job        String
   startedAt  DateTime  @default(now())
   finishedAt DateTime?
   ok         Boolean?
-  report     Json? // compteurs : alertes envoyées, fiches anonymisées…
+  report     Json? // compteurs (alertes envoyées, fiches anonymisées...)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 

@@ -34,7 +34,7 @@ export async function sendMail(
   return true;
 }
 
-/** Destinataire des alertes : ADMIN_NOTIFY_EMAIL, à défaut l'e-mail du compte admin. */
+// ADMIN_NOTIFY_EMAIL, ou à défaut le mail du compte admin
 async function adminRecipient(): Promise<string | null> {
   if (env.ADMIN_NOTIFY_EMAIL) return env.ADMIN_NOTIFY_EMAIL;
   const { db } = await import("../db");

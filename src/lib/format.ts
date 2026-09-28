@@ -19,7 +19,7 @@ export function monthShort(monthIndex: number): string {
   return MONTHS_SHORT[monthIndex] ?? "";
 }
 
-/** 3 500 → « 35 € », 350 → « 3,50 € ». */
+// 3500 => "35 €", 350 => "3,50 €"
 export function formatMoney(cents: number | null | undefined): string {
   if (cents == null) return "—";
   const euros = cents / 100;
@@ -30,7 +30,7 @@ export function formatMoney(cents: number | null | undefined): string {
   }).format(euros);
 }
 
-/** Montant sans symbole, pour les cartes de formule (« 35 »). */
+// sans le symbole €, pour les cartes de formule
 export function formatAmount(cents: number): string {
   const euros = cents / 100;
   return new Intl.NumberFormat("fr-FR", {
@@ -38,7 +38,7 @@ export function formatAmount(cents: number): string {
   }).format(euros);
 }
 
-/** « AAAA-MM-JJ » ou Date @db.Date → « 26/09/2026 ». */
+// 26/09/2026
 export function formatDay(value: string | Date | null | undefined): string {
   if (!value) return "—";
   const day = typeof value === "string" ? value : value.toISOString().slice(0, 10);
@@ -46,7 +46,7 @@ export function formatDay(value: string | Date | null | undefined): string {
   return `${d}/${m}/${y}`;
 }
 
-/** « AAAA-MM-JJ » → « samedi 17 octobre 2026 ». */
+// samedi 17 octobre 2026
 export function formatDayLong(value: string | Date): string {
   const day = typeof value === "string" ? value : value.toISOString().slice(0, 10);
   return new Intl.DateTimeFormat("fr-FR", {
@@ -58,7 +58,7 @@ export function formatDayLong(value: string | Date): string {
   }).format(new Date(`${day}T12:00:00Z`));
 }
 
-/** Instant → « 26/09/2026 à 19:30 » (heure de Paris). */
+// 26/09/2026 à 19:30, heure de Paris
 export function formatDateTime(value: Date | null | undefined): string {
   if (!value) return "—";
   return new Intl.DateTimeFormat("fr-FR", {
@@ -70,7 +70,7 @@ export function formatDateTime(value: Date | null | undefined): string {
     .replace(" ", " à ");
 }
 
-/** Instant → « samedi 17 octobre » (heure de Paris). */
+// samedi 17 octobre
 export function formatEventDate(value: Date): string {
   return new Intl.DateTimeFormat("fr-FR", {
     timeZone: TZ,
@@ -80,7 +80,7 @@ export function formatEventDate(value: Date): string {
   }).format(value);
 }
 
-/** Heure affichée à la française : « 19h », « 18h30 ». */
+// 19h, 18h30
 export function formatHour(value: Date): string {
   const parts = new Intl.DateTimeFormat("fr-FR", {
     timeZone: TZ,
@@ -93,7 +93,7 @@ export function formatHour(value: Date): string {
   return m === "00" ? `${h}h` : `${h}h${m}`;
 }
 
-/** Jour du mois et mois court à Paris, pour la pastille de date des événements. */
+// pour la pastille de date sur les cartes d'événement
 export function eventDateParts(value: Date): { day: number; month: string } {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: TZ,

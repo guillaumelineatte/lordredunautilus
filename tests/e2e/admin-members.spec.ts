@@ -13,7 +13,7 @@ test("adhérent : création, adhésion, renouvellement, carte PDF, anonymisation
   await page.getByLabel("Nom", { exact: true }).fill("Testeuse");
   await page.getByLabel("Ajouter un jeu").selectOption({ label: "Yu-Gi-Oh!" });
 
-  // Identifiant invalide : refusé par la regex du jeu
+  // identifiant qui ne respecte pas la regex du jeu
   await page.getByLabel("Konami ID").fill("123");
   await expect(page.getByText("Format attendu : 0123456789.")).toBeVisible();
   await page.getByLabel("Konami ID").fill(String(Date.now()).slice(-10));
@@ -22,32 +22,32 @@ test("adhérent : création, adhésion, renouvellement, carte PDF, anonymisation
   await expect(page.getByRole("heading", { name: `${firstName} Testeuse` })).toBeVisible();
   await expect(page.getByText("Année de naissance")).toHaveCount(0);
 
-  // Enregistrer une adhésion
+  // adhésion
   await page.getByLabel("Référence PayPal (facultatif)").first().fill(`E2E${run}`);
   await page.getByRole("button", { name: "Enregistrer l'adhésion" }).click();
   await expect(page.getByText("en cours", { exact: true })).toBeVisible();
 
-  // Renouveler : nouvelle adhésion chaînée
+  // renouvellement
   await page.locator("summary", { hasText: "Renouveler" }).click();
   await page.getByRole("button", { name: "Renouveler", exact: true }).click();
   await expect(page.getByText("renouvelée", { exact: true })).toBeVisible();
 
-  // Carte de membre PDF
+  // carte de membre en PDF
   const memberId = page.url().split("/").pop() ?? "";
   const pdf = await request.get(`/api/timonerie/pdf/carte?adherent=${memberId}`);
   expect(pdf.headers()["content-type"]).toBe("application/pdf");
 
-  // Supprimer la fiche : elle a des adhésions, donc anonymisation
+  // suppression : la fiche a des adhésions donc elle est anonymisée
   await page.getByRole("button", { name: "Supprimer la fiche" }).click();
   await expect(page).toHaveURL(/\/timonerie\/adherents$/);
   await page.goto(`/timonerie/adherents?q=${firstName}`);
   await expect(page.getByText("Aucun adhérent ne correspond")).toBeVisible();
 
-  // La fiche anonymisée ne garde que la comptabilité
+  // il ne reste que la compta
   await page.goto(`/timonerie/adherents/${memberId}`);
   await expect(page.getByRole("heading", { name: "Ancien membre" })).toBeVisible();
 
-  // Le journal a tracé l'anonymisation sans le nom
+  // le journal a noté l'anonymisation, sans le nom
   await page.goto("/timonerie/journal?action=ANONYMIZE");
   await expect(page.locator("table").getByText("Anonymisation").first()).toBeVisible();
   await expect(page.getByText(firstName)).toHaveCount(0);
@@ -67,7 +67,7 @@ test("suppression depuis la liste : une fiche, puis une sélection", async ({ pa
   await page.goto(`/timonerie/adherents?q=${run}`);
   await expect(page.locator("tbody tr")).toHaveCount(3);
 
-  // Une fiche, depuis sa ligne (sans adhésion : effacement définitif)
+  // une fiche depuis sa ligne (pas d'adhésion, donc effacée pour de bon)
   await page
     .getByRole("row", { name: new RegExp(names[0] ?? "") })
     .getByRole("button", { name: /Supprimer la fiche de/ })
@@ -75,14 +75,14 @@ test("suppression depuis la liste : une fiche, puis une sélection", async ({ pa
   await expect(page.getByText("Fiche supprimée.")).toBeVisible();
   await expect(page.locator("tbody tr")).toHaveCount(2);
 
-  // Les deux autres, par sélection groupée
+  // les deux autres avec la sélection
   await page.getByLabel("Tout sélectionner").check();
   await expect(page.getByText("2 fiche(s) sélectionnée(s)")).toBeVisible();
   await page.getByRole("button", { name: "Supprimer la sélection" }).click();
   await expect(page.getByText("2 fiche(s) supprimée(s).")).toBeVisible();
   await expect(page.getByText("Aucun adhérent ne correspond")).toBeVisible();
 
-  // Tracé dans le journal comme suppression
+  // noté comme suppression dans le journal
   await page.goto("/timonerie/journal?action=DELETE&entite=Member");
   await expect(page.locator("table").getByText("Suppression").first()).toBeVisible();
 });
@@ -102,7 +102,7 @@ test("modification : paramètres de la fiche, suspension et correction d'une adh
   await page.getByRole("button", { name: "Enregistrer l'adhésion" }).click();
   await expect(page.getByText("en cours", { exact: true })).toBeVisible();
 
-  // Mode lecture → modification des paramètres
+  // on passe de la lecture à l'édition
   await expect(page.getByRole("heading", { name: "Paramètres de l'adhérent" })).toBeVisible();
   await page.getByRole("button", { name: "Modifier", exact: true }).click();
   const edit = page.getByRole("region", { name: "Modifier les paramètres" });
@@ -114,13 +114,13 @@ test("modification : paramètres de la fiche, suspension et correction d'une adh
   await expect(page.getByRole("heading", { name: `${firstName} Après` })).toBeVisible();
   await expect(page.getByText("Suspendu (réglé à la main)")).toBeVisible();
 
-  // Levée de la suspension : statut recalculé d'après les adhésions
+  // on lève la suspension, le statut est recalculé
   await page.getByRole("button", { name: "Modifier", exact: true }).click();
   await edit.getByLabel("Adhérent suspendu").uncheck();
   await page.getByRole("button", { name: "Enregistrer les modifications" }).click();
   await expect(page.getByText("Actif (calculé d'après les adhésions)")).toBeVisible();
 
-  // Correction d'une adhésion : dates incohérentes refusées, puis enregistrées
+  // correction d'adhésion : dates incohérentes refusées, puis ok
   await page.getByRole("button", { name: /Modifier l'adhésion du/ }).click();
   await page.getByLabel("Fin", { exact: true }).fill("2020-01-01");
   await page.getByRole("button", { name: "Enregistrer l'adhésion" }).click();
@@ -132,7 +132,7 @@ test("modification : paramètres de la fiche, suspension et correction d'une adh
   const [y, m, d] = end.split("-");
   await expect(page.getByText(`→ ${d}/${m}/${y}`)).toBeVisible();
 
-  // Numéro de carte déjà attribué : refus explicite
+  // numéro de carte déjà pris
   await page.goto("/timonerie/adherents/nouveau");
   await page.getByLabel("Prénom").fill(`Doublon${run}`);
   await page.getByLabel("Nom", { exact: true }).fill("Carte");
@@ -140,14 +140,14 @@ test("modification : paramètres de la fiche, suspension et correction d'une adh
   await page.getByRole("button", { name: "Créer l'adhérent" }).click();
   await expect(page.getByText(`déjà attribué à ${firstName} Après`).first()).toBeVisible();
 
-  // Depuis la liste, le crayon ouvre directement l'édition
+  // le crayon de la liste ouvre direct l'édition
   await page.goto(`/timonerie/adherents?q=${firstName}`);
   await page.getByRole("link", { name: /Modifier la fiche de/ }).click();
   await expect(page.getByRole("button", { name: "Enregistrer les modifications" })).toBeVisible();
   await page.getByRole("button", { name: "Annuler" }).click();
   await expect(page.getByRole("heading", { name: "Paramètres de l'adhérent" })).toBeVisible();
 
-  // Nettoyage
+  // ménage
   await page.getByRole("button", { name: "Supprimer la fiche" }).click();
   await expect(page).toHaveURL(/\/timonerie\/adherents$/);
 });

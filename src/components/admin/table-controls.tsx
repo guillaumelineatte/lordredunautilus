@@ -20,7 +20,7 @@ function useUpdateParams() {
   return { params, update, pending };
 }
 
-/** Recherche instantanée (raccourci « / »), synchronisée avec l'URL. */
+// recherche au fil de la frappe, gardée dans l'url (raccourci /)
 export function SearchBox({ placeholder = "Rechercher…" }: { placeholder?: string }) {
   const { params, update, pending } = useUpdateParams();
   const [value, setValue] = useState(params.get("q") ?? "");

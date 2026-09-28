@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Sauvegarde complète de la base (format pg_dump « custom », compressé).
+# Sauvegarde complète de la base (pg_dump au format custom, compressé).
 #
-#   ./scripts/backup.sh                 → utilise DIRECT_URL du fichier .env
-#   DIRECT_URL="postgres://…" ./scripts/backup.sh
+#   ./scripts/backup.sh                 prend DIRECT_URL dans le .env
+#   DIRECT_URL="postgres://..." ./scripts/backup.sh
 #
-# Prérequis : outils clients PostgreSQL ≥ 16 (macOS : brew install libpq && brew link --force libpq).
-# Le fichier produit contient des données personnelles : stockez-le chiffré,
-# hors du dépôt, et supprimez les sauvegardes de plus de 12 mois.
+# Il faut les outils client PostgreSQL 16 ou plus (sur mac : brew install libpq && brew link --force libpq).
+# Le fichier contient des données perso : à ranger chiffré, hors du dépôt,
+# et à supprimer au bout de 12 mois.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."

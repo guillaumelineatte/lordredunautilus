@@ -4,10 +4,8 @@ import type { AuditRecorder } from "../service/audit";
 import { fail } from "../service/errors";
 import { recomputeMemberStatus } from "./members";
 
-/**
- * Fusion de doublons : tout ce qui appartient à `dropId` passe sur `keepId`,
- * les champs vides de la fiche conservée sont complétés, puis `dropId` est supprimée.
- */
+// Fusion de doublons : tout ce qui est à dropId passe sur keepId, on complète
+// les champs vides de keepId puis on supprime dropId.
 export async function mergeMembers(tx: Tx, keepId: string, dropId: string, audit: AuditRecorder) {
   const [keep, drop] = await Promise.all([
     tx.member.findUnique({ where: { id: keepId }, include: { gameIds: true } }),
@@ -46,7 +44,7 @@ export async function mergeMembers(tx: Tx, keepId: string, dropId: string, audit
   }
 
   const dropCard = drop.cardNumber;
-  // Libère les valeurs uniques avant de les reporter sur la fiche conservée.
+  // on libère les valeurs uniques avant de les recopier sur la fiche gardée
   await tx.member.update({
     where: { id: dropId },
     data: { cardNumber: null },

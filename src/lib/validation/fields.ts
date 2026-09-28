@@ -1,10 +1,8 @@
 import { z } from "zod";
 import { isIsoDay } from "../dates";
 
-/**
- * Briques de validation acceptant indifféremment un objet JS ou les valeurs
- * brutes d'un FormData (chaînes, « on » pour les cases cochées).
- */
+// Petits schémas qui acceptent aussi bien un objet JS que les valeurs brutes
+// d'un FormData (des chaînes, "on" pour une case cochée).
 
 const emptyToNull = (v: unknown) => (typeof v === "string" && v.trim() === "" ? null : v);
 
@@ -35,7 +33,7 @@ export const optionalInt = (min: number, max: number, msg = "Nombre invalide.") 
     )
     .transform((v) => v ?? null);
 
-/** Montant saisi en euros (« 35 », « 3,50 ») → centimes. */
+// "35" ou "3,50" (en euros) vers des centimes
 export const euros = z.union([z.string(), z.number()]).transform((v, ctx) => {
   const n = typeof v === "number" ? v : Number(v.replace(",", ".").replace(/\s|€/g, ""));
   if (!Number.isFinite(n) || n < 0 || n > 100_000) {
@@ -73,7 +71,7 @@ export const optionalId = z
   .preprocess(emptyToNull, id.nullable().optional())
   .transform((v) => v ?? null);
 
-/** Champ caché contenant du JSON, validé par `schema`. */
+// champ caché qui contient du JSON
 export function json<T extends z.ZodType>(schema: T) {
   return z
     .union([z.string(), z.array(z.unknown()), z.record(z.string(), z.unknown())])
@@ -89,7 +87,7 @@ export function json<T extends z.ZodType>(schema: T) {
     .pipe(schema);
 }
 
-/** Liste de lignes (textarea) → tableau de chaînes non vides. */
+// textarea, une valeur par ligne (les lignes vides sautent)
 export const lines = z
   .union([z.string(), z.array(z.string())])
   .transform((v) =>

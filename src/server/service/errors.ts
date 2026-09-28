@@ -1,4 +1,4 @@
-/** Erreur métier : son message est affiché tel quel à l'administrateur. */
+// Le message est montré tel quel à l'admin, donc on l'écrit pour lui.
 export class DomainError extends Error {
   constructor(
     message: string,

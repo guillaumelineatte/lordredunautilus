@@ -23,7 +23,6 @@ function monthsAgo(n: number, from = new Date()): Date {
 
 type Report = Record<string, number | string>;
 
-/** Membres dont l'adhésion la plus récente n'a pas été renouvelée. */
 async function latestUnrenewedMemberships() {
   return db.membership.findMany({
     where: {
@@ -38,10 +37,11 @@ async function latestUnrenewedMemberships() {
   });
 }
 
-/** Alertes J-30 / J-7 / J0, une fois par palier ; statut « désabonné » le lendemain de la fin. */
+// Alertes à J-30, J-7 et J0 (une seule fois par palier). Le lendemain de la fin
+// de son adhésion, le membre passe en désabonné.
 export async function membershipJob(today = todayParis()): Promise<Report> {
   const all = await latestUnrenewedMemberships();
-  // Ne garder que la dernière adhésion de chaque membre
+  // on ne garde que la dernière adhésion de chaque membre
   const latest = new Map<string, (typeof all)[number]>();
   for (const m of all) {
     const current = latest.get(m.memberId);
@@ -83,7 +83,7 @@ export async function membershipJob(today = todayParis()): Promise<Report> {
     });
   }
 
-  // Passage à « désabonné » : actifs sans adhésion couvrant aujourd'hui ni à venir.
+  // les actifs sans adhésion en cours ni à venir passent en désabonné
   const expired = await db.member.findMany({
     where: {
       status: "ACTIVE",
@@ -99,10 +99,11 @@ export async function membershipJob(today = todayParis()): Promise<Report> {
   }
   if (expired.length > 0) revalidateTag(TAGS.stats, "max");
 
-  return { alertes: alerts, passesEchus: expired.length };
+  return { alertes: alerts, passesDesabonnes: expired.length };
 }
 
-/** Événements passés → terminés ; e-mails d'inscription effacés ; vieilles inscriptions supprimées. */
+// Clôture les événements passés, efface les mails des inscrits et purge les
+// vieilles inscriptions.
 export async function eventsJob(now = new Date()): Promise<Report> {
   const finished = await db.event.updateMany({
     where: {
@@ -140,7 +141,7 @@ export async function eventsJob(now = new Date()): Promise<Report> {
   };
 }
 
-/** Messages, anonymisation automatique, corbeille, journal, compteurs. */
+// Les purges RGPD : messages, fiches trop anciennes, corbeille, journal, compteurs.
 export async function retentionJob(now = new Date(), today = todayParis()): Promise<Report> {
   const handled = await db.contactMessage.deleteMany({
     where: { status: "HANDLED", handledAt: { lt: monthsAgo(RETENTION.contactHandledMonths, now) } },
@@ -149,9 +150,9 @@ export async function retentionJob(now = new Date(), today = todayParis()): Prom
     where: { status: "NEW", createdAt: { lt: monthsAgo(RETENTION.contactUnhandledMonths, now) } },
   });
 
-  // Fin de conservation : dernière adhésion terminée depuis plus de 3 ans, fiche sans
-  // adhésion créée il y a plus de 3 ans, corbeille de plus de 30 jours. Même règle que
-  // le bouton « Supprimer » : effacement complet sans adhésion, anonymisation sinon.
+  // Fiches à supprimer : dernière adhésion finie depuis plus de 3 ans, fiche sans
+  // adhésion créée il y a plus de 3 ans, ou dans la corbeille depuis plus de 30 jours.
+  // Même logique que le bouton supprimer (effacée si aucune adhésion, anonymisée sinon).
   const limitDay = addDays(today, -365 * RETENTION.memberYears);
   const candidates = await db.member.findMany({
     where: {
@@ -208,7 +209,7 @@ export async function retentionJob(now = new Date(), today = todayParis()): Prom
   };
 }
 
-/** Digest quotidien : à renouveler ce mois-ci, inscriptions de la veille. */
+// Le mail récap du matin.
 export async function digestJob(now = new Date(), today = todayParis()): Promise<Report> {
   const monthEnd = addDays(`${today.slice(0, 7)}-01`, 40).slice(0, 7) + "-01";
   const toRenew = await db.membership.findMany({
@@ -265,7 +266,7 @@ export const JOBS = {
   digest: digestJob,
 } as const;
 
-/** Exécute toutes les tâches, chacune tracée dans CronRun, sans qu'un échec bloque les suivantes. */
+// Chaque tâche est tracée dans CronRun. Si l'une plante, les suivantes tournent quand même.
 export async function runDailyJobs(): Promise<Record<string, Report | { erreur: string }>> {
   const results: Record<string, Report | { erreur: string }> = {};
   for (const [name, job] of Object.entries(JOBS)) {

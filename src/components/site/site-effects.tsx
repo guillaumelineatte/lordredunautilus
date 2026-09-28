@@ -21,7 +21,7 @@ function reducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-/** Défilement doux (Lenis, lerp 0.18) synchronisé avec le ticker GSAP. Créé une seule fois. */
+// scroll doux Lenis calé sur le ticker GSAP, créé une seule fois
 function initLenis() {
   if (lenis || reducedMotion()) return;
   try {
@@ -34,7 +34,7 @@ function initLenis() {
   }
 }
 
-/** Apparitions au défilement, compteurs, parallaxe du hublot, recul du hero. */
+// apparitions au scroll, compteurs, parallaxe du hublot, recul du hero
 function scrollFx() {
   if (reducedMotion()) {
     gsap.set(".reveal", { opacity: 1, y: 0 });
@@ -92,7 +92,7 @@ function scrollFx() {
   }
 }
 
-/** Cartes inclinables, boutons magnétiques et curseur personnalisé (souris uniquement). */
+// cartes qui s'inclinent, boutons aimantés, curseur perso (souris seulement)
 function pointerFx(): () => void {
   const cleanups: (() => void)[] = [];
   const on = <K extends keyof HTMLElementEventMap>(
@@ -165,18 +165,18 @@ function pointerFx(): () => void {
   };
 }
 
-/** L'écran de chargement (CSS) ne se rejoue pas aux visites suivantes de la session. */
+// le loader ne se rejoue pas pendant la session
 function markLoaderSeen() {
   try {
     sessionStorage.setItem("nautilus-loaded", "1");
   } catch {
-    /* navigation privée : sans importance */
+    /* navigation privée, pas grave */
   }
 }
 
 let firstRun = true;
 
-/** Toutes les animations du site vitrine, réinitialisées à chaque changement de page. */
+// toutes les anims du site, relancées à chaque changement de page
 export function SiteEffects() {
   const pathname = usePathname();
 
@@ -188,7 +188,7 @@ export function SiteEffects() {
     const start = () => {
       ctx.add(() => scrollFx());
       cleanupPointer = pointerFx();
-      // Ancre éventuelle (/#adhesion) après la navigation
+      // ancre éventuelle (/#adhesion) après la navigation
       if (window.location.hash) {
         const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
         if (target)
@@ -204,8 +204,8 @@ export function SiteEffects() {
     if (firstRun) {
       firstRun = false;
       markLoaderSeen();
-      // Premier chargement : initialisation au premier moment libre pour ne pas
-      // allonger l'hydratation (le contenu visible est déjà animé en CSS).
+      // au premier chargement on attend un moment libre pour ne pas ralentir
+      // l'hydratation, le haut de page est déjà animé en CSS
       const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 200));
       idleId = idle(
         () => {

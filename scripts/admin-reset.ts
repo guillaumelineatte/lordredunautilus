@@ -1,13 +1,11 @@
-/**
- * Dépannage du compte administrateur, en ligne de commande (accès serveur requis).
- *
- *   npm run admin:reset                          → déverrouille le compte
- *   npm run admin:reset -- --password "…"        → + nouveau mot de passe (12 caractères min.)
- *   npm run admin:reset -- --generate            → + mot de passe aléatoire affiché une fois
- *   npm run admin:reset -- --disable-2fa         → + désactive la double authentification
- *
- * Toutes les sessions ouvertes sont fermées. L'opération est tracée dans le journal.
- */
+// Pour débloquer le compte admin en ligne de commande (il faut un accès au serveur).
+//
+//   npm run admin:reset                          déverrouille le compte
+//   npm run admin:reset -- --password "..."      + nouveau mot de passe (12 caractères mini)
+//   npm run admin:reset -- --generate            + mot de passe aléatoire, affiché une seule fois
+//   npm run admin:reset -- --disable-2fa         + coupe la double authentification
+//
+// Ça ferme toutes les sessions ouvertes, et c'est noté dans le journal.
 import "dotenv/config";
 import { randomBytes } from "node:crypto";
 import { PrismaPg } from "@prisma/adapter-pg";

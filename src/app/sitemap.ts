@@ -22,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
   } catch {
-    // Base indisponible au build : le sitemap sera complété à la régénération.
+    // pas de base pendant le build, le sitemap se complètera à la prochaine régénération
   }
   return [...pages, ...events];
 }

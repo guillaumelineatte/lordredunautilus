@@ -16,7 +16,7 @@ export const revalidate = 3600;
 
 export default async function GalleryPage() {
   const photos = await getPhotos();
-  // Regroupement par soirée ; les photos sans soirée forment le premier groupe.
+  // groupées par soirée, celles sans soirée en premier
   const groups = new Map<string, { title: string; date: string | null; photos: PhotoDTO[] }>();
   for (const p of photos) {
     const key = p.event?.slug ?? "_";

@@ -45,7 +45,7 @@ export function parseOrFail<S extends z.ZodType>(
   return { ok: true, data: parsed.data };
 }
 
-/** Inscription publique à un événement (sans compte). */
+// inscription depuis le site, sans compte
 export async function registerPublic(
   input: RegistrationInput,
 ): Promise<ActionResult<{ status: "REGISTERED" | "WAITLISTED"; emailSent: boolean }>> {
@@ -101,7 +101,7 @@ export async function registerPublic(
   }
 }
 
-/** Annulation via le lien reçu par e-mail. */
+// annulation avec le lien reçu par mail
 export async function cancelByToken(token: string): Promise<ActionResult<{ eventTitle: string }>> {
   const meta = await requestMeta();
   if (!(await rateLimit("cancellation", meta.ip))) return { ok: false, error: TOO_MANY };

@@ -1,12 +1,12 @@
 name: Sauvegarde quotidienne
 
-# Sauvegarde chiffrée de la base de production, conservée 30 jours comme
-# artefact GitHub. Secrets requis (Settings → Secrets → Actions) :
-#   BACKUP_DATABASE_URL  URL directe Neon de la production (sans -pooler)
-#   BACKUP_PASSPHRASE    phrase de passe de chiffrement (à garder hors de GitHub aussi)
+# Sauvegarde chiffrée de la base de prod, gardée 30 jours en artefact GitHub.
+# Secrets à créer dans Settings > Secrets > Actions :
+#   BACKUP_DATABASE_URL  url directe Neon de la prod (sans -pooler)
+#   BACKUP_PASSPHRASE    phrase de passe du chiffrement (à noter ailleurs aussi)
 on:
   schedule:
-    - cron: "30 3 * * *" # 05:30 heure de Paris l'été, 04:30 l'hiver
+    - cron: "30 3 * * *" # 5h30 en été, 4h30 en hiver
   workflow_dispatch:
 
 jobs:

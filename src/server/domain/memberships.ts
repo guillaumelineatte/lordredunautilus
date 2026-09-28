@@ -64,7 +64,7 @@ export async function recordMembership(tx: Tx, input: RecordMembership, audit: A
   return membership;
 }
 
-/** Renouvellement : nouvelle adhésion chaînée à la précédente. */
+// Un renouvellement = une nouvelle adhésion rattachée à la précédente.
 export async function renewMembership(
   tx: Tx,
   input: Omit<RecordMembership, "memberId" | "startDate" | "renewedFromId"> & {
@@ -86,12 +86,8 @@ export async function renewMembership(
   );
 }
 
-/**
- * Modification d'une adhésion existante (correction de saisie) :
- * formule d'adhésion uniquement, pas de chevauchement avec une autre adhésion
- * du même membre, alertes d'échéance remises à zéro si la fin change,
- * statut du membre recalculé.
- */
+// Correction d'une adhésion. On refuse si les dates chevauchent une autre
+// adhésion du même membre.
 export async function updateMembership(tx: Tx, input: MembershipUpdateInput, audit: AuditRecorder) {
   const before = await tx.membership.findUnique({ where: { id: input.id } });
   if (!before) fail("Adhésion introuvable.");
@@ -132,7 +128,7 @@ export async function updateMembership(tx: Tx, input: MembershipUpdateInput, aud
       amountCents: input.amount,
       paymentMethod: input.paymentMethod,
       transactionRef: input.transactionRef,
-      // Nouvelle échéance : les alertes J-30 / J-7 / J0 repartent de zéro.
+      // si la date de fin bouge, les alertes repartent de zéro
       ...(endChanged ? { alertD30SentAt: null, alertD7SentAt: null, alertD0SentAt: null } : {}),
     },
   });

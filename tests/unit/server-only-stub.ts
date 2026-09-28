@@ -1,2 +1,2 @@
-// Remplace le module « server-only » pendant les tests unitaires.
+// remplace server-only dans les tests unitaires
 export {};

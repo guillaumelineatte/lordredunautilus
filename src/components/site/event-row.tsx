@@ -15,7 +15,7 @@ function placeLabel(e: EventDTO): string {
   return `${left} place${left > 1 ? "s" : ""} restante${left > 1 ? "s" : ""}`;
 }
 
-/** Ligne d'agenda, identique au site vitrine, reliée à la page de l'événement. */
+// ligne d'agenda comme sur le site vitrine, avec le lien vers l'événement
 export function EventRow({ event }: { event: EventDTO }) {
   const start = new Date(event.startsAt);
   const { day, month } = eventDateParts(start);

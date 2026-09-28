@@ -1,6 +1,6 @@
 import ReactMarkdown from "react-markdown";
 
-/** Markdown saisi par l'admin : HTML brut ignoré, liens externes sécurisés. */
+// markdown écrit par l'admin : on ignore le HTML brut et on sécurise les liens externes
 export function Markdown({ children }: { children: string }) {
   return (
     <ReactMarkdown

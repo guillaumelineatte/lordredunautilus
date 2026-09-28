@@ -5,7 +5,7 @@ import { env } from "./env";
 import { siteUrl } from "./mail/send";
 import { loadSettings } from "./settings";
 
-/** Annonce un événement publié sur le salon Discord (si activé dans les réglages). */
+// poste l'événement sur Discord si c'est activé dans les réglages
 export async function announceEventOnDiscord(eventId: string): Promise<void> {
   if (!env.DISCORD_WEBHOOK_URL) return;
   const settings = await loadSettings(db);

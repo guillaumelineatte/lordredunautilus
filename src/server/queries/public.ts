@@ -17,8 +17,8 @@ import type { Settings } from "@/lib/settings";
 import { db } from "../db";
 import { loadSettings } from "../settings";
 
-// Les pages publiques sont régénérées au plus tard toutes les heures,
-// et immédiatement après chaque écriture admin (updateTag).
+// Les pages publiques se régénèrent au moins toutes les heures, et tout de
+// suite quand l'admin modifie quelque chose (updateTag).
 const REVALIDATE = 3600;
 
 export const getSettings = unstable_cache(
@@ -89,7 +89,7 @@ function toEventDTO(e: EventRow): EventDTO {
   };
 }
 
-/** Événements publiés à venir (à partir d'aujourd'hui, heure de Paris). */
+// événements publiés à partir d'aujourd'hui
 export const getUpcomingEvents = unstable_cache(
   async (
     filters: { limit?: number; game?: string; type?: EventType } = {},
@@ -154,7 +154,7 @@ export const getPhotos = unstable_cache(
       width: p.width,
       height: p.height,
       blurDataUrl: p.blurDataUrl,
-      // Texte alternatif facultatif à la saisie : légende, sinon description générique.
+      // alt facultatif : on prend la légende, sinon un texte générique
       alt: p.alt.trim() || p.caption?.trim() || "Photo d'une soirée de L'Ordre du Nautilus",
       caption: p.caption,
       event: p.event ? { ...p.event, startsAt: p.event.startsAt.toISOString() } : null,
@@ -209,7 +209,7 @@ export const getPlans = unstable_cache(
   { tags: [TAGS.plans], revalidate: REVALIDATE },
 );
 
-/** Chiffres clés : valeurs saisies, ou calculées (membres actifs, année de fondation). */
+// chiffres clés : ceux des réglages, sinon calculés
 export const getStats = unstable_cache(
   async (): Promise<StatDTO[]> => {
     const settings = await loadSettings(db);

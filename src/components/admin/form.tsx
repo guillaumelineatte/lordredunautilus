@@ -27,22 +27,17 @@ export function useFormState() {
 type ActionFormProps<T> = {
   action: (data: FormData) => Promise<ActionResult<T>>;
   children: ReactNode;
-  /** Message affiché en cas de succès. */
   success?: string;
-  /** Redirection après succès. */
   redirectTo?: string | ((data: T) => string);
   onSuccess?: (data: T) => void;
   resetOnSuccess?: boolean;
-  /** Données ajoutées au FormData (identifiants, JSON…). */
+  // ajouté au FormData (id, JSON...)
   extra?: Record<string, string>;
   className?: string;
   confirm?: string;
 };
 
-/**
- * Formulaire relié à une Server Action : envoie le FormData, affiche les erreurs
- * par champ, notifie le succès et rafraîchit la page.
- */
+// Formulaire branché sur une server action : erreurs sous chaque champ, toast et refresh.
 export function ActionForm<T>({
   action,
   children,

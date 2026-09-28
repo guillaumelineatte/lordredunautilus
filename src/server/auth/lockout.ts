@@ -1,11 +1,8 @@
-/** Nombre d'échecs consécutifs avant verrouillage. */
+// échecs d'affilée avant blocage
 export const MAX_FAILED_ATTEMPTS = 5;
 
-/**
- * Durée du verrouillage (en minutes) après `failedCount` échecs consécutifs.
- * Temporaire : un verrouillage définitif permettrait à n'importe qui de
- * bloquer l'unique compte administrateur.
- */
+// Durée du blocage en minutes. Jamais définitif, sinon n'importe qui pourrait
+// bloquer le seul compte admin en se trompant exprès.
 export function lockMinutes(failedCount: number): number | null {
   if (failedCount < MAX_FAILED_ATTEMPTS) return null;
   if (failedCount >= MAX_FAILED_ATTEMPTS * 2) return 60;

@@ -1,4 +1,3 @@
-/** Icône poubelle (trait, couleur héritée du texte). */
 export function TrashIcon({ className = "size-4 shrink-0" }: { className?: string }) {
   return (
     <svg
@@ -19,7 +18,6 @@ export function TrashIcon({ className = "size-4 shrink-0" }: { className?: strin
   );
 }
 
-/** Icône crayon (modifier). */
 export function PencilIcon({ className = "size-4 shrink-0" }: { className?: string }) {
   return (
     <svg
@@ -38,7 +36,6 @@ export function PencilIcon({ className = "size-4 shrink-0" }: { className?: stri
   );
 }
 
-/** Petite flèche de retour. */
 export function ArrowLeftIcon({ className = "size-3.5 shrink-0" }: { className?: string }) {
   return (
     <svg

@@ -75,7 +75,7 @@ function Fill({
   );
 }
 
-// ── Autorisation parentale ─────────────────────────────────
+// Autorisation parentale
 
 export type ParentalConsentData = {
   associationName: string;
@@ -167,7 +167,7 @@ export function ParentalConsentPdf({
   );
 }
 
-// ── Carte de membre ────────────────────────────────────────
+// Carte de membre
 
 export type MemberCardData = {
   firstName: string;
@@ -267,7 +267,7 @@ export function MemberCardPdf(d: MemberCardData) {
   );
 }
 
-// ── Feuille d'émargement ───────────────────────────────────
+// Feuille d'émargement
 
 export type AttendanceRow = {
   firstName: string;
@@ -379,7 +379,7 @@ export function AttendanceSheetPdf(d: AttendanceData) {
   );
 }
 
-// ── Registre des traitements ───────────────────────────────
+// Registre des traitements
 
 export function ProcessingRegisterPdf({
   processings,

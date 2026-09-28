@@ -1,9 +1,7 @@
 import { RETENTION } from "./retention";
 
-/**
- * Registre des activités de traitement (art. 30 RGPD), d'après le modèle CNIL.
- * Source unique pour la page admin, l'export PDF et la page confidentialité.
- */
+// Registre des traitements (RGPD art. 30), sur le modèle de la CNIL.
+// Utilisé par la page admin, le PDF et la page confidentialité.
 export type Processing = {
   name: string;
   purpose: string;

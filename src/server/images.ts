@@ -24,10 +24,8 @@ export type ProcessedPhoto = {
   blurDataUrl: string;
 };
 
-/**
- * Génère les trois variantes WebP d'une photo. `rotate()` applique l'orientation
- * EXIF, et sharp supprime toutes les métadonnées (dont la géolocalisation).
- */
+// Les 3 variantes WebP. rotate() applique l'orientation EXIF, et sharp vire
+// toutes les métadonnées au passage (GPS compris).
 export async function processPhoto(input: Buffer): Promise<ProcessedPhoto> {
   const base = sharp(input, { failOn: "error" }).rotate();
   const meta = await base.metadata();

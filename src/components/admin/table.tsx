@@ -49,7 +49,7 @@ function href(sp: SearchParams, changes: Record<string, string | null>) {
   return s ? `?${s}` : "?";
 }
 
-/** En-tête de colonne triable (lien, rendu serveur). */
+// en-tête triable, c'est juste un lien donc ça marche côté serveur
 export function SortHeader({
   label,
   field,

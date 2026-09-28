@@ -18,7 +18,7 @@ type Props = {
 
 type Errors = Partial<Record<"firstName" | "lastName" | "playerId" | "email", string>>;
 
-/** Inscription sans compte : prénom, nom, identifiant de jeu, e-mail facultatif. */
+// pas de compte : prénom, nom, identifiant de jeu, et un mail si la personne veut
 export function RegistrationForm({ eventId, full, requirePlayerId, game }: Props) {
   const [errors, setErrors] = useState<Errors>({});
   const [failure, setFailure] = useState<string | null>(null);

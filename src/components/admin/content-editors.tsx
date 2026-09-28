@@ -29,7 +29,7 @@ import {
 import { useToast } from "./toast";
 import { Badge, Button } from "./ui";
 
-/** Liste réordonnable (flèches) avec édition dépliable de chaque élément. */
+// liste qu'on réordonne avec les flèches, chaque élément se déplie pour l'éditer
 function SortableList<T extends { id: string }>({
   items,
   reorder,
@@ -119,7 +119,7 @@ function SortableList<T extends { id: string }>({
   );
 }
 
-// ── Témoignages ────────────────────────────────────────────
+// Témoignages
 
 type Testimonial = {
   id: string;
@@ -216,7 +216,7 @@ export function TestimonialsEditor({ items }: { items: Testimonial[] }) {
   );
 }
 
-// ── FAQ ────────────────────────────────────────────────────
+// FAQ
 
 type Faq = { id: string; question: string; answer: string; isPublished: boolean };
 
@@ -285,7 +285,7 @@ export function FaqEditor({ items }: { items: Faq[] }) {
   );
 }
 
-// ── Formules ───────────────────────────────────────────────
+// Formules
 
 type Plan = {
   id: string;
@@ -424,7 +424,7 @@ export function PlansEditor({ items }: { items: Plan[] }) {
   );
 }
 
-// ── Jeux ───────────────────────────────────────────────────
+// Jeux
 
 type Game = {
   id: string;

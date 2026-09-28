@@ -25,8 +25,8 @@ const config = [
     },
   },
   {
-    // Toute écriture passe par la couche service (audit). Le client Prisma
-    // n'est importable que par la couche serveur qui en a légitimement besoin.
+    // Prisma n'est importable que côté serveur, pour que toutes les écritures
+    // passent par la couche service (et donc par l'audit).
     files: ["src/app/**/*.tsx", "src/components/**", "src/server/actions/**"],
     rules: {
       "no-restricted-imports": [

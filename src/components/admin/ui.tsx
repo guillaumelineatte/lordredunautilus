@@ -86,8 +86,7 @@ export function PageHeader({
 }: {
   kicker?: string;
   title: string;
-  /** Lien de retour affiché au-dessus du titre (petite flèche). */
-  back?: { href: string; label: string };
+  back?: { href: string; label: string }; // petite flèche de retour au-dessus du titre
   description?: ReactNode;
   actions?: ReactNode;
 }) {

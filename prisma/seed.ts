@@ -1,8 +1,6 @@
-/**
- * Données initiales. Idempotent : ne recrée rien de ce qui existe déjà.
- *   npm run db:seed                 → contenus + compte admin
- *   SEED_DEMO=true npm run db:seed  → + adhérents et inscriptions fictifs (local uniquement)
- */
+// Données de départ. On peut le relancer sans risque, rien n'est créé en double.
+//   npm run db:seed                  contenus + compte admin
+//   SEED_DEMO=true npm run db:seed   + faux adhérents et inscriptions (en local seulement)
 import "dotenv/config";
 import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -32,7 +30,7 @@ const GAMES = [
     levels: "Débutant à compétitif",
     formats: ["Commander", "Draft", "Standard"],
     playerIdLabel: "Wizards Account",
-    // Pseudo Wizards (« Pseudo#12345 ») ; le « @ » est refusé pour ne jamais stocker d'e-mail.
+    // pseudo Wizards (Pseudo#12345). On refuse le @ pour ne pas se retrouver avec des mails
     playerIdPattern: "[^\\s@]{2,32}(#\\d{4,6})?",
     playerIdExample: "Nemo#12345",
   },
@@ -148,7 +146,7 @@ const PLANS: Prisma.MembershipPlanCreateInput[] = [
   },
 ];
 
-// Décalage en jours par rapport à la date du seed, pour que l'agenda reste à venir.
+// en jours à partir d'aujourd'hui, pour que l'agenda ait toujours des dates à venir
 const EVENTS = [
   {
     in: 3,
@@ -354,7 +352,7 @@ const PHOTOS = [
   { h: 190, caption: "Les decks de prêt", alt: "Une étagère de decks de prêt rangés par jeu" },
 ];
 
-/** Photos de démonstration générées (dégradés de la palette), écrites dans public/demo. */
+// fausses photos (des dégradés aux couleurs du site) écrites dans public/demo
 async function demoPhotoFiles(index: number, heightHint: number, caption: string) {
   const dir = path.join(process.cwd(), "public", "demo");
   await mkdir(dir, { recursive: true });
@@ -506,7 +504,7 @@ async function seedContent() {
   console.log("• Jeux, formules, 10 événements, 8 photos, témoignages, FAQ et réglages créés");
 }
 
-/** Adhérents fictifs pour essayer l'administration (jamais en production). */
+// faux adhérents pour tester l'admin, jamais en prod
 async function seedDemoMembers() {
   if (process.env.SEED_DEMO !== "true") return;
   if ((await db.member.count()) > 0) {

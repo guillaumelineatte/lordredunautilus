@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { PlanDTO } from "@/lib/dto";
 import { formatAmount } from "@/lib/format";
 
-/** Cartes de formules, reprises du site vitrine, alimentées par la base. */
+// cartes des formules, même rendu que le site vitrine mais avec les données de la base
 export function Plans({ plans, onJoinPage = false }: { plans: PlanDTO[]; onJoinPage?: boolean }) {
   return (
     <div className="plans">

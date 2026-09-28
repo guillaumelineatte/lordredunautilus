@@ -1,10 +1,8 @@
 import { z } from "zod";
 
-/**
- * Réglages du site (table SiteSetting, une ligne par clé).
- * Chaque clé a son schéma et sa valeur par défaut : une valeur absente ou
- * invalide en base retombe sur le défaut, le site ne casse jamais.
- */
+// Réglages du site, une ligne par clé dans SiteSetting.
+// Chaque clé a un schéma et une valeur par défaut : si la valeur en base manque
+// ou est invalide on prend le défaut, comme ça le site ne casse pas.
 
 const url = z.union([z.literal(""), z.string().trim().url("Adresse web invalide.")]);
 

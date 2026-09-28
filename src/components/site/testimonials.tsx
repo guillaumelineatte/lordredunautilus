@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { TestimonialDTO } from "@/lib/dto";
 
-/** Carrousel de témoignages (défilement automatique coupé si animations réduites). */
+// carrousel, pas de défilement auto si les animations sont réduites
 export function Testimonials({ items }: { items: TestimonialDTO[] }) {
   const [slide, setSlide] = useState(0);
   const [tick, setTick] = useState(0);

@@ -26,7 +26,7 @@ function isTyping(target: EventTarget | null) {
   return target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
 }
 
-/** Raccourcis : « / » pour chercher, « n » pour créer. */
+// raccourcis clavier : / pour chercher, n pour créer
 function Shortcuts() {
   const router = useRouter();
   useEffect(() => {
@@ -56,7 +56,7 @@ function Shortcuts() {
 export function AdminShell({ children, unread }: { children: ReactNode; unread: number }) {
   const pathname = usePathname();
   const router = useRouter();
-  // Le menu mobile se referme de lui-même quand l'adresse change.
+  // on referme le menu mobile quand on change de page
   const [openOn, setOpenOn] = useState<string | null>(null);
   const open = openOn === pathname;
   const setOpen = (value: boolean) => setOpenOn(value ? pathname : null);

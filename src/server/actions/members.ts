@@ -25,11 +25,8 @@ import { fail } from "../service/errors";
 
 const dayOrNull = (v: string | null) => (v ? dayToDbDate(v) : null);
 
-/**
- * Création ou modification d'une fiche.
- * - statut : suspendu si coché, sinon déduit des adhésions (actif / désabonné) ;
- * - numéro de carte unique, identifiants de jeu validés par la regex du jeu ;
- */
+// Création ou modif d'une fiche. Le statut vient des adhésions, sauf si la
+// case "suspendu" est cochée.
 export const saveMember = adminAction(
   { schema: memberInput, tags: [TAGS.stats, TAGS.photos] },
   async (input, { tx, audit }) => {
@@ -65,7 +62,7 @@ export const saveMember = adminAction(
     const created = await tx.member.create({
       data: {
         ...data,
-        // Pas encore d'adhésion : « désabonné » jusqu'à l'enregistrement de la première.
+        // pas encore d'adhésion, donc désabonné en attendant la première
         status: input.suspended ? "SUSPENDED" : "EXPIRED",
       },
     });
@@ -75,7 +72,7 @@ export const saveMember = adminAction(
   },
 );
 
-/** Corbeille (soft delete) : la fiche sera anonymisée automatiquement après 30 jours. */
+// Corbeille : le cron anonymise la fiche au bout de 30 jours.
 export const trashMember = adminAction(
   { schema: idInput, tags: [TAGS.stats] },
   async ({ id }, { tx, audit }) => {
@@ -100,13 +97,12 @@ export const restoreMember = adminAction(
 
 const DELETE_REASON = "Suppression demandée depuis l'administration";
 
-/** Supprime une fiche (définitivement, ou par anonymisation si elle a des adhésions). */
+// Supprimée pour de bon, ou juste anonymisée si la fiche a des adhésions.
 export const deleteMemberAction = adminAction(
   { schema: idInput, tags: [TAGS.stats, TAGS.photos] },
   async ({ id }, { tx, audit }) => ({ mode: await deleteMember(tx, id, audit, DELETE_REASON) }),
 );
 
-/** Suppression groupée depuis la liste des adhérents. */
 export const deleteMembersAction = adminAction(
   {
     schema: z.object({
@@ -175,7 +171,7 @@ export const renewMembershipAction = adminAction(
   },
 );
 
-/** Correction d'une adhésion existante (formule, dates, montant, paiement, référence). */
+// Pour corriger une adhésion mal saisie.
 export const updateMembershipAction = adminAction(
   { schema: membershipUpdateInput, tags: [TAGS.stats] },
   async (input, { tx, audit }) => {

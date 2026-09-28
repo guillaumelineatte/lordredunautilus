@@ -12,7 +12,7 @@ export function unreadMessagesCount() {
   return db.contactMessage.count({ where: { status: "NEW" } });
 }
 
-// ── Tableau de bord ────────────────────────────────────────
+// Tableau de bord
 
 export async function dashboardData() {
   const today = todayParis();
@@ -95,7 +95,7 @@ export async function dashboardData() {
   };
 }
 
-// ── Adhérents ──────────────────────────────────────────────
+// Adhérents
 
 export async function listMembers(p: ListParams) {
   const trash = p.filters.status === "corbeille";
@@ -172,7 +172,7 @@ export async function getMemberDetail(id: string) {
   return { member, history };
 }
 
-/** Doublons probables : même nom + prénom normalisés. */
+// doublons probables : même nom et prénom
 export async function findDuplicateGroups() {
   const members = await db.member.findMany({
     where: ACTIVE_MEMBER,
@@ -221,7 +221,7 @@ export function gameOptions(includeInactive = false) {
   });
 }
 
-// ── Événements ─────────────────────────────────────────────
+// Événements
 
 export async function listEvents(p: ListParams) {
   const now = new Date();
@@ -290,7 +290,7 @@ export function eventOptions() {
   });
 }
 
-// ── Galerie ────────────────────────────────────────────────
+// Galerie
 
 export function listPhotos() {
   return db.photo.findMany({
@@ -302,7 +302,7 @@ export function listPhotos() {
   });
 }
 
-// ── Messages ───────────────────────────────────────────────
+// Messages
 
 export async function listMessages(p: ListParams) {
   const where: Prisma.ContactMessageWhereInput = {
@@ -333,7 +333,7 @@ export async function listMessages(p: ListParams) {
   return { total, rows };
 }
 
-// ── Journal ────────────────────────────────────────────────
+// Journal
 
 export async function listAudit(p: ListParams) {
   const from = p.filters.du ? parisToUtc(p.filters.du, "00:00") : undefined;
@@ -359,7 +359,7 @@ export async function listAudit(p: ListParams) {
   return { total, rows, size };
 }
 
-/** Libellés lisibles des éléments référencés par le journal (résolus à l'affichage). */
+// retrouve un libellé lisible pour chaque élément cité dans le journal
 export async function auditTargets(rows: { entity: string; entityId: string | null }[]) {
   const ids = (entity: string) =>
     rows.filter((r) => r.entity === entity && r.entityId).map((r) => r.entityId as string);
@@ -382,7 +382,7 @@ export async function auditTargets(rows: { entity: string; entityId: string | nu
   return map;
 }
 
-// ── Compte ─────────────────────────────────────────────────
+// Compte
 
 export async function accountData(userId: string) {
   const [user, sessions] = await Promise.all([
@@ -412,7 +412,7 @@ export async function accountData(userId: string) {
   return { user, sessions };
 }
 
-// ── Contenus ───────────────────────────────────────────────
+// Contenus
 
 export function listTestimonials() {
   return db.testimonial.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] });

@@ -1,19 +1,12 @@
-/** Durées de conservation : une seule source pour le cron, la page confidentialité et le registre. */
+// Durées de conservation. Utilisées par le cron, la page confidentialité et le registre,
+// donc on ne les change qu'ici.
 export const RETENTION = {
-  /** Fiche adhérent : années après la fin de la dernière adhésion, puis anonymisation. */
-  memberYears: 3,
-  /** Fiche mise à la corbeille : jours avant anonymisation définitive. */
-  trashDays: 30,
-  /** E-mail facultatif d'une inscription : jours après l'événement. */
-  registrationEmailDays: 7,
-  /** Inscriptions aux événements : mois après l'événement. */
-  registrationMonths: 12,
-  /** Message de contact traité : mois après traitement. */
-  contactHandledMonths: 6,
-  /** Message de contact jamais traité : mois après réception. */
-  contactUnhandledMonths: 12,
-  /** Journal d'administration : mois. */
+  memberYears: 3, // après la fin de la dernière adhésion
+  trashDays: 30, // corbeille, avant anonymisation
+  registrationEmailDays: 7, // mail facultatif d'une inscription, après l'événement
+  registrationMonths: 12, // inscriptions, après l'événement
+  contactHandledMonths: 6, // message traité
+  contactUnhandledMonths: 12, // message jamais traité
   auditMonths: 12,
-  /** Compteurs de limitation de débit : heures. */
   rateLimitHours: 24,
 } as const;

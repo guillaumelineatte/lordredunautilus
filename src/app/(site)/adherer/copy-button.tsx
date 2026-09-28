@@ -14,7 +14,7 @@ export function CopyButton({ value }: { value: string }) {
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
         } catch {
-          /* presse-papiers indisponible : l'utilisateur copie à la main */
+          /* pas de presse-papiers, tant pis, copie à la main */
         }
       }}
     >

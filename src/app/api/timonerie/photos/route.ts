@@ -7,8 +7,8 @@ import { AuditRecorder } from "@/server/service/audit";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-// Upload d'une photo (le navigateur la redimensionne avant envoi pour rester
-// sous la limite de 4,5 Mo des fonctions Vercel) → variantes sharp → brouillon.
+// Upload d'une photo. Le navigateur la réduit avant l'envoi pour passer sous la
+// limite de 4,5 Mo de Vercel, on fait les variantes avec sharp et elle arrive en brouillon.
 export async function POST(req: Request) {
   const admin = await adminFromRequest(req);
   if (!admin) return unauthorized();

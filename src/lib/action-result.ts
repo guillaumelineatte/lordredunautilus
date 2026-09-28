@@ -4,7 +4,7 @@ export type ActionResult<T = null> =
   | { ok: true; data: T; message?: string }
   | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
-/** Premier message d'erreur par champ (chemin « a.b.0.c »). */
+// On garde seulement la première erreur de chaque champ.
 export function zodFieldErrors(error: z.ZodError): Record<string, string> {
   const out: Record<string, string> = {};
   for (const issue of error.issues) {
