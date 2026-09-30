@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Josefin_Sans, Source_Sans_3 } from "next/font/google";
+import { TestBanner } from "@/components/test-banner";
 import "./admin.css";
 
 const josefin = Josefin_Sans({
@@ -23,7 +24,10 @@ export const viewport: Viewport = { themeColor: "#132438", colorScheme: "dark" }
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${josefin.variable} ${source.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <TestBanner />
+      </body>
     </html>
   );
 }

@@ -4,6 +4,7 @@ import { Footer } from "@/components/site/footer";
 import { JsonLd } from "@/components/site/json-ld";
 import { Nav } from "@/components/site/nav";
 import { SiteEffects } from "@/components/site/site-effects";
+import { TestBanner } from "@/components/test-banner";
 import { getSettings } from "@/server/queries/public";
 import "lenis/dist/lenis.css";
 import "./site.css";
@@ -114,6 +115,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: REVEAL_NOW }} />
         <SiteEffects />
         <JsonLd data={organization} />
+        <TestBanner />
       </body>
     </html>
   );

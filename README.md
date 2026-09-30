@@ -97,15 +97,26 @@ Un hook Husky lance ESLint et Prettier sur les fichiers modifiés à chaque comm
 
 ## 4. Déploiement : Vercel, Neon, Resend, Blob
 
-1. **Neon** : le projet existe déjà (`wild-smoke-59314577`).
-   - Branche `production` : le site en ligne. Migrations et seed déjà appliqués ; le compte admin existe, avec un mot de passe transmis séparément.
-   - Branche `dev` : le développement local et les tests.
-2. **Vercel** : importez le dépôt GitHub.
-   - Framework : Next.js. Rien d'autre à régler : le script `vercel-build` génère le client Prisma, applique les migrations (`prisma migrate deploy`) puis compile.
-   - Renseignez les variables de la section 2 pour l'environnement _Production_.
-   - Avec l'intégration Neon du Marketplace, `DATABASE_URL` et `DATABASE_URL_UNPOOLED` sont créées automatiquement.
-   - Pour les _Preview_, pointez sur une branche Neon distincte, jamais sur la production.
-3. **Vercel Blob** : Storage → Create → Blob, relié au projet. `BLOB_READ_WRITE_TOKEN` est ajoutée d'office.
+1. **Neon** (projet `wild-smoke-59314577`), trois branches :
+   - `production` : le vrai site. Le compte admin existe, avec un mot de passe transmis séparément.
+   - `test` : la version de test, copiée depuis la production le 30/09/2026 puis remplie avec les données de démo. Même mot de passe admin qu'en local.
+   - `dev` : le développement local et les tests automatiques.
+   - Une fois qu'il y a de vrais adhérents en production, ne recopiez plus la production vers `test` : ce sont des données personnelles.
+2. **Vercel** : le projet `lordredunautilus` est créé et configuré, avec deux versions.
+
+   | Version    | Adresse                                  | Variables Vercel | Base Neon    | Photos (Blob)          |
+   | ---------- | ---------------------------------------- | ---------------- | ------------ | ---------------------- |
+   | Test       | https://lordredunautilus-test.vercel.app | _Preview_        | `test`       | `nautilus-photos-test` |
+   | Production | https://lordredunautilus.vercel.app      | _Production_     | `production` | `nautilus-photos`      |
+   - La version de test affiche un bandeau « Version de test », n'est pas indexée par Google et le cron n'y tourne pas (Vercel ne lance les crons qu'en production). Pas de clé Resend : les e-mails s'affichent dans les logs au lieu de partir.
+   - Le script `vercel-build` génère le client Prisma, applique les migrations sur la base de la version déployée, puis compile.
+   - On déploie d'abord en test, on vérifie, puis en production :
+     ```bash
+     npm run deploy:test
+     npm run deploy:prod
+     ```
+
+3. **Vercel Blob** : les deux stockages sont créés et reliés chacun à sa version.
 4. **Resend** :
    - vérifiez le domaine d'envoi (enregistrements DNS SPF/DKIM) ;
    - créez une clé d'API → `RESEND_API_KEY` ;

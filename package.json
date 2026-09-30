@@ -24,7 +24,9 @@
     "postinstall": "prisma generate",
     "prepare": "husky",
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
-    "screenshots": "tsx scripts/screenshots.ts"
+    "screenshots": "tsx scripts/screenshots.ts",
+    "deploy:test": "bash scripts/deploy.sh test",
+    "deploy:prod": "bash scripts/deploy.sh prod"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
