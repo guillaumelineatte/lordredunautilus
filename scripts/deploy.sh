@@ -12,8 +12,12 @@ TEST_DOMAIN="lordredunautilus-test.vercel.app"
 
 case "${1:-}" in
   test)
-    # vercel deploy écrit l'adresse du déploiement sur la sortie standard
-    url=$(vercel deploy --yes --archive=tgz)
+    # selon le terminal, vercel deploy sort juste l'adresse ou un JSON : on la repêche dans les deux cas
+    url=$(vercel deploy --yes --archive=tgz | grep -oE 'lordredunautilus-[a-z0-9]+-[a-z0-9-]+\.vercel\.app' | head -1)
+    if [ -z "$url" ]; then
+      echo "Adresse du déploiement introuvable, alias non posé." >&2
+      exit 1
+    fi
     vercel alias set "$url" "$TEST_DOMAIN"
     echo "Version de test en ligne : https://$TEST_DOMAIN"
     ;;
